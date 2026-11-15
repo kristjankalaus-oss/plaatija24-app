@@ -1,0 +1,924 @@
+'use client'
+
+import { useState, useRef, useMemo } from 'react'
+import { useRouter } from 'next/navigation'
+import {
+  ProjectInquiry,
+  ServiceType,
+  TileSpecs,
+  MicrocementSpecs,
+  ScopeOfWork,
+  UploadedFile,
+  SystemBrand,
+  ClientType
+} from '@/types'
+import { calculateAIEstimate, SYSTEM_BRAND_INFO } from '@/lib/pricing-calculator'
+import { getAIVisualizations } from '@/lib/ai-visualizer'
+import { saveProject } from '@/lib/data-store'
+import AdBanner from '@/components/ads/AdBanner'
+
+const ROOM_TYPES = [
+  { id: 'vannituba', label: 'Vannituba', icon: '🛁', desc: 'Dušš, vann, seinad ja põrand' },
+  { id: 'duss',      label: 'Duširuum',  icon: '🚿', desc: 'Kalletega põrand, veetsoon' },
+  { id: 'kook',      label: 'Köök',      icon: '🍳', desc: 'Köögitagune sein ja põrand' },
+  { id: 'esik',      label: 'Esik / Koridor', icon: '🚪', desc: 'Suure kulumiskoormusega' },
+  { id: 'elutuba',   label: 'Eluruum',   icon: '🛋️', desc: 'Avatud põrandapinnad' },
+  { id: 'muu',       label: 'Muu / Trepp', icon: '📐', desc: 'Eripinnad ja terrassid' },
+]
+
+const TILE_SIZES = [
+  { id: 'standard_30x60', label: 'Standard 30x60 cm' },
+  { id: 'standard_60x60', label: 'Ruutplaat 60x60 cm' },
+  { id: 'large_60x120',   label: 'Suurformaat 60x120 cm' },
+  { id: 'slab_large',     label: 'XL Keraamiline Slab (120x240cm+)' },
+  { id: 'herringbone',    label: 'Kalasaba muster (Herringbone)' },
+  { id: 'mosaic',         label: 'Mosaiik / Heksagon' },
+]
+
+const SYSTEM_BRANDS: { id: SystemBrand; label: string; flag: string; desc: string }[] = [
+  { id: 'mira',    label: 'MIRA',    flag: '🇩🇰', desc: 'Mira 4400 multicoat & 3130 superfix' },
+  { id: 'mapei',   label: 'MAPEI',   flag: '🇮🇹', desc: 'Mapelastic & Ultracolor Plus' },
+  { id: 'weber',   label: 'Weber',   flag: '🇫🇷', desc: 'Saint-Gobain vetonit süsteem' },
+  { id: 'kiilto',  label: 'Kiilto',  flag: '🇫🇮', desc: 'Kerafiber kiudtugevdatud süsteem' },
+  { id: 'ceresit', label: 'Ceresit', flag: '🇩🇪', desc: 'CL51 & CM17 Super Flex' },
+  { id: 'none',    label: 'Ei oma eelistust', flag: '⭐', desc: 'Meistri parim soovitus' },
+]
+
+export default function RequestForm() {
+  const router = useRouter()
+  const [step, setStep] = useState(1)
+  const [loading, setLoading] = useState(false)
+  const [dragOver, setDragOver] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // 1. Tellija tüüp
+  const [clientType, setClientType] = useState<ClientType>('private')
+  const [companyName, setCompanyName] = useState('')
+
+  // 2. Üldandmed & Süsteemi valik
+  const [roomType, setRoomType] = useState('vannituba')
+  const [serviceType, setServiceType] = useState<ServiceType>('mõlemad')
+  const [systemBrand, setSystemBrand] = useState<SystemBrand>('mira')
+
+  // 3. Mõõdud & Mahutabel
+  const [floorArea, setFloorArea] = useState<number>(6)
+  const [wallArea, setWallArea] = useState<number>(18)
+  const [wallHeight, setWallHeight] = useState<number>(2.5)
+  const [perimeter, setPerimeter] = useState<number>(10)
+
+  // Töölõigud
+  const [levelingRequired, setLevelingRequired] = useState(true)
+  const [demolitionRequired, setDemolitionRequired] = useState(false)
+  const [waterproofingArea, setWaterproofingArea] = useState<number>(24)
+  const [corners45degCount, setCorners45degCount] = useState<number>(6)
+  const [nichesCount, setNichesCount] = useState<number>(1)
+  const [drainsCount, setDrainsCount] = useState<number>(1)
+  const [siliconeLength, setSiliconeLength] = useState<number>(15)
+
+  // 4. Plaatide andmed
+  const [tileSize, setTileSize] = useState<TileSpecs['size']>('large_60x120')
+  const [tileMaterial, setTileMaterial] = useState<TileSpecs['material']>('portselan')
+  const [tileFinish, setTileFinish] = useState<TileSpecs['finish']>('matt')
+  const [tileColorStyle, setTileColorStyle] = useState('Valge Carrara marmor helehallide soontega')
+  const [jointType, setJointType] = useState<'cement' | 'epoxy'>('epoxy')
+  const [tileBrand, setTileBrand] = useState('')
+
+  // 5. Mikrotsemendi andmed
+  const [microSystem, setMicroSystem] = useState<MicrocementSpecs['system']>('shower_waterproof')
+  const [microFinish, setMicroFinish] = useState<MicrocementSpecs['finish']>('siidjas')
+  const [microColorTone, setMicroColorTone] = useState('Soe liivakarva beež')
+  const [microTexture, setMicroTexture] = useState<MicrocementSpecs['texture']>('peenike_sile')
+
+  // Failid ja kirjeldus
+  const [description, setDescription] = useState('')
+  const [files, setFiles] = useState<UploadedFile[]>([])
+
+  // Kontakt
+  const [clientName, setClientName] = useState('')
+  const [clientEmail, setClientEmail] = useState('')
+  const [clientPhone, setClientPhone] = useState('')
+  const [city, setCity] = useState('Tallinn')
+  const [address, setAddress] = useState('')
+
+  // Reaalajas koostatav Scope
+  const currentScope: ScopeOfWork = useMemo(() => ({
+    floorArea: Number(floorArea) || 0,
+    wallArea: Number(wallArea) || 0,
+    wallHeight: Number(wallHeight) || 2.5,
+    perimeter: Number(perimeter) || 0,
+    levelingRequired,
+    waterproofingArea: Number(waterproofingArea) || 0,
+    corners45degCount: Number(corners45degCount) || 0,
+    nichesCount: Number(nichesCount) || 0,
+    drainsCount: Number(drainsCount) || 0,
+    siliconeLength: Number(siliconeLength) || 0,
+    demolitionRequired,
+    extras: []
+  }), [
+    floorArea, wallArea, wallHeight, perimeter, levelingRequired,
+    waterproofingArea, corners45degCount, nichesCount, drainsCount,
+    siliconeLength, demolitionRequired
+  ])
+
+  const currentTileSpecs: TileSpecs = useMemo(() => ({
+    size: tileSize,
+    sizeLabel: TILE_SIZES.find(s => s.id === tileSize)?.label || tileSize,
+    material: tileMaterial,
+    finish: tileFinish,
+    colorStyle: tileColorStyle,
+    jointType,
+    tileBrand: tileBrand || undefined
+  }), [tileSize, tileMaterial, tileFinish, tileColorStyle, jointType, tileBrand])
+
+  const currentMicroSpecs: MicrocementSpecs = useMemo(() => ({
+    system: microSystem,
+    systemLabel: microSystem === 'shower_waterproof' ? 'Veekindel dušisüsteem' : 'Standard 2-kihiline',
+    finish: microFinish,
+    colorTone: microColorTone,
+    texture: microTexture
+  }), [microSystem, microFinish, microColorTone, microTexture])
+
+  // Reaalajas letihinna kalkulatsioon valitud tootjasüsteemiga
+  const liveEstimate = useMemo(() => {
+    return calculateAIEstimate(serviceType, currentScope, currentTileSpecs, currentMicroSpecs, systemBrand)
+  }, [serviceType, currentScope, currentTileSpecs, currentMicroSpecs, systemBrand])
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return
+    const newFiles: UploadedFile[] = Array.from(e.target.files).map(f => ({
+      name: f.name,
+      size: f.size,
+      type: f.type
+    }))
+    setFiles(prev => [...prev, ...newFiles])
+  }
+
+  const handleSubmit = async () => {
+    setLoading(true)
+
+    const finalEstimate = calculateAIEstimate(serviceType, currentScope, currentTileSpecs, currentMicroSpecs, systemBrand)
+    const visualUrls = getAIVisualizations(serviceType, currentTileSpecs, currentMicroSpecs)
+
+    const isB2B = clientType === 'contractor_b2b'
+    const projectId = 'proj-' + Date.now()
+
+    const newProject: ProjectInquiry = {
+      id: projectId,
+      createdAt: new Date().toISOString(),
+      status: 'pakkumised_avatud',
+      clientType,
+      companyName: isB2B ? (companyName || 'Peatöövõtja / Arendaja') : undefined,
+      isB2BProject: isB2B,
+      minTierRequired: isB2B ? 'vip_b2b_2500' : 'free',
+      clientName: clientName || (isB2B ? 'B2B Projektijuht' : 'Eraisik Tellija'),
+      clientEmail: clientEmail || 'klient@example.ee',
+      clientPhone: clientPhone || '+372 500 0000',
+      city: city || 'Tallinn',
+      address,
+      roomType,
+      roomTypeLabel: isB2B ? `B2B Hange: ${ROOM_TYPES.find(r => r.id === roomType)?.label}` : (ROOM_TYPES.find(r => r.id === roomType)?.label || 'Ruum'),
+      serviceType,
+      systemBrand,
+      systemBrandLabel: SYSTEM_BRAND_INFO[systemBrand]?.name || 'Sertifitseeritud süsteem',
+      scope: currentScope,
+      tileSpecs: (serviceType === 'plaat' || serviceType === 'mõlemad') ? currentTileSpecs : undefined,
+      microcementSpecs: (serviceType === 'mikrotsement' || serviceType === 'mõlemad') ? currentMicroSpecs : undefined,
+      description: description || `${ROOM_TYPES.find(r => r.id === roomType)?.label} viimistlustööd (${systemBrand.toUpperCase()} süsteem). Mahud: ${Number(floorArea) + Number(wallArea)} m².`,
+      files,
+      aiEstimate: finalEstimate,
+      aiVisualizations: visualUrls,
+      quotesCount: 0
+    }
+
+    saveProject(newProject)
+
+    await new Promise(r => setTimeout(r, 1100))
+    setLoading(false)
+    router.push(`/request/${projectId}`)
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-10 px-4">
+      <div className="max-w-5xl mx-auto">
+        
+        {/* Reklaamibänner päises */}
+        <div className="mb-6">
+          <AdBanner position="inline" specificBrand={systemBrand !== 'none' ? systemBrand : undefined} />
+        </div>
+
+        {/* Pealkiri */}
+        <div className="text-center mb-8">
+          <span className="text-xs uppercase font-extrabold tracking-wider px-3 py-1 bg-amber-100 text-amber-800 rounded-full">
+            Kliendile 100% Tasuta · Kohustusi pole
+          </span>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mt-3">
+            Sisesta ruumi andmed & koosta AI esialgne pakkumine
+          </h1>
+          <p className="text-gray-500 text-sm mt-1 max-w-xl mx-auto">
+            Vali eelistatud süsteem (MIRA, Mapei, Weber jne) ja sisesta mahud. AI kalkuleerib kohese letihindade kalkulatsiooni ja kujundab pildid valmis pinnast.
+          </p>
+        </div>
+
+        {/* Sammude indikaator */}
+        <div className="flex items-center justify-between mb-8 max-w-2xl mx-auto">
+          {[
+            { s: 1, label: 'Tellija & Ruum' },
+            { s: 2, label: 'Süsteem & Mahutabel' },
+            { s: 3, label: 'Plaadid & Pildid' },
+            { s: 4, label: 'Eelarve & Esitamine' },
+          ].map((item) => (
+            <div key={item.s} className="flex flex-col items-center flex-1">
+              <div
+                className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm transition-all ${
+                  step >= item.s
+                    ? 'text-white shadow-md'
+                    : 'bg-gray-200 text-gray-400'
+                }`}
+                style={step >= item.s ? { backgroundColor: 'var(--color-brand-500)' } : {}}
+              >
+                {step > item.s ? '✓' : item.s}
+              </div>
+              <span className={`text-[11px] font-semibold mt-1.5 text-center ${
+                step >= item.s ? 'text-gray-900' : 'text-gray-400'
+              }`}>
+                {item.label}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Peamine paigutus */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          <div className="lg:col-span-2 space-y-6">
+            <div className="card shadow-sm border border-gray-100 p-6">
+              
+              {/* SAMM 1: Tellija tüüp & Ruum */}
+              {step === 1 && (
+                <div className="space-y-6">
+                  
+                  {/* Tellija tüübi valik: Eraisik vs Peatöövõtja */}
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                      Tellija staatus
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setClientType('private')}
+                        className={`p-3 rounded-xl border text-left transition-all ${
+                          clientType === 'private'
+                            ? 'border-amber-500 bg-amber-50/70 shadow-xs'
+                            : 'border-gray-200 hover:border-gray-300 bg-white'
+                        }`}
+                      >
+                        <div className="text-xl mb-1">🏠</div>
+                        <div className="text-xs font-bold text-gray-900">Eraisik (Erakodu)</div>
+                        <div className="text-[11px] text-gray-500 mt-0.5">Korteri või eramu viimistlus</div>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setClientType('contractor_b2b')}
+                        className={`p-3 rounded-xl border text-left transition-all ${
+                          clientType === 'contractor_b2b'
+                            ? 'border-blue-600 bg-blue-50/70 shadow-xs'
+                            : 'border-gray-200 hover:border-gray-300 bg-white'
+                        }`}
+                      >
+                        <div className="text-xl mb-1">🏢</div>
+                        <div className="text-xs font-bold text-gray-900 flex items-center gap-1">
+                          Peatöövõtja / Arendaja <span className="text-[10px] bg-blue-100 text-blue-700 px-1 rounded">B2B</span>
+                        </div>
+                        <div className="text-[11px] text-gray-500 mt-0.5">Korterelamud, arendused, suuremad mahud</div>
+                      </button>
+                    </div>
+
+                    {clientType === 'contractor_b2b' && (
+                      <div className="mt-3 p-3 bg-blue-50/60 border border-blue-200 rounded-xl">
+                        <label className="block text-[11px] font-bold text-blue-900 mb-1">Peatöövõtja ettevõtte nimi</label>
+                        <input
+                          type="text"
+                          value={companyName}
+                          onChange={(e) => setCompanyName(e.target.value)}
+                          placeholder="nt Merko Ehitus, Nordecon, YIT jne"
+                          className="input bg-white text-xs font-semibold"
+                        />
+                        <p className="text-[10px] text-blue-700 mt-1">
+                          💎 Peatöövõtjate B2B hangetele pääsevad pakkuma ainult kontrollitud Pro-meistrid.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Teenuse liik */}
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Teenuse liik</label>
+                    <div className="grid grid-cols-3 gap-3">
+                      {[
+                        { id: 'plaat', label: 'Plaatimine', icon: '🧱', desc: 'Keraamika, portselan' },
+                        { id: 'mikrotsement', label: 'Mikrotsement', icon: '🎨', desc: 'Vuugivaba monoliit' },
+                        { id: 'mõlemad', label: 'Mõlemad', icon: '✨', desc: 'Kombineeritud' },
+                      ].map((t) => (
+                        <button
+                          key={t.id}
+                          type="button"
+                          onClick={() => setServiceType(t.id as ServiceType)}
+                          className={`p-3 rounded-xl border-2 text-left transition-all ${
+                            serviceType === t.id
+                              ? 'border-amber-500 bg-amber-50/60 shadow-xs'
+                              : 'border-gray-200 hover:border-gray-300 bg-white'
+                          }`}
+                        >
+                          <div className="text-2xl mb-1">{t.icon}</div>
+                          <div className="text-xs font-bold text-gray-900">{t.label}</div>
+                          <div className="text-[10px] text-gray-500 mt-0.5">{t.desc}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Ruumi tüüp */}
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Ruumi tüüp</label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                      {ROOM_TYPES.map((r) => (
+                        <button
+                          key={r.id}
+                          type="button"
+                          onClick={() => setRoomType(r.id)}
+                          className={`p-3 rounded-xl border text-left flex items-start gap-2.5 transition-all ${
+                            roomType === r.id
+                              ? 'border-amber-500 bg-amber-50/50 shadow-2xs font-semibold'
+                              : 'border-gray-200 hover:border-gray-300 bg-white text-gray-700'
+                          }`}
+                        >
+                          <span className="text-xl">{r.icon}</span>
+                          <div>
+                            <div className="text-xs font-bold text-gray-900">{r.label}</div>
+                            <div className="text-[10px] text-gray-400">{r.desc}</div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Pinnad ja mõõdud */}
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Pinnad ja mõõdud</label>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div>
+                        <span className="text-xs text-gray-600 block mb-1">Põranda pind (m²)</span>
+                        <input
+                          type="number"
+                          step="0.5"
+                          min="0"
+                          value={floorArea}
+                          onChange={(e) => setFloorArea(parseFloat(e.target.value) || 0)}
+                          className="input font-semibold"
+                        />
+                      </div>
+                      <div>
+                        <span className="text-xs text-gray-600 block mb-1">Seinte pind (m²)</span>
+                        <input
+                          type="number"
+                          step="0.5"
+                          min="0"
+                          value={wallArea}
+                          onChange={(e) => setWallArea(parseFloat(e.target.value) || 0)}
+                          className="input font-semibold"
+                        />
+                      </div>
+                      <div>
+                        <span className="text-xs text-gray-600 block mb-1">Ruumi kõrgus (m)</span>
+                        <input
+                          type="number"
+                          step="0.1"
+                          min="1"
+                          value={wallHeight}
+                          onChange={(e) => setWallHeight(parseFloat(e.target.value) || 2.5)}
+                          className="input font-semibold"
+                        />
+                      </div>
+                      <div>
+                        <span className="text-xs text-gray-600 block mb-1">Perimeeter (jm)</span>
+                        <input
+                          type="number"
+                          step="0.5"
+                          min="0"
+                          value={perimeter}
+                          onChange={(e) => setPerimeter(parseFloat(e.target.value) || 0)}
+                          className="input font-semibold"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => setStep(2)}
+                      className="btn-primary py-2.5 px-6 text-sm"
+                    >
+                      Edasi: Süsteem & Mahutabel →
+                    </button>
+                  </div>
+
+                </div>
+              )}
+
+              {/* SAMM 2: Süsteemi valik (MIRA, Mapei, Weber jne) & Mahutabel */}
+              {step === 2 && (
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="text-lg font-bold text-gray-900">2. Süsteemi valik & Mahutabel</h2>
+                    <p className="text-xs text-gray-500">Vali soovitud ehitusmaterjalide tootja või jäta valik meistrile</p>
+                  </div>
+
+                  {/* SÜSTEEMI VALIK */}
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                      Ehitussüsteemi / Tootja eelistus *
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {SYSTEM_BRANDS.map(b => (
+                        <button
+                          key={b.id}
+                          type="button"
+                          onClick={() => setSystemBrand(b.id)}
+                          className={`p-3 rounded-xl border text-left transition-all ${
+                            systemBrand === b.id
+                              ? 'border-amber-500 bg-amber-50/80 shadow-xs ring-1 ring-amber-400'
+                              : 'border-gray-200 hover:border-gray-300 bg-white'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-lg">{b.flag}</span>
+                            <span className={`text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded ${
+                              systemBrand === b.id ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-600'
+                            }`}>
+                              {b.label}
+                            </span>
+                          </div>
+                          <div className="text-[11px] text-gray-500 leading-tight mt-1">
+                            {b.desc}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Mahutabeli ettevalmistus */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <label className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-50">
+                      <input
+                        type="checkbox"
+                        checked={levelingRequired}
+                        onChange={(e) => setLevelingRequired(e.target.checked)}
+                        className="w-4 h-4 text-amber-600 rounded"
+                      />
+                      <div>
+                        <div className="text-xs font-bold text-gray-900">Aluspinna tasandus & kruntimine</div>
+                        <div className="text-[11px] text-gray-500">Süvanakkekrunt + kiirkõvenev tasandussegu</div>
+                      </div>
+                    </label>
+
+                    <label className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-50">
+                      <input
+                        type="checkbox"
+                        checked={demolitionRequired}
+                        onChange={(e) => setDemolitionRequired(e.target.checked)}
+                        className="w-4 h-4 text-amber-600 rounded"
+                      />
+                      <div>
+                        <div className="text-xs font-bold text-gray-900">Vana plaadi eemaldus / lammutus</div>
+                        <div className="text-[11px] text-gray-500">Lammutustööd ja prügi utiliseerimine</div>
+                      </div>
+                    </label>
+                  </div>
+
+                  {/* Mahutabeli numbrilised parameetrid */}
+                  <div className="space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <div className="text-xs font-bold text-gray-700 uppercase tracking-wider">
+                      Töölõikude mahud
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <div className="flex justify-between text-xs text-gray-700 mb-1">
+                          <span className="font-semibold">Hüdroisolatsiooni maht:</span>
+                          <span className="font-bold text-amber-700">{waterproofingArea} m²</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="0"
+                          max="60"
+                          value={waterproofingArea}
+                          onChange={(e) => setWaterproofingArea(parseInt(e.target.value) || 0)}
+                          className="w-full accent-amber-500"
+                        />
+                      </div>
+
+                      <div>
+                        <div className="flex justify-between text-xs text-gray-700 mb-1">
+                          <span className="font-semibold">45° välisnurgad (jiirid):</span>
+                          <span className="font-bold text-amber-700">{corners45degCount} jm</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="0"
+                          max="20"
+                          value={corners45degCount}
+                          onChange={(e) => setCorners45degCount(parseInt(e.target.value) || 0)}
+                          className="w-full accent-amber-500"
+                        />
+                      </div>
+
+                      <div>
+                        <div className="flex justify-between text-xs text-gray-700 mb-1">
+                          <span className="font-semibold">Seinanišid ja riiulid:</span>
+                          <span className="font-bold text-amber-700">{nichesCount} tk</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="0"
+                          max="6"
+                          value={nichesCount}
+                          onChange={(e) => setNichesCount(parseInt(e.target.value) || 0)}
+                          className="w-full accent-amber-500"
+                        />
+                      </div>
+
+                      <div>
+                        <div className="flex justify-between text-xs text-gray-700 mb-1">
+                          <span className="font-semibold">Trapikraed ja rennid:</span>
+                          <span className="font-bold text-amber-700">{drainsCount} tk</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="0"
+                          max="4"
+                          value={drainsCount}
+                          onChange={(e) => setDrainsCount(parseInt(e.target.value) || 0)}
+                          className="w-full accent-amber-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 flex justify-between">
+                    <button
+                      type="button"
+                      onClick={() => setStep(1)}
+                      className="btn-secondary py-2 px-5 text-sm"
+                    >
+                      ← Tagasi
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setStep(3)}
+                      className="btn-primary py-2.5 px-6 text-sm"
+                    >
+                      Edasi: Materjalid & Pildid →
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* SAMM 3: Materjalid & Pildid */}
+              {step === 3 && (
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="text-lg font-bold text-gray-900">3. Materjalide andmed & Failid</h2>
+                    <p className="text-xs text-gray-500">Sisesta plaatide detailid, et AI saaks luua fotorealistlikud pildid</p>
+                  </div>
+
+                  {/* Plaadid */}
+                  {(serviceType === 'plaat' || serviceType === 'mõlemad') && (
+                    <div className="space-y-4 p-4 rounded-xl bg-orange-50/40 border border-orange-200/60">
+                      <div className="text-xs font-bold text-orange-950 uppercase tracking-wider flex items-center gap-1.5">
+                        <span>🧱</span> Plaatide spetsifikatsioon
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1">Plaadi formaat</label>
+                          <select
+                            value={tileSize}
+                            onChange={(e) => setTileSize(e.target.value as TileSpecs['size'])}
+                            className="input bg-white text-xs font-semibold"
+                          >
+                            {TILE_SIZES.map(s => (
+                              <option key={s.id} value={s.id}>{s.label}</option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1">Pinnaviimistlus</label>
+                          <select
+                            value={tileFinish}
+                            onChange={(e) => setTileFinish(e.target.value as TileSpecs['finish'])}
+                            className="input bg-white text-xs"
+                          >
+                            <option value="matt">Matt</option>
+                            <option value="läikiv">Kõrgläige</option>
+                            <option value="poolmatt">Poolmatt / Satin</option>
+                            <option value="struktureeritud">Struktuurne kiviimitatsioon</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-700 mb-1">Plaadi stiil / värvus / muster</label>
+                        <input
+                          type="text"
+                          value={tileColorStyle}
+                          onChange={(e) => setTileColorStyle(e.target.value)}
+                          placeholder="nt Valge Carrara marmor või Tumehall betoon"
+                          className="input bg-white text-xs"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Mikrotsement */}
+                  {(serviceType === 'mikrotsement' || serviceType === 'mõlemad') && (
+                    <div className="space-y-4 p-4 rounded-xl bg-amber-50/50 border border-amber-200/60">
+                      <div className="text-xs font-bold text-amber-950 uppercase tracking-wider flex items-center gap-1.5">
+                        <span>🎨</span> Mikrotsemendi spetsifikatsioon
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1">Mikrotsemendi toon</label>
+                          <input
+                            type="text"
+                            value={microColorTone}
+                            onChange={(e) => setMicroColorTone(e.target.value)}
+                            placeholder="nt Soe liivakarva beež või Helehall"
+                            className="input bg-white text-xs"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1">Kaitsekiht & läige</label>
+                          <select
+                            value={microFinish}
+                            onChange={(e) => setMicroFinish(e.target.value as MicrocementSpecs['finish'])}
+                            className="input bg-white text-xs"
+                          >
+                            <option value="siidjas">Siidjasmatt (Soovitatav)</option>
+                            <option value="matt">Sügavmatt</option>
+                            <option value="läikiv">Läikiv 2K PU lakk</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Failide laadimine */}
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                      Fotod ruumist, joonised ja mahutabelid
+                    </label>
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
+                      onDragLeave={() => setDragOver(false)}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        setDragOver(false);
+                        if (e.dataTransfer.files) {
+                          const dropped: UploadedFile[] = Array.from(e.dataTransfer.files).map(f => ({
+                            name: f.name,
+                            size: f.size,
+                            type: f.type
+                          }))
+                          setFiles(prev => [...prev, ...dropped])
+                        }
+                      }}
+                      className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${
+                        dragOver ? 'border-amber-500 bg-amber-50' : 'border-gray-200 hover:border-gray-300 bg-gray-50/50'
+                      }`}
+                    >
+                      <div className="text-3xl mb-1.5">📁</div>
+                      <p className="text-xs font-bold text-gray-700">Lohista failid siia või kliki valimiseks</p>
+                      <p className="text-[11px] text-gray-400 mt-0.5">JPG, PNG, PDF joonised või Exceli mahutabelid</p>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        multiple
+                        accept="image/*,.pdf,.xlsx,.xls"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                      />
+                    </div>
+
+                    {files.length > 0 && (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {files.map((file, idx) => (
+                          <div key={idx} className="flex items-center gap-1.5 text-xs bg-white border border-gray-200 px-2.5 py-1 rounded-lg">
+                            <span>📎</span>
+                            <span className="font-medium text-gray-800">{file.name}</span>
+                            <button
+                              type="button"
+                              onClick={() => setFiles(files.filter((_, i) => i !== idx))}
+                              className="text-gray-400 hover:text-red-500 ml-1 font-bold"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+                      Lisakirjeldus ja erisoovid
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Kirjelda lühidalt objekti asukohta ja täpseid soove..."
+                      className="input text-xs resize-none"
+                    />
+                  </div>
+
+                  <div className="pt-4 flex justify-between">
+                    <button
+                      type="button"
+                      onClick={() => setStep(2)}
+                      className="btn-secondary py-2 px-5 text-sm"
+                    >
+                      ← Tagasi
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setStep(4)}
+                      className="btn-primary py-2.5 px-6 text-sm"
+                    >
+                      Edasi: Eelarve & Esitamine →
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* SAMM 4: Kontakt ja kinnitus */}
+              {step === 4 && (
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="text-lg font-bold text-gray-900">4. Kontaktandmed ja kinnitus</h2>
+                    <p className="text-xs text-gray-500">Pakkumised ja plaatijate sõnumid saadetakse teie kontaktidele</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1">Teie nimi *</label>
+                      <input
+                        type="text"
+                        required
+                        value={clientName}
+                        onChange={(e) => setClientName(e.target.value)}
+                        placeholder="nt Martin Kukk"
+                        className="input text-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1">E-post *</label>
+                      <input
+                        type="email"
+                        required
+                        value={clientEmail}
+                        onChange={(e) => setClientEmail(e.target.value)}
+                        placeholder="nt martin@kodu.ee"
+                        className="input text-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1">Telefoninumber</label>
+                      <input
+                        type="tel"
+                        value={clientPhone}
+                        onChange={(e) => setClientPhone(e.target.value)}
+                        placeholder="+372 5xx xxxxx"
+                        className="input text-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1">Linn / Vald *</label>
+                      <input
+                        type="text"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        placeholder="Tallinn"
+                        className="input text-xs"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-2 text-xs">
+                    <div className="font-bold text-gray-900 text-sm">📋 Projekti parameetrid:</div>
+                    <div className="grid grid-cols-2 gap-2 text-gray-600">
+                      <div>🏠 Tellija: <span className="font-semibold text-gray-800">{clientType === 'contractor_b2b' ? `Peatöövõtja (${companyName || 'B2B'})` : 'Eraisik'}</span></div>
+                      <div>🧱 Süsteem: <span className="font-bold text-amber-700">{SYSTEM_BRAND_INFO[systemBrand]?.name}</span></div>
+                      <div>📏 Pindala: <span className="font-semibold text-gray-800">{Number(floorArea) + Number(wallArea)} m²</span></div>
+                      <div>📍 Asukoht: <span className="font-semibold text-gray-800">{city || 'Määramata'}</span></div>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 flex justify-between">
+                    <button
+                      type="button"
+                      onClick={() => setStep(3)}
+                      className="btn-secondary py-2 px-5 text-sm"
+                    >
+                      ← Tagasi
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSubmit}
+                      disabled={loading}
+                      className="btn-primary py-3 px-8 text-sm font-bold shadow-md"
+                    >
+                      {loading ? '⏳ Koostan AI pakkumist ja pilte...' : '🤖 Genereeri esialgne pakkumine ja pildid →'}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+            </div>
+          </div>
+
+          {/* Parempoolne külgriba */}
+          <div className="space-y-4">
+            <div className="card border border-amber-200/80 bg-gradient-to-b from-amber-50/40 to-white p-5 sticky top-24">
+              
+              <div className="flex items-center justify-between pb-3 border-b border-amber-100">
+                <span className="text-xs font-extrabold uppercase tracking-wider text-amber-800 flex items-center gap-1.5">
+                  <span>⚡</span> AI Letihindade prognoos
+                </span>
+                <span className="text-[10px] font-bold px-2 py-0.5 bg-amber-100 text-amber-800 rounded">
+                  {SYSTEM_BRAND_INFO[systemBrand]?.name.split(' ')[0]}
+                </span>
+              </div>
+
+              <div className="py-4">
+                <div className="text-xs text-gray-500">Esialgne eeldatav kogumaksumus:</div>
+                <div className="text-2xl font-black text-gray-900 mt-1">
+                  ~{liveEstimate.grossTotal.toLocaleString('et-EE')} €
+                  <span className="text-xs font-normal text-gray-400 ml-1">(KM-ga)</span>
+                </div>
+                <div className="text-[11px] font-medium text-amber-700 mt-1">
+                  Vahemik: {liveEstimate.priceRange.min.toLocaleString('et-EE')} – {liveEstimate.priceRange.max.toLocaleString('et-EE')} €
+                </div>
+              </div>
+
+              <div className="space-y-2 py-3 border-t border-gray-100 text-xs">
+                <div className="flex justify-between text-gray-600">
+                  <span>Tööde letihind:</span>
+                  <span className="font-semibold text-gray-900">{liveEstimate.laborSubtotal.toLocaleString('et-EE')} €</span>
+                </div>
+                <div className="flex justify-between text-gray-600">
+                  <span>Süsteemi materjalid:</span>
+                  <span className="font-semibold text-gray-900">{liveEstimate.materialSubtotal.toLocaleString('et-EE')} €</span>
+                </div>
+                <div className="flex justify-between text-gray-600">
+                  <span>Tööde kestus:</span>
+                  <span className="font-semibold text-gray-900">~{liveEstimate.estimatedDays} tööpäeva</span>
+                </div>
+              </div>
+
+              {/* Eelvaade pildist */}
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <div className="text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-1">
+                  <span>🖼️</span> AI visualiseerimise näidis:
+                </div>
+                <div className="rounded-lg overflow-hidden border border-gray-200 relative h-36 bg-gray-100">
+                  <img
+                    src={getAIVisualizations(serviceType, currentTileSpecs, currentMicroSpecs)[0]}
+                    alt="AI Visualiseering"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-2.5">
+                    <span className="text-white text-[11px] font-medium leading-tight line-clamp-2">
+                      {tileColorStyle || microColorTone}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  )
+}
