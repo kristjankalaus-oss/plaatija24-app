@@ -17,15 +17,6 @@ import { getAIVisualizations } from '@/lib/ai-visualizer'
 import { saveProject } from '@/lib/data-store'
 import AdBanner from '@/components/ads/AdBanner'
 
-const ROOM_TYPES = [
-  { id: 'vannituba', label: 'Vannituba', icon: '🛁', desc: 'Dušš, vann, seinad ja põrand' },
-  { id: 'duss',      label: 'Duširuum',  icon: '🚿', desc: 'Kalletega põrand, veetsoon' },
-  { id: 'kook',      label: 'Köök',      icon: '🍳', desc: 'Köögitagune sein ja põrand' },
-  { id: 'esik',      label: 'Esik / Koridor', icon: '🚪', desc: 'Suure kulumiskoormusega' },
-  { id: 'elutuba',   label: 'Eluruum',   icon: '🛋️', desc: 'Avatud põrandapinnad' },
-  { id: 'muu',       label: 'Muu / Trepp', icon: '📐', desc: 'Eripinnad ja terrassid' },
-]
-
 const TILE_SIZES = [
   { id: 'standard_30x60', label: 'Standard 30x60 cm' },
   { id: 'standard_60x60', label: 'Ruutplaat 60x60 cm' },
@@ -51,22 +42,23 @@ export default function RequestForm() {
   const [dragOver, setDragOver] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // 1. Tellija tüüp
+  // 1. Tellija staatus
   const [clientType, setClientType] = useState<ClientType>('private')
   const [companyName, setCompanyName] = useState('')
 
-  // 2. Üldandmed & Süsteemi valik
-  const [roomType, setRoomType] = useState('vannituba')
-  const [serviceType, setServiceType] = useState<ServiceType>('mõlemad')
-  const [systemBrand, setSystemBrand] = useState<SystemBrand>('mira')
+  // 2. Teenus & Kirjeldus & Failid (juba 1. sammus!)
+  const [serviceType, setServiceType] = useState<ServiceType>('plaat')
+  const [description, setDescription] = useState('')
+  const [files, setFiles] = useState<UploadedFile[]>([])
 
-  // 3. Mõõdud & Mahutabel
+  // 3. Mõõdud & Mahud
   const [floorArea, setFloorArea] = useState<number>(6)
   const [wallArea, setWallArea] = useState<number>(18)
   const [wallHeight, setWallHeight] = useState<number>(2.5)
   const [perimeter, setPerimeter] = useState<number>(10)
 
-  // Töölõigud
+  // 4. Süsteemi valik & Töölõigud (2. samm)
+  const [systemBrand, setSystemBrand] = useState<SystemBrand>('mira')
   const [levelingRequired, setLevelingRequired] = useState(true)
   const [demolitionRequired, setDemolitionRequired] = useState(false)
   const [waterproofingArea, setWaterproofingArea] = useState<number>(24)
@@ -75,7 +67,7 @@ export default function RequestForm() {
   const [drainsCount, setDrainsCount] = useState<number>(1)
   const [siliconeLength, setSiliconeLength] = useState<number>(15)
 
-  // 4. Plaatide andmed
+  // 5. Plaatide andmed (3. samm)
   const [tileSize, setTileSize] = useState<TileSpecs['size']>('large_60x120')
   const [tileMaterial, setTileMaterial] = useState<TileSpecs['material']>('portselan')
   const [tileFinish, setTileFinish] = useState<TileSpecs['finish']>('matt')
@@ -83,17 +75,13 @@ export default function RequestForm() {
   const [jointType, setJointType] = useState<'cement' | 'epoxy'>('epoxy')
   const [tileBrand, setTileBrand] = useState('')
 
-  // 5. Mikrotsemendi andmed
+  // 6. Mikrotsemendi andmed
   const [microSystem, setMicroSystem] = useState<MicrocementSpecs['system']>('shower_waterproof')
   const [microFinish, setMicroFinish] = useState<MicrocementSpecs['finish']>('siidjas')
   const [microColorTone, setMicroColorTone] = useState('Soe liivakarva beež')
   const [microTexture, setMicroTexture] = useState<MicrocementSpecs['texture']>('peenike_sile')
 
-  // Failid ja kirjeldus
-  const [description, setDescription] = useState('')
-  const [files, setFiles] = useState<UploadedFile[]>([])
-
-  // Kontakt
+  // 7. Kontakt (4. samm)
   const [clientName, setClientName] = useState('')
   const [clientEmail, setClientEmail] = useState('')
   const [clientPhone, setClientPhone] = useState('')
@@ -138,7 +126,7 @@ export default function RequestForm() {
     texture: microTexture
   }), [microSystem, microFinish, microColorTone, microTexture])
 
-  // Reaalajas letihinna kalkulatsioon valitud tootjasüsteemiga
+  // Reaalajas letihinna kalkulatsioon
   const liveEstimate = useMemo(() => {
     return calculateAIEstimate(serviceType, currentScope, currentTileSpecs, currentMicroSpecs, systemBrand)
   }, [serviceType, currentScope, currentTileSpecs, currentMicroSpecs, systemBrand])
@@ -162,6 +150,10 @@ export default function RequestForm() {
     const isB2B = clientType === 'contractor_b2b'
     const projectId = 'proj-' + Date.now()
 
+    const projectTitle = isB2B
+      ? `B2B Hange: ${companyName || 'Ehitusobjekt'}`
+      : `Viimistlusobjekt (${serviceType === 'mõlemad' ? 'Plaat + Mikrotsement' : serviceType})`
+
     const newProject: ProjectInquiry = {
       id: projectId,
       createdAt: new Date().toISOString(),
@@ -170,20 +162,20 @@ export default function RequestForm() {
       companyName: isB2B ? (companyName || 'Peatöövõtja / Arendaja') : undefined,
       isB2BProject: isB2B,
       minTierRequired: isB2B ? 'vip_b2b_2500' : 'free',
-      clientName: clientName || (isB2B ? 'B2B Projektijuht' : 'Eraisik Tellija'),
-      clientEmail: clientEmail || 'klient@example.ee',
+      clientName: clientName || (isB2B ? 'B2B Projektijuht' : 'Tellija'),
+      clientEmail: clientEmail || 'klient@plaatija24.ee',
       clientPhone: clientPhone || '+372 500 0000',
       city: city || 'Tallinn',
       address,
-      roomType,
-      roomTypeLabel: isB2B ? `B2B Hange: ${ROOM_TYPES.find(r => r.id === roomType)?.label}` : (ROOM_TYPES.find(r => r.id === roomType)?.label || 'Ruum'),
+      roomType: 'objekt',
+      roomTypeLabel: projectTitle,
       serviceType,
       systemBrand,
       systemBrandLabel: SYSTEM_BRAND_INFO[systemBrand]?.name || 'Sertifitseeritud süsteem',
       scope: currentScope,
       tileSpecs: (serviceType === 'plaat' || serviceType === 'mõlemad') ? currentTileSpecs : undefined,
       microcementSpecs: (serviceType === 'mikrotsement' || serviceType === 'mõlemad') ? currentMicroSpecs : undefined,
-      description: description || `${ROOM_TYPES.find(r => r.id === roomType)?.label} viimistlustööd (${systemBrand.toUpperCase()} süsteem). Mahud: ${Number(floorArea) + Number(wallArea)} m².`,
+      description: description || `Plaatimis- ja viimistlustööd mahus ${Number(floorArea) + Number(wallArea)} m² (${systemBrand.toUpperCase()} süsteem).`,
       files,
       aiEstimate: finalEstimate,
       aiVisualizations: visualUrls,
@@ -192,13 +184,13 @@ export default function RequestForm() {
 
     saveProject(newProject)
 
-    await new Promise(r => setTimeout(r, 1100))
+    await new Promise(r => setTimeout(r, 1000))
     setLoading(false)
     router.push(`/request/${projectId}`)
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
+    <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-5xl mx-auto">
         
         {/* Reklaamibänner päises */}
@@ -211,21 +203,21 @@ export default function RequestForm() {
           <span className="text-xs uppercase font-extrabold tracking-wider px-3 py-1 bg-amber-100 text-amber-800 rounded-full">
             Kliendile 100% Tasuta · Kohustusi pole
           </span>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mt-3">
-            Sisesta ruumi andmed & koosta AI esialgne pakkumine
+          <h1 className="text-3xl sm:text-4xl font-black text-gray-950 mt-3">
+            Kirjelda objekti & koosta esialgne AI pakkumine
           </h1>
           <p className="text-gray-500 text-sm mt-1 max-w-xl mx-auto">
-            Vali eelistatud süsteem (MIRA, Mapei, Weber jne) ja sisesta mahud. AI kalkuleerib kohese letihindade kalkulatsiooni ja kujundab pildid valmis pinnast.
+            Laadi üles fotod, joonised või mahutabel ning kirjelda tehtavaid töid vabas vormis. AI koostab letihindadega esialgse kalkulatsiooni.
           </p>
         </div>
 
         {/* Sammude indikaator */}
         <div className="flex items-center justify-between mb-8 max-w-2xl mx-auto">
           {[
-            { s: 1, label: 'Tellija & Ruum' },
-            { s: 2, label: 'Süsteem & Mahutabel' },
-            { s: 3, label: 'Plaadid & Pildid' },
-            { s: 4, label: 'Eelarve & Esitamine' },
+            { s: 1, label: 'Objekt, Kirjeldus & Failid' },
+            { s: 2, label: 'Süsteem & Töölõigud' },
+            { s: 3, label: 'Plaadid & Viimistlus' },
+            { s: 4, label: 'Kontakt & Kinnitus' },
           ].map((item) => (
             <div key={item.s} className="flex flex-col items-center flex-1">
               <div
@@ -247,17 +239,17 @@ export default function RequestForm() {
           ))}
         </div>
 
-        {/* Peamine paigutus */}
+        {/* Peamine paigutus kahe veeruga */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
           <div className="lg:col-span-2 space-y-6">
-            <div className="card shadow-sm border border-gray-100 p-6">
+            <div className="card shadow-sm border border-gray-100 p-6 sm:p-7">
               
-              {/* SAMM 1: Tellija tüüp & Ruum */}
+              {/* SAMM 1: Teenus, Kirjeldus vabas vormis & Failide üleslaadimine */}
               {step === 1 && (
                 <div className="space-y-6">
                   
-                  {/* Tellija tüübi valik: Eraisik vs Peatöövõtja */}
+                  {/* Tellija staatus */}
                   <div>
                     <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
                       Tellija staatus
@@ -274,7 +266,7 @@ export default function RequestForm() {
                       >
                         <div className="text-xl mb-1">🏠</div>
                         <div className="text-xs font-bold text-gray-900">Eraisik (Erakodu)</div>
-                        <div className="text-[11px] text-gray-500 mt-0.5">Korteri või eramu viimistlus</div>
+                        <div className="text-[11px] text-gray-500 mt-0.5">Korter, eramu, vannituba jms</div>
                       </button>
 
                       <button
@@ -288,15 +280,15 @@ export default function RequestForm() {
                       >
                         <div className="text-xl mb-1">🏢</div>
                         <div className="text-xs font-bold text-gray-900 flex items-center gap-1">
-                          Peatöövõtja / Arendaja <span className="text-[10px] bg-blue-100 text-blue-700 px-1 rounded">B2B</span>
+                          Peatöövõtja / Arendaja <span className="text-[10px] bg-blue-100 text-blue-700 px-1 rounded font-bold">B2B</span>
                         </div>
-                        <div className="text-[11px] text-gray-500 mt-0.5">Korterelamud, arendused, suuremad mahud</div>
+                        <div className="text-[11px] text-gray-500 mt-0.5">Korterelamud, äripinnad, allhanked</div>
                       </button>
                     </div>
 
                     {clientType === 'contractor_b2b' && (
                       <div className="mt-3 p-3 bg-blue-50/60 border border-blue-200 rounded-xl">
-                        <label className="block text-[11px] font-bold text-blue-900 mb-1">Peatöövõtja ettevõtte nimi</label>
+                        <label className="block text-[11px] font-bold text-blue-900 mb-1">Ettevõtte / Peatöövõtja nimi</label>
                         <input
                           type="text"
                           value={companyName}
@@ -304,9 +296,6 @@ export default function RequestForm() {
                           placeholder="nt Merko Ehitus, Nordecon, YIT jne"
                           className="input bg-white text-xs font-semibold"
                         />
-                        <p className="text-[10px] text-blue-700 mt-1">
-                          💎 Peatöövõtjate B2B hangetele pääsevad pakkuma ainult kontrollitud Pro-meistrid.
-                        </p>
                       </div>
                     )}
                   </div>
@@ -316,17 +305,17 @@ export default function RequestForm() {
                     <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Teenuse liik</label>
                     <div className="grid grid-cols-3 gap-3">
                       {[
-                        { id: 'plaat', label: 'Plaatimine', icon: '🧱', desc: 'Keraamika, portselan' },
-                        { id: 'mikrotsement', label: 'Mikrotsement', icon: '🎨', desc: 'Vuugivaba monoliit' },
-                        { id: 'mõlemad', label: 'Mõlemad', icon: '✨', desc: 'Kombineeritud' },
+                        { id: 'plaat', label: 'Plaatimine', icon: '🧱', desc: 'Keraamika, portselan, marmor' },
+                        { id: 'mikrotsement', label: 'Mikrotsement', icon: '🎨', desc: 'Sujuv vuugivaba viimistlus' },
+                        { id: 'mõlemad', label: 'Mõlemad', icon: '✨', desc: 'Kombineeritud lahendus' },
                       ].map((t) => (
                         <button
                           key={t.id}
                           type="button"
                           onClick={() => setServiceType(t.id as ServiceType)}
-                          className={`p-3 rounded-xl border-2 text-left transition-all ${
+                          className={`p-3.5 rounded-xl border-2 text-left transition-all ${
                             serviceType === t.id
-                              ? 'border-amber-500 bg-amber-50/60 shadow-xs'
+                              ? 'border-amber-500 bg-amber-50/70 shadow-xs'
                               : 'border-gray-200 hover:border-gray-300 bg-white'
                           }`}
                         >
@@ -338,34 +327,95 @@ export default function RequestForm() {
                     </div>
                   </div>
 
-                  {/* Ruumi tüüp */}
+                  {/* FOTOD, JOONISED & MAHUTABELID (Juba kohe 1. sammus!) */}
                   <div>
-                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Ruumi tüüp</label>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                      {ROOM_TYPES.map((r) => (
-                        <button
-                          key={r.id}
-                          type="button"
-                          onClick={() => setRoomType(r.id)}
-                          className={`p-3 rounded-xl border text-left flex items-start gap-2.5 transition-all ${
-                            roomType === r.id
-                              ? 'border-amber-500 bg-amber-50/50 shadow-2xs font-semibold'
-                              : 'border-gray-200 hover:border-gray-300 bg-white text-gray-700'
-                          }`}
-                        >
-                          <span className="text-xl">{r.icon}</span>
-                          <div>
-                            <div className="text-xs font-bold text-gray-900">{r.label}</div>
-                            <div className="text-[10px] text-gray-400">{r.desc}</div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">
+                        📁 Laadi üles fotod, joonised ja mahutabelid
+                      </label>
+                      <span className="text-[11px] text-amber-700 font-semibold">JPG, PNG, PDF, Excel</span>
+                    </div>
+
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
+                      onDragLeave={() => setDragOver(false)}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        setDragOver(false);
+                        if (e.dataTransfer.files) {
+                          const dropped: UploadedFile[] = Array.from(e.dataTransfer.files).map(f => ({
+                            name: f.name,
+                            size: f.size,
+                            type: f.type
+                          }))
+                          setFiles(prev => [...prev, ...dropped])
+                        }
+                      }}
+                      className={`border-2 border-dashed rounded-2xl p-7 text-center cursor-pointer transition-all ${
+                        dragOver ? 'border-amber-500 bg-amber-50' : 'border-gray-300 hover:border-amber-400 bg-gray-50/60'
+                      }`}
+                    >
+                      <div className="text-3xl mb-2">📸 📄 📊</div>
+                      <p className="text-sm font-bold text-gray-900">
+                        Lohista failid siia või <span style={{ color: 'var(--color-brand-600)' }} className="underline">kliki valimiseks</span>
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1 max-w-md mx-auto">
+                        Lisa fotod olemasolevast ruumist, arhitekti joonised (PDF) või Exceli mahutabelid.
+                      </p>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        multiple
+                        accept="image/*,.pdf,.xlsx,.xls,.dwg"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                      />
+                    </div>
+
+                    {files.length > 0 && (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {files.map((file, idx) => (
+                          <div key={idx} className="flex items-center gap-1.5 text-xs bg-white border border-gray-200 px-3 py-1.5 rounded-xl shadow-2xs">
+                            <span>📎</span>
+                            <span className="font-semibold text-gray-800">{file.name}</span>
+                            <span className="text-[10px] text-gray-400">({Math.round(file.size / 1024)} KB)</span>
+                            <button
+                              type="button"
+                              onClick={() => setFiles(files.filter((_, i) => i !== idx))}
+                              className="text-gray-400 hover:text-red-500 ml-1.5 font-bold text-sm"
+                            >
+                              ×
+                            </button>
                           </div>
-                        </button>
-                      ))}
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* OBJEKTI JA TEHTAVATE TÖÖDE KIRJELDUS VABAS VORMIS */}
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                      Objekti ja tehtavate tööde kirjeldus vabas vormis *
+                    </label>
+                    <textarea
+                      rows={5}
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Kirjelda vabas vormis oma objekti: nt vannitoa või terve korteri renoveerimine, ruumide mõõdud, aluspinna seisukord (nt betoon, kips), soovitud plaadid, kallete tegemine, trapid, eritööd või eelistatud algusaeg..."
+                      className="input text-xs sm:text-sm resize-none leading-relaxed"
+                    />
+                    <div className="flex items-center justify-between text-[11px] text-gray-400 mt-1">
+                      <span>Mida põhjalikumalt kirjeldad, seda täpsema pakkumise meistrid teevad</span>
+                      <span>{description.length} tähemärki</span>
                     </div>
                   </div>
 
-                  {/* Pinnad ja mõõdud */}
-                  <div>
-                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Pinnad ja mõõdud</label>
+                  {/* Esialgsed pinnad ja mõõdud */}
+                  <div className="p-4 bg-gray-50/70 rounded-2xl border border-gray-200">
+                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                      Pinnad ja esialgsed mahud (kui on teada)
+                    </label>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       <div>
                         <span className="text-xs text-gray-600 block mb-1">Põranda pind (m²)</span>
@@ -375,7 +425,7 @@ export default function RequestForm() {
                           min="0"
                           value={floorArea}
                           onChange={(e) => setFloorArea(parseFloat(e.target.value) || 0)}
-                          className="input font-semibold"
+                          className="input font-semibold bg-white"
                         />
                       </div>
                       <div>
@@ -386,7 +436,7 @@ export default function RequestForm() {
                           min="0"
                           value={wallArea}
                           onChange={(e) => setWallArea(parseFloat(e.target.value) || 0)}
-                          className="input font-semibold"
+                          className="input font-semibold bg-white"
                         />
                       </div>
                       <div>
@@ -397,7 +447,7 @@ export default function RequestForm() {
                           min="1"
                           value={wallHeight}
                           onChange={(e) => setWallHeight(parseFloat(e.target.value) || 2.5)}
-                          className="input font-semibold"
+                          className="input font-semibold bg-white"
                         />
                       </div>
                       <div>
@@ -408,37 +458,37 @@ export default function RequestForm() {
                           min="0"
                           value={perimeter}
                           onChange={(e) => setPerimeter(parseFloat(e.target.value) || 0)}
-                          className="input font-semibold"
+                          className="input font-semibold bg-white"
                         />
                       </div>
                     </div>
                   </div>
 
-                  <div className="pt-4 flex justify-end">
+                  <div className="pt-2 flex justify-end">
                     <button
                       type="button"
                       onClick={() => setStep(2)}
-                      className="btn-primary py-2.5 px-6 text-sm"
+                      className="btn-primary py-3 px-8 text-sm font-bold shadow-md"
                     >
-                      Edasi: Süsteem & Mahutabel →
+                      Edasi: Süsteem & Töölõigud →
                     </button>
                   </div>
 
                 </div>
               )}
 
-              {/* SAMM 2: Süsteemi valik (MIRA, Mapei, Weber jne) & Mahutabel */}
+              {/* SAMM 2: Süsteem & Mahutabel */}
               {step === 2 && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-lg font-bold text-gray-900">2. Süsteemi valik & Mahutabel</h2>
-                    <p className="text-xs text-gray-500">Vali soovitud ehitusmaterjalide tootja või jäta valik meistrile</p>
+                    <h2 className="text-lg font-bold text-gray-900">2. Süsteemi valik & Töölõigud</h2>
+                    <p className="text-xs text-gray-500">Vali eelistatud ehitussüsteem või jäta valik meistrile</p>
                   </div>
 
                   {/* SÜSTEEMI VALIK */}
                   <div>
                     <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
-                      Ehitussüsteemi / Tootja eelistus *
+                      Ehitussüsteemi / Tootja eelistus
                     </label>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                       {SYSTEM_BRANDS.map(b => (
@@ -468,7 +518,7 @@ export default function RequestForm() {
                     </div>
                   </div>
 
-                  {/* Mahutabeli ettevalmistus */}
+                  {/* Ettevalmistus */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <label className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-50">
                       <input
@@ -491,16 +541,16 @@ export default function RequestForm() {
                         className="w-4 h-4 text-amber-600 rounded"
                       />
                       <div>
-                        <div className="text-xs font-bold text-gray-900">Vana plaadi eemaldus / lammutus</div>
-                        <div className="text-[11px] text-gray-500">Lammutustööd ja prügi utiliseerimine</div>
+                        <div className="text-xs font-bold text-gray-900">Vana katte lammutus / eemaldus</div>
+                        <div className="text-[11px] text-gray-500">Plaatide piikamine ja utiliseerimine</div>
                       </div>
                     </label>
                   </div>
 
-                  {/* Mahutabeli numbrilised parameetrid */}
+                  {/* Täpsemad töölõigud */}
                   <div className="space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-100">
                     <div className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                      Töölõikude mahud
+                      Detailne mahutabel
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -579,25 +629,24 @@ export default function RequestForm() {
                       onClick={() => setStep(3)}
                       className="btn-primary py-2.5 px-6 text-sm"
                     >
-                      Edasi: Materjalid & Pildid →
+                      Edasi: Plaadid & Viimistlus →
                     </button>
                   </div>
                 </div>
               )}
 
-              {/* SAMM 3: Materjalid & Pildid */}
+              {/* SAMM 3: Plaadid & Viimistlus */}
               {step === 3 && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-lg font-bold text-gray-900">3. Materjalide andmed & Failid</h2>
-                    <p className="text-xs text-gray-500">Sisesta plaatide detailid, et AI saaks luua fotorealistlikud pildid</p>
+                    <h2 className="text-lg font-bold text-gray-900">3. Plaatide & Mikrotsemendi spetsifikatsioon</h2>
+                    <p className="text-xs text-gray-500">Täpsed plaadi andmed võimaldavad AI-l luua fotorealistlikud pildid</p>
                   </div>
 
-                  {/* Plaadid */}
                   {(serviceType === 'plaat' || serviceType === 'mõlemad') && (
                     <div className="space-y-4 p-4 rounded-xl bg-orange-50/40 border border-orange-200/60">
                       <div className="text-xs font-bold text-orange-950 uppercase tracking-wider flex items-center gap-1.5">
-                        <span>🧱</span> Plaatide spetsifikatsioon
+                        <span>🧱</span> Plaatide andmed
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -621,7 +670,7 @@ export default function RequestForm() {
                             onChange={(e) => setTileFinish(e.target.value as TileSpecs['finish'])}
                             className="input bg-white text-xs"
                           >
-                            <option value="matt">Matt</option>
+                            <option value="matt">Matt (libisemiskindel)</option>
                             <option value="läikiv">Kõrgläige</option>
                             <option value="poolmatt">Poolmatt / Satin</option>
                             <option value="struktureeritud">Struktuurne kiviimitatsioon</option>
@@ -630,19 +679,18 @@ export default function RequestForm() {
                       </div>
 
                       <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-1">Plaadi stiil / värvus / muster</label>
+                        <label className="block text-xs font-semibold text-gray-700 mb-1">Plaadi stiil / toon / muster</label>
                         <input
                           type="text"
                           value={tileColorStyle}
                           onChange={(e) => setTileColorStyle(e.target.value)}
-                          placeholder="nt Valge Carrara marmor või Tumehall betoon"
+                          placeholder="nt Valge Carrara marmor või Tumehall kiltkivi"
                           className="input bg-white text-xs"
                         />
                       </div>
                     </div>
                   )}
 
-                  {/* Mikrotsement */}
                   {(serviceType === 'mikrotsement' || serviceType === 'mõlemad') && (
                     <div className="space-y-4 p-4 rounded-xl bg-amber-50/50 border border-amber-200/60">
                       <div className="text-xs font-bold text-amber-950 uppercase tracking-wider flex items-center gap-1.5">
@@ -677,76 +725,6 @@ export default function RequestForm() {
                     </div>
                   )}
 
-                  {/* Failide laadimine */}
-                  <div>
-                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
-                      Fotod ruumist, joonised ja mahutabelid
-                    </label>
-                    <div
-                      onClick={() => fileInputRef.current?.click()}
-                      onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
-                      onDragLeave={() => setDragOver(false)}
-                      onDrop={(e) => {
-                        e.preventDefault();
-                        setDragOver(false);
-                        if (e.dataTransfer.files) {
-                          const dropped: UploadedFile[] = Array.from(e.dataTransfer.files).map(f => ({
-                            name: f.name,
-                            size: f.size,
-                            type: f.type
-                          }))
-                          setFiles(prev => [...prev, ...dropped])
-                        }
-                      }}
-                      className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${
-                        dragOver ? 'border-amber-500 bg-amber-50' : 'border-gray-200 hover:border-gray-300 bg-gray-50/50'
-                      }`}
-                    >
-                      <div className="text-3xl mb-1.5">📁</div>
-                      <p className="text-xs font-bold text-gray-700">Lohista failid siia või kliki valimiseks</p>
-                      <p className="text-[11px] text-gray-400 mt-0.5">JPG, PNG, PDF joonised või Exceli mahutabelid</p>
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        multiple
-                        accept="image/*,.pdf,.xlsx,.xls"
-                        onChange={handleFileUpload}
-                        className="hidden"
-                      />
-                    </div>
-
-                    {files.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {files.map((file, idx) => (
-                          <div key={idx} className="flex items-center gap-1.5 text-xs bg-white border border-gray-200 px-2.5 py-1 rounded-lg">
-                            <span>📎</span>
-                            <span className="font-medium text-gray-800">{file.name}</span>
-                            <button
-                              type="button"
-                              onClick={() => setFiles(files.filter((_, i) => i !== idx))}
-                              className="text-gray-400 hover:text-red-500 ml-1 font-bold"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                      Lisakirjeldus ja erisoovid
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder="Kirjelda lühidalt objekti asukohta ja täpseid soove..."
-                      className="input text-xs resize-none"
-                    />
-                  </div>
-
                   <div className="pt-4 flex justify-between">
                     <button
                       type="button"
@@ -760,7 +738,7 @@ export default function RequestForm() {
                       onClick={() => setStep(4)}
                       className="btn-primary py-2.5 px-6 text-sm"
                     >
-                      Edasi: Eelarve & Esitamine →
+                      Edasi: Kontakt & Kinnitus →
                     </button>
                   </div>
                 </div>
@@ -811,7 +789,7 @@ export default function RequestForm() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-gray-700 mb-1">Linn / Vald *</label>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1">Linn / Piirkond *</label>
                       <input
                         type="text"
                         value={city}
@@ -823,12 +801,12 @@ export default function RequestForm() {
                   </div>
 
                   <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-2 text-xs">
-                    <div className="font-bold text-gray-900 text-sm">📋 Projekti parameetrid:</div>
+                    <div className="font-bold text-gray-900 text-sm">📋 Objekti kokkuvõte:</div>
                     <div className="grid grid-cols-2 gap-2 text-gray-600">
                       <div>🏠 Tellija: <span className="font-semibold text-gray-800">{clientType === 'contractor_b2b' ? `Peatöövõtja (${companyName || 'B2B'})` : 'Eraisik'}</span></div>
                       <div>🧱 Süsteem: <span className="font-bold text-amber-700">{SYSTEM_BRAND_INFO[systemBrand]?.name}</span></div>
                       <div>📏 Pindala: <span className="font-semibold text-gray-800">{Number(floorArea) + Number(wallArea)} m²</span></div>
-                      <div>📍 Asukoht: <span className="font-semibold text-gray-800">{city || 'Määramata'}</span></div>
+                      <div>📎 Lisatud faile: <span className="font-semibold text-gray-800">{files.length} tk</span></div>
                     </div>
                   </div>
 
