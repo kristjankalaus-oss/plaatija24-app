@@ -15,13 +15,16 @@ export default function HomePage() {
             <span>🇪🇪</span> Kliendile 100% tasuta · AI Letihindade kalkulaator & Visualiseering
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-black text-gray-950 tracking-tight leading-[1.12] mb-6">
-            Leia parim plaatija ja mikrotsemendi meister.<br />
-            <span style={{ color: 'var(--color-brand-500)' }}>AI esialgne letihindade kalkulatsioon & visualiseering.</span>
+          <h1 className="text-4xl sm:text-6xl font-black text-gray-950 tracking-tight leading-[1.15] mb-4">
+            Leia usaldusväärne plaatija või mikrotsemendi meister kiirelt ja vaevata.
           </h1>
 
-          <p className="text-base sm:text-xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed">
-            Sisesta ruumi mahud, fotod ja joonised. Meie <strong>AI agent</strong> koostab kohese letihindadega esialgse pakkumise ning kujundab realistlikud fotod valmis tööst. Kontrollitud meistrid ja peatöövõtjad esitavad omapoolsed pakkumised ning suhtlevad <strong>kiirsõnumitega</strong>.
+          <p className="text-xl sm:text-2xl font-bold mb-6" style={{ color: 'var(--color-brand-500)' }}>
+            Nutikas hinnakalkulaator ja AI-põhine disainilahendus.
+          </p>
+
+          <p className="text-base sm:text-lg text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed">
+            Sisesta ruumi mõõdud, fotod või visandid ning meie intelligentne süsteem koostab kohese eelarve ja realistliku 3D-visiooni valminud projektist. Vali parimate spetsialistide hulgast välja sobiv partner ning vii oma projekt muretult ellu.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
