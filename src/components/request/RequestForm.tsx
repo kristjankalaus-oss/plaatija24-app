@@ -326,7 +326,7 @@ export default function RequestForm() {
             Kirjelda objekti & koosta esialgne AI pakkumine
           </h1>
           <p className="text-gray-500 text-sm mt-1 max-w-xl mx-auto">
-            Laadi üles fotod, joonised või mahutabel ning kirjelda tehtavaid töid vabas vormis. AI koostab letihindadega esialgse kalkulatsiooni.
+            Laadi üles fotod, joonised või mahutabel ning kirjelda tehtavaid töid vabas vormis. AI koostab turuhindadel põhineva esialgse eelarve.
           </p>
         </div>
 
@@ -1089,7 +1089,7 @@ export default function RequestForm() {
               
               <div className="flex items-center justify-between pb-3 border-b border-blue-100">
                 <span className="text-xs font-extrabold uppercase tracking-wider text-blue-900 flex items-center gap-1.5">
-                  <span>⚡</span> AI Letihindade prognoos
+                  <span>⚡</span> AI Hinnaprognoos
                 </span>
                 <span className="text-[10px] font-bold px-2 py-0.5 bg-blue-100 text-blue-800 rounded">
                   {SYSTEM_BRAND_INFO[systemBrand]?.name.split(' ')[0]}
@@ -1109,7 +1109,7 @@ export default function RequestForm() {
 
               <div className="space-y-2 py-3 border-t border-gray-100 text-xs">
                 <div className="flex justify-between text-gray-600">
-                  <span>Tööde letihind:</span>
+                  <span>Tööde turuhind:</span>
                   <span className="font-semibold text-gray-900">{liveEstimate.laborSubtotal.toLocaleString('et-EE')} €</span>
                 </div>
                 <div className="flex justify-between text-gray-600">

@@ -41,7 +41,7 @@ export const PRICING_PLANS: PricingPlan[] = [
       'Maksimaalselt 3 pakkumist kuus',
       'Avalik meistriprofiil ja fotogalerii',
       'Otsesuhtlus kiirsõnumitega',
-      'AI letihindade kalkulatsiooni nägemine'
+      'AI turuhindade kalkulatsiooni nägemine'
     ],
     ctaText: 'Hetkel aktiivne (Tasuta)'
   },

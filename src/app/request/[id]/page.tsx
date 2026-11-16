@@ -142,7 +142,7 @@ export default function ProjectDetailPage() {
           {/* Navigatsioonitabid */}
           <div className="flex border-b border-gray-100 mt-6 -mb-2 overflow-x-auto text-sm font-semibold">
             {[
-              { id: 'ai_quote', label: '🤖 AI Letihindade pakkumine' },
+              { id: 'ai_quote', label: '🤖 AI Hinnaprognoos' },
               { id: 'visuals', label: `🖼️ AI Visualiseeringud (${project.aiVisualizations?.length || 0})` },
               { id: 'contractors', label: `🔨 Paigaldajate pakkumised (${quotes.length})` },
               { id: 'chat', label: '💬 Kiirsõnumid & Chat' },
@@ -177,7 +177,7 @@ export default function ProjectDetailPage() {
                       AI
                     </span>
                     <div>
-                      <h3 className="font-bold text-gray-900 text-base">Eesti turu letihindade kalkulatsioon</h3>
+                      <h3 className="font-bold text-gray-900 text-base">Eesti turuhindade kalkulatsioon</h3>
                       <p className="text-xs text-gray-500">Põhineb standardsetel sertifitseeritud ehitushindadel</p>
                     </div>
                   </div>
@@ -193,7 +193,7 @@ export default function ProjectDetailPage() {
                     <div className="text-lg font-black text-gray-900">{aiEstimate.laborSubtotal.toLocaleString('et-EE')} €</div>
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500">Materjalid (letihind):</div>
+                    <div className="text-xs text-gray-500">Materjalid (turuhind):</div>
                     <div className="text-lg font-black text-gray-900">{aiEstimate.materialSubtotal.toLocaleString('et-EE')} €</div>
                   </div>
                   <div>
@@ -455,7 +455,7 @@ export default function ProjectDetailPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-bold text-gray-900">Registreeritud paigaldajate pakkumised</h2>
-                <p className="text-xs text-gray-500">Meistrid on teie ruumi andmeid ja AI letihindu vaadanud ning esitanud omapoolse hinna</p>
+                <p className="text-xs text-gray-500">Meistrid on teie ruumi andmeid ja AI hinnaprognoosi vaadanud ning esitanud omapoolse hinna</p>
               </div>
               <Link
                 href="/pro/requests"

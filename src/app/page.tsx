@@ -12,7 +12,7 @@ export default function HomePage() {
         <div className="max-w-5xl mx-auto text-center">
           
           <div className="inline-flex items-center gap-2 bg-blue-100/90 text-blue-900 border border-blue-200/70 text-xs font-bold px-3.5 py-1.5 rounded-full mb-6 uppercase tracking-wider shadow-2xs">
-            <span>🇪🇪</span> Kliendile 100% tasuta · AI Letihindade kalkulaator & Visualiseering
+            <span>🇪🇪</span> Kliendile 100% tasuta · AI Hinnakalkulaator & Visualiseering
           </div>
 
           <h1 className="text-4xl sm:text-6xl font-black text-gray-950 tracking-tight leading-[1.15] mb-4">
@@ -44,7 +44,7 @@ export default function HomePage() {
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs font-semibold text-gray-500">
             <span className="flex items-center gap-1.5"><span className="text-blue-600 font-bold">✓</span> Kliendile täiesti tasuta</span>
-            <span className="flex items-center gap-1.5"><span className="text-blue-600 font-bold">✓</span> Täpne letihindade mahutabel</span>
+            <span className="flex items-center gap-1.5"><span className="text-blue-600 font-bold">✓</span> Täpne turuhindadega mahutabel</span>
             <span className="flex items-center gap-1.5"><span className="text-blue-600 font-bold">✓</span> AI fotorealistlikud pildid</span>
             <span className="flex items-center gap-1.5"><span className="text-blue-600 font-bold">✓</span> Otsevestlus kiirsõnumites</span>
           </div>
@@ -97,7 +97,7 @@ export default function HomePage() {
                 step: '02',
                 icon: '🤖',
                 title: 'AI letihinnad & pildid',
-                desc: 'AI arvutab detailse letihindadega esialgse kalkulatsiooni ning kujundab realistlikud fotod valmis ruumist.'
+                desc: 'AI arvutab detailse turuhindadel põhineva kalkulatsiooni ning kujundab realistlikud fotod valmis ruumist.'
               },
               {
                 step: '03',

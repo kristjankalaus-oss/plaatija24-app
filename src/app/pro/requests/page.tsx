@@ -196,7 +196,7 @@ export default function ProRequestsPage() {
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold">Avatud päringud & pakkumiste haldus</h1>
             <p className="text-sm text-gray-300 mt-1 max-w-2xl">
-              Vaata klientide ja peatöövõtjate mahutabeleid, fotosid ja AI letihindade kalkulatsiooni. Kohanda oma hindu ja saada pakkumised.
+              Vaata klientide ja peatöövõtjate mahutabeleid, fotosid ja AI hinnaprognoosi. Kohanda oma hindu ja saada pakkumised.
             </p>
           </div>
 
@@ -306,7 +306,7 @@ export default function ProRequestsPage() {
                   </div>
 
                   <div className="mt-3 pt-2 border-t border-gray-100 flex items-center justify-between text-xs">
-                    <span className="text-gray-500">AI Letihind:</span>
+                    <span className="text-gray-500">AI Turuhind:</span>
                     <span className="font-black text-gray-900">~{p.aiEstimate.grossTotal.toLocaleString('et-EE')} €</span>
                   </div>
 
@@ -390,13 +390,13 @@ export default function ProRequestsPage() {
                 {/* AI Letihinnad võrdluseks */}
                 <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 text-xs flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <span className="text-gray-500 block text-[11px]">AI koostatud letihind kliendile:</span>
+                    <span className="text-gray-500 block text-[11px]">AI koostatud hinnaprognoos kliendile:</span>
                     <span className="text-lg font-black text-gray-900">
                       {currentProject.aiEstimate.grossTotal.toLocaleString('et-EE')} € (KM-ga)
                     </span>
                   </div>
                   <div className="text-right text-[11px] text-gray-500">
-                    <div>Töö letihind: {currentProject.aiEstimate.laborSubtotal.toLocaleString('et-EE')} €</div>
+                    <div>Tööde turuhind: {currentProject.aiEstimate.laborSubtotal.toLocaleString('et-EE')} €</div>
                     <div>Materjalid: {currentProject.aiEstimate.materialSubtotal.toLocaleString('et-EE')} €</div>
                   </div>
                 </div>

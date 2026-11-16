@@ -168,7 +168,7 @@ export default function AdminPage() {
     const updated = products.map(p => p.id === id ? { ...p, retailPrice: newPrice } : p)
     setProducts(updated)
     saveAdminProducts(updated)
-    flashNotice('✅ Toote letihind edukalt uuendatud!')
+    flashNotice('✅ Toote baashind edukalt uuendatud!')
   }
 
   // Uue toote lisamine
@@ -192,7 +192,7 @@ export default function AdminPage() {
     saveAdminProducts(updated)
     setNewProdName('')
     setNewProdDesc('')
-    flashNotice(`✅ Toode "${newProd.name}" lisatud letihindade andmebaasi!`)
+    flashNotice(`✅ Toode "${newProd.name}" lisatud toodete andmebaasi!`)
   }
 
   // Paketi hinna muutmine
@@ -346,7 +346,7 @@ export default function AdminPage() {
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold">Portaali haldus, tooted & tulud</h1>
             <p className="text-xs sm:text-sm text-gray-300 mt-1">
-              Muuda letihindu, halda tellimuspakette (12.90 € / 49 €), lisa kliente ja halda reklaamibännereid.
+              Muuda baashindu, halda tellimuspakette (12.90 € / 49 €), lisa kliente ja halda reklaamibännereid.
             </p>
           </div>
 
@@ -434,7 +434,7 @@ export default function AdminPage() {
                   ~{Math.round(totalVolumeEstimate).toLocaleString('et-EE')} €
                 </div>
                 <div className="text-[11px] text-blue-700 mt-1">
-                  AI letihindade kalkulatsiooni koguväärtus
+                  AI hinnaprognooside koguväärtus
                 </div>
               </div>
 
@@ -988,7 +988,7 @@ export default function AdminPage() {
                       <tr className="border-b border-gray-200 text-gray-400 uppercase tracking-wider text-[10px]">
                         <th className="pb-2 font-bold">Toode & Bränd</th>
                         <th className="pb-2 font-bold">Kategooria</th>
-                        <th className="pb-2 font-bold text-right">Letihind (€)</th>
+                        <th className="pb-2 font-bold text-right">Baashind (€)</th>
                         <th className="pb-2 font-bold text-center">Tegevus</th>
                       </tr>
                     </thead>
@@ -1101,7 +1101,7 @@ export default function AdminPage() {
 
                     <div>
                       <label className="block font-bold text-gray-700 uppercase tracking-wider mb-1">
-                        Letihind (€) *
+                        Baashind (€) *
                       </label>
                       <input
                         type="number"
@@ -1131,7 +1131,7 @@ export default function AdminPage() {
                     type="submit"
                     className="btn-primary w-full justify-center py-2.5 text-xs font-bold shadow-xs"
                   >
-                    Salvesta toode letihindadesse
+                    Salvesta toode andmebaasi
                   </button>
                 </form>
               </div>
