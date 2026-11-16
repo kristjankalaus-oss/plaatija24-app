@@ -99,7 +99,8 @@ export interface ProjectInquiry {
   // Kliendi info ja tüüp
   clientType: ClientType // 'private' (eraisik) või 'contractor_b2b' (peatöövõtja)
   isB2BProject?: boolean // Suurem B2B arendus / kortermaja
-  minTierRequired?: SubscriptionTier // Ainult 25€ B2B Pro paketiga ligipääsetav
+  b2bScope?: 'full_project' | 'stage_helper' // Põhihange (49€) vs kiire etapp/lisajõud (12.90€+)
+  minTierRequired?: SubscriptionTier
 
   clientName: string
   clientEmail: string

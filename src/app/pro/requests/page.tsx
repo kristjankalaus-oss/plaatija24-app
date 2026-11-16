@@ -63,9 +63,12 @@ export default function ProRequestsPage() {
   const existingQuotes = currentProject ? getQuotesForProject(currentProject.id) : []
 
   // Kontrollime õigusi
-  const isFreeTier = currentTiler?.subscriptionTier === 'free'
+  const requiredTier = currentProject?.minTierRequired || (currentProject?.isB2BProject ? 'vip_b2b_2500' : 'free')
+  const tilerTier = currentTiler?.subscriptionTier || 'free'
+  const isFreeTier = tilerTier === 'free'
   const isFreeLimitReached = isFreeTier && (currentTiler?.quotesUsedThisMonth || 0) >= 3
-  const isB2BLocked = currentProject?.isB2BProject && currentTiler?.subscriptionTier !== 'vip_b2b_2500'
+  const isB2BLocked = requiredTier === 'vip_b2b_2500' && tilerTier !== 'vip_b2b_2500'
+  const isStageProLocked = requiredTier === 'pro_1290' && tilerTier === 'free'
 
   const handleSelectProject = (p: ProjectInquiry) => {
     setSelectedProjectId(p.id)
@@ -285,9 +288,15 @@ export default function ProRequestsPage() {
                 >
                   {isB2B && (
                     <div className="mb-2">
-                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-blue-100 text-blue-900 border border-blue-200">
-                        💎 Peatöövõtja B2B Hange (49€ pakett)
-                      </span>
+                      {p.b2bScope === 'stage_helper' || p.minTierRequired === 'pro_1290' ? (
+                        <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 border border-emerald-200">
+                          ⚡ B2B Kiire etapp / Lisajõud (12.90€ PRO+)
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-blue-100 text-blue-900 border border-blue-200">
+                          💎 Peatöövõtja B2B Põhihange (49€ pakett)
+                        </span>
+                      )}
                     </div>
                   )}
 
@@ -478,6 +487,22 @@ export default function ProRequestsPage() {
                       className="btn-primary py-2.5 px-6 text-xs font-bold shadow-md bg-blue-600 hover:bg-blue-700"
                     >
                       Liitu B2B Äripaketiga (49 € / kuu) →
+                    </Link>
+                  </div>
+                ) : isStageProLocked ? (
+                  <div className="p-8 text-center bg-blue-50/90 border-2 border-blue-400 rounded-2xl">
+                    <span className="text-4xl">⚡</span>
+                    <h3 className="text-lg font-black text-blue-950 mt-2">
+                      Peatöövõtja kiire etapp / lisajõu hange
+                    </h3>
+                    <p className="text-xs text-blue-800 max-w-md mx-auto mt-1 mb-4 leading-relaxed">
+                      Sellele alltöövõtu etapile pääsevad pakkuma <strong>Aktiivne Meister PRO (12.90 €/kuu)</strong> ja <strong>Äri PRO (49.00 €/kuu)</strong> paketiga meistrid.
+                    </p>
+                    <Link
+                      href="/pricing"
+                      className="btn-primary py-2.5 px-6 text-xs font-bold shadow-md"
+                    >
+                      Liitu Meister PRO paketiga (12.90 € / kuu) →
                     </Link>
                   </div>
                 ) : isFreeLimitReached ? (

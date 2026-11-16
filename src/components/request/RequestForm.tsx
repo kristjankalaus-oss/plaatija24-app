@@ -46,6 +46,7 @@ export default function RequestForm() {
   // 1. Tellija staatus
   const [clientType, setClientType] = useState<ClientType>('private')
   const [companyName, setCompanyName] = useState('')
+  const [b2bScope, setB2bScope] = useState<'full_project' | 'stage_helper'>('stage_helper')
 
   // 2. Teenus & Kirjeldus & Failid (juba 1. sammus!)
   const [serviceType, setServiceType] = useState<ServiceType>('plaat')
@@ -289,7 +290,9 @@ export default function RequestForm() {
     const projectId = 'proj-' + Date.now()
 
     const projectTitle = isB2B
-      ? `B2B Hange: ${companyName || 'Ehitusobjekt'}`
+      ? b2bScope === 'stage_helper'
+        ? `B2B Etapp / Lisajõud: ${companyName || 'Ehitusobjekt'}`
+        : `B2B Põhihange: ${companyName || 'Ehitusobjekt'}`
       : `Viimistlusobjekt (${serviceType === 'mõlemad' ? 'Plaat + Mikrotsement' : serviceType})`
 
     const newProject: ProjectInquiry = {
@@ -299,7 +302,8 @@ export default function RequestForm() {
       clientType,
       companyName: isB2B ? (companyName || 'Peatöövõtja / Arendaja') : undefined,
       isB2BProject: isB2B,
-      minTierRequired: isB2B ? 'vip_b2b_2500' : 'free',
+      b2bScope: isB2B ? b2bScope : undefined,
+      minTierRequired: isB2B ? (b2bScope === 'stage_helper' ? 'pro_1290' : 'vip_b2b_2500') : 'free',
       clientName: clientName || (isB2B ? 'B2B Projektijuht' : 'Tellija'),
       clientEmail: clientEmail || 'klient@plaatija24.ee',
       clientPhone: clientPhone || '+372 500 0000',
@@ -441,15 +445,52 @@ export default function RequestForm() {
                     </div>
 
                     {clientType === 'contractor_b2b' && (
-                      <div className="mt-3 p-3 bg-blue-50/60 border border-blue-200 rounded-xl">
-                        <label className="block text-[11px] font-bold text-blue-900 mb-1">Ettevõtte / Peatöövõtja nimi</label>
-                        <input
-                          type="text"
-                          value={companyName}
-                          onChange={(e) => setCompanyName(e.target.value)}
-                          placeholder="nt Merko Ehitus, Nordecon, YIT jne"
-                          className="input bg-white text-xs font-semibold"
-                        />
+                      <div className="mt-3 p-4 bg-blue-50/60 border border-blue-200 rounded-xl space-y-3">
+                        <div>
+                          <label className="block text-[11px] font-bold text-blue-900 mb-1">Ettevõtte / Peatöövõtja nimi</label>
+                          <input
+                            type="text"
+                            value={companyName}
+                            onChange={(e) => setCompanyName(e.target.value)}
+                            placeholder="nt Ehitus OÜ"
+                            className="input bg-white text-xs font-semibold"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold text-blue-900 mb-1.5">Mis tüüpi alltöövõttu otsite? *</label>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <button
+                              type="button"
+                              onClick={() => setB2bScope('stage_helper')}
+                              className={`p-3 rounded-xl border-2 text-left transition-all ${
+                                b2bScope === 'stage_helper'
+                                  ? 'border-blue-600 bg-white shadow-xs'
+                                  : 'border-blue-200/70 bg-white/60 hover:bg-white'
+                              }`}
+                            >
+                              <div className="text-xs font-bold text-gray-900">⚡ Kiire etapp / Lisajõud</div>
+                              <div className="text-[10px] text-gray-500 mt-0.5">
+                                Lõpetamata etapid, paar vannituba või kiire abi (avatud ka 12.90 € Meister PRO väikefirmadele)
+                              </div>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => setB2bScope('full_project')}
+                              className={`p-3 rounded-xl border-2 text-left transition-all ${
+                                b2bScope === 'full_project'
+                                  ? 'border-blue-600 bg-white shadow-xs'
+                                  : 'border-blue-200/70 bg-white/60 hover:bg-white'
+                              }`}
+                            >
+                              <div className="text-xs font-bold text-gray-900">🏗️ Terve objekt / Põhihange</div>
+                              <div className="text-[10px] text-gray-500 mt-0.5">
+                                Suuremahuline tervikleping (avatud ainult 49 € Äri PRO brigaadidele)
+                              </div>
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>

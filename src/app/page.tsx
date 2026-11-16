@@ -198,7 +198,7 @@ export default function HomePage() {
               <div>
                 <span className="text-xs font-bold text-blue-700 uppercase">Aktiivne Meister PRO</span>
                 <div className="text-2xl font-black text-gray-900 mt-1">12.90 € <span className="text-xs font-normal text-gray-400">/ kuu</span></div>
-                <p className="text-xs text-gray-500 mt-1">Piiramatu arv pakkumisi kõigile erapäringutele. Esiletõstetud profiil.</p>
+                <p className="text-xs text-gray-500 mt-1">Piiramatu arv erapäringuid + peatöövõtjate kiired etapid ja lisajõu tööd.</p>
               </div>
               <Link href="/pricing" className="btn-primary w-full justify-center text-xs font-bold py-2 mt-6">
                 Liitu 12.90 € paketiga

@@ -55,6 +55,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     popular: true,
     features: [
       'Piiramatu arv pakkumiste esitamist erapäringutele',
+      '⚡ Ligipääs peatöövõtjate kiiretele etappidele ja lisajõu töödele',
       'Kohesed e-posti teavitused uutest objektidest (ilma viivituseta)',
       'Esiletõstetud profiil ja märge "Kinnitatud Meister PRO"',
       '🛡️ Esimese objekti garantii: kui 60 päevaga tööd ei võida, pikendame tasuta',
