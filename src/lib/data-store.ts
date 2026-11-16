@@ -15,6 +15,7 @@ import {
   SubscriptionTier,
   SystemBrand
 } from '@/types'
+import { supabase } from '@/lib/supabase'
 
 // HINNAKIRJA PAKETID PLAATIJATELE
 export const PRICING_PLANS: PricingPlan[] = [
@@ -683,6 +684,34 @@ export function updateTilerProfile(updated: TilerProfile): void {
   if (typeof window === 'undefined') return
   const tilers = getTilers().map(t => t.id === updated.id ? updated : t)
   localStorage.setItem(STORAGE_KEYS.TILERS, JSON.stringify(tilers))
+
+  // Taustasünkroonimine Supabase'i
+  try {
+    supabase.from('tiler_profiles').upsert({
+      id: updated.id,
+      name: updated.name,
+      company_name: updated.companyName,
+      registry_code: updated.registryCode,
+      avatar_url: updated.avatarUrl,
+      city: updated.city,
+      service_regions: updated.serviceRegions,
+      services: updated.services,
+      experience_years: updated.experienceYears,
+      phone: updated.phone,
+      email: updated.email,
+      rating: updated.rating,
+      reviews_count: updated.reviewsCount,
+      completed_jobs_count: updated.completedJobsCount,
+      bio: updated.bio,
+      badges: updated.badges,
+      verified: updated.verified,
+      subscription_tier: updated.subscriptionTier,
+      quotes_used_this_month: updated.quotesUsedThisMonth,
+      quotes_limit: updated.quotesLimit
+    }).then(() => {})
+  } catch (err) {
+    console.debug('Supabase sync skipped:', err)
+  }
 }
 
 export function addGalleryItem(tilerId: string, item: GalleryItem): void {
@@ -694,6 +723,23 @@ export function addGalleryItem(tilerId: string, item: GalleryItem): void {
     return t
   })
   localStorage.setItem(STORAGE_KEYS.TILERS, JSON.stringify(tilers))
+
+  try {
+    supabase.from('gallery_items').insert({
+      id: item.id,
+      tiler_id: tilerId,
+      title: item.title,
+      room_type: item.roomType,
+      service_type: item.serviceType,
+      image_url: item.imageUrl,
+      before_image_url: item.beforeImageUrl,
+      description: item.description,
+      tile_details: item.tileDetails,
+      completed_year: item.completedYear
+    }).then(() => {})
+  } catch (err) {
+    console.debug('Supabase sync skipped:', err)
+  }
 }
 
 export function getProjects(): ProjectInquiry[] {
@@ -719,6 +765,37 @@ export function saveProject(project: ProjectInquiry): void {
   const list = getProjects()
   const filtered = list.filter(p => p.id !== project.id)
   localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify([project, ...filtered]))
+
+  // Taustasünkroonimine Supabase'i
+  try {
+    supabase.from('project_inquiries').upsert({
+      id: project.id,
+      client_type: project.clientType,
+      is_b2b_project: project.isB2BProject || false,
+      min_tier_required: project.minTierRequired || 'free',
+      client_name: project.clientName,
+      client_email: project.clientEmail,
+      client_phone: project.clientPhone,
+      company_name: project.companyName,
+      city: project.city,
+      address: project.address,
+      room_type: project.roomType,
+      room_type_label: project.roomTypeLabel,
+      service_type: project.serviceType,
+      system_brand: project.systemBrand,
+      system_brand_label: project.systemBrandLabel,
+      scope: project.scope,
+      tile_specs: project.tileSpecs,
+      microcement_specs: project.microcementSpecs,
+      description: project.description,
+      files: project.files,
+      ai_estimate: project.aiEstimate,
+      ai_visualizations: project.aiVisualizations,
+      status: project.status
+    }).then(() => {})
+  } catch (err) {
+    console.debug('Supabase sync skipped:', err)
+  }
 }
 
 export function getQuotesForProject(projectId: string): ContractorQuote[] {
@@ -760,6 +837,31 @@ export function addQuote(quote: ContractorQuote): { success: boolean; error?: st
   const updated = [quote, ...list.filter(q => q.id !== quote.id)]
   localStorage.setItem(STORAGE_KEYS.QUOTES, JSON.stringify(updated))
 
+  // Taustasünkroonimine Supabase'i
+  try {
+    supabase.from('contractor_quotes').upsert({
+      id: quote.id,
+      project_id: quote.projectId,
+      tiler_id: quote.tilerId,
+      tiler_name: quote.tilerName,
+      tiler_company: quote.tilerCompany,
+      tiler_avatar: quote.tilerAvatar,
+      tiler_rating: quote.tilerRating,
+      tiler_city: quote.tilerCity,
+      labor_price: quote.laborPrice,
+      material_price: quote.materialPrice,
+      total_price: quote.totalPrice,
+      materials_included: quote.materialsIncluded,
+      estimated_start_date: quote.estimatedStartDate,
+      estimated_duration: quote.estimatedDuration,
+      warranty_years: quote.warrantyYears,
+      comment: quote.comment,
+      status: quote.status
+    }).then(() => {})
+  } catch (err) {
+    console.debug('Supabase sync skipped:', err)
+  }
+
   return { success: true }
 }
 
@@ -783,4 +885,18 @@ export function sendChatMessage(message: ChatMessage): void {
   const current = all[message.projectId] || []
   all[message.projectId] = [...current, message]
   localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(all))
+
+  // Taustasünkroonimine Supabase'i
+  try {
+    supabase.from('project_messages').insert({
+      id: message.id,
+      project_id: message.projectId,
+      conversation_id: message.conversationId,
+      sender_type: message.senderType,
+      sender_name: message.senderName,
+      message: message.message
+    }).then(() => {})
+  } catch (err) {
+    console.debug('Supabase sync skipped:', err)
+  }
 }
