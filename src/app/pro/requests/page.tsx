@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
-import { getProjects, getTilers, addQuote, getQuotesForProject } from '@/lib/data-store'
+import { getProjects, getTilers, addQuote, getQuotesForProject, fetchProjectsFromSupabase } from '@/lib/data-store'
 import { ProjectInquiry, ContractorQuote, TilerProfile } from '@/types'
 
 export default function ProRequestsPage() {
@@ -30,6 +30,10 @@ export default function ProRequestsPage() {
 
     const tList = getTilers()
     setTilers(tList)
+
+    fetchProjectsFromSupabase().then(remoteProjects => {
+      if (remoteProjects && remoteProjects.length > 0) setProjects(remoteProjects)
+    })
   }
 
   useEffect(() => {
@@ -43,6 +47,12 @@ export default function ProRequestsPage() {
 
     const tList = getTilers()
     setTilers(tList)
+
+    fetchProjectsFromSupabase().then(remoteProjects => {
+      if (remoteProjects && remoteProjects.length > 0) {
+        setProjects(remoteProjects)
+      }
+    })
   }, [])
 
   const currentProject = projects.find(p => p.id === selectedProjectId) || projects[0]

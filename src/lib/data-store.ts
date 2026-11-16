@@ -760,6 +760,99 @@ export function getProjectById(id: string): ProjectInquiry | undefined {
   return getProjects().find(p => p.id === id)
 }
 
+export async function fetchProjectsFromSupabase(): Promise<ProjectInquiry[]> {
+  try {
+    const { data, error } = await supabase
+      .from('project_inquiries')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (error || !data || data.length === 0) return getProjects()
+
+    const mapped: ProjectInquiry[] = data.map(row => ({
+      id: row.id,
+      createdAt: row.created_at,
+      status: row.status,
+      clientType: row.client_type || 'private',
+      isB2BProject: row.is_b2b_project || false,
+      minTierRequired: row.min_tier_required || 'free',
+      clientName: row.client_name,
+      clientEmail: row.client_email,
+      clientPhone: row.client_phone || '',
+      companyName: row.company_name || undefined,
+      city: row.city,
+      address: row.address || undefined,
+      roomType: row.room_type || 'Vannituba',
+      roomTypeLabel: row.room_type_label || 'Vannituba',
+      serviceType: row.service_type || 'plaat',
+      systemBrand: row.system_brand || 'mira',
+      systemBrandLabel: row.system_brand_label || 'MIRA',
+      scope: row.scope || { floorArea: 0, wallArea: 0, wallHeight: 2.5, perimeter: 10, levelingRequired: false, waterproofingArea: 0, corners45degCount: 0, nichesCount: 0, drainsCount: 0, siliconeLength: 0, demolitionRequired: false, extras: [] },
+      tileSpecs: row.tile_specs || undefined,
+      microcementSpecs: row.microcement_specs || undefined,
+      description: row.description || '',
+      files: row.files || [],
+      aiEstimate: row.ai_estimate || {},
+      aiVisualizations: row.ai_visualizations || []
+    }))
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(mapped))
+    }
+    return mapped
+  } catch (err) {
+    console.debug('Failed to fetch projects from Supabase:', err)
+    return getProjects()
+  }
+}
+
+export async function fetchProjectFromSupabase(id: string): Promise<ProjectInquiry | undefined> {
+  try {
+    const { data, error } = await supabase
+      .from('project_inquiries')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle()
+
+    if (error || !data) return getProjectById(id)
+
+    const row = data
+    const project: ProjectInquiry = {
+      id: row.id,
+      createdAt: row.created_at,
+      status: row.status,
+      clientType: row.client_type || 'private',
+      isB2BProject: row.is_b2b_project || false,
+      minTierRequired: row.min_tier_required || 'free',
+      clientName: row.client_name,
+      clientEmail: row.client_email,
+      clientPhone: row.client_phone || '',
+      companyName: row.company_name || undefined,
+      city: row.city,
+      address: row.address || undefined,
+      roomType: row.room_type || 'Vannituba',
+      roomTypeLabel: row.room_type_label || 'Vannituba',
+      serviceType: row.service_type || 'plaat',
+      systemBrand: row.system_brand || 'mira',
+      systemBrandLabel: row.system_brand_label || 'MIRA',
+      scope: row.scope,
+      tileSpecs: row.tile_specs || undefined,
+      microcementSpecs: row.microcement_specs || undefined,
+      description: row.description || '',
+      files: row.files || [],
+      aiEstimate: row.ai_estimate,
+      aiVisualizations: row.ai_visualizations || []
+    }
+
+    if (typeof window !== 'undefined') {
+      saveProject(project)
+    }
+    return project
+  } catch {
+    return getProjectById(id)
+  }
+}
+
 export function saveProject(project: ProjectInquiry): void {
   if (typeof window === 'undefined') return
   const list = getProjects()

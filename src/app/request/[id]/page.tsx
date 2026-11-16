@@ -6,7 +6,7 @@ import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
 import ProjectChat from '@/components/chat/ProjectChat'
 import { ProjectInquiry, ContractorQuote } from '@/types'
-import { getProjectById, getQuotesForProject, SEED_PROJECTS } from '@/lib/data-store'
+import { getProjectById, getQuotesForProject, fetchProjectFromSupabase, SEED_PROJECTS } from '@/lib/data-store'
 
 export default function ProjectDetailPage() {
   const params = useParams()
@@ -34,6 +34,13 @@ export default function ProjectDetailPage() {
         company: qList[0].tilerCompany
       })
     }
+
+    // Pärime reaalajas ka Supabase pilvebaasist
+    fetchProjectFromSupabase(projectId).then(remoteP => {
+      if (remoteP) {
+        setProject(remoteP)
+      }
+    })
   }, [projectId])
 
   if (!project) {
