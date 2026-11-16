@@ -15,6 +15,7 @@ function LoginFormContent() {
   const [mode, setMode] = useState<'login' | 'register'>('login')
   const [role, setRole] = useState<UserRole>('tiler')
   const [fullName, setFullName] = useState('')
+  const [companyName, setCompanyName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -47,11 +48,16 @@ function LoginFormContent() {
         } else if (userRole === 'admin') {
           router.push('/admin')
         } else {
-          router.push('/request')
+          router.push('/my-projects')
         }
       } else {
         if (!fullName.trim()) {
-          setErrorMsg('Palun sisesta oma nimi või ettevõtte nimi.')
+          setErrorMsg('Palun sisesta oma nimi.')
+          setLoading(false)
+          return
+        }
+        if (role === 'contractor_b2b' && !companyName.trim()) {
+          setErrorMsg('Palun sisesta ettevõtte nimi.')
           setLoading(false)
           return
         }
@@ -68,6 +74,7 @@ function LoginFormContent() {
             data: {
               role,
               full_name: fullName.trim(),
+              company_name: companyName.trim() || undefined,
             },
           },
         })
@@ -84,7 +91,7 @@ function LoginFormContent() {
           } else if (role === 'tiler') {
             router.push('/pro/profile')
           } else {
-            router.push('/request')
+            router.push('/my-projects')
           }
         } else {
           setSuccessMsg('✅ Konto loodud! Kontrolli oma e-posti kinnituslingi jaoks ja seejärel logi sisse.')
@@ -159,7 +166,7 @@ function LoginFormContent() {
                   <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
                     Konto tüüp *
                   </label>
-                  <div className="grid grid-cols-2 gap-2.5">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     <button
                       type="button"
                       onClick={() => setRole('tiler')}
@@ -170,8 +177,22 @@ function LoginFormContent() {
                       }`}
                     >
                       <div className="text-lg">🧱</div>
-                      <div className="text-xs font-bold text-gray-900 mt-0.5">Meister / Firma</div>
-                      <div className="text-[10px] text-gray-500">Pakun plaatimistöid</div>
+                      <div className="text-xs font-bold text-gray-900 mt-0.5">Meister</div>
+                      <div className="text-[10px] text-gray-500">Pakun töid</div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setRole('contractor_b2b')}
+                      className={`p-3 rounded-xl border-2 text-left transition-all ${
+                        role === 'contractor_b2b'
+                          ? 'border-blue-600 bg-blue-50/70'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="text-lg">🏢</div>
+                      <div className="text-xs font-bold text-gray-900 mt-0.5">Peatöövõtja</div>
+                      <div className="text-[10px] text-gray-500">Postitan hankeid</div>
                     </button>
 
                     <button
@@ -184,22 +205,38 @@ function LoginFormContent() {
                       }`}
                     >
                       <div className="text-lg">🏠</div>
-                      <div className="text-xs font-bold text-gray-900 mt-0.5">Tellija / Klient</div>
-                      <div className="text-[10px] text-gray-500">Küsin pakkumisi</div>
+                      <div className="text-xs font-bold text-gray-900 mt-0.5">Eraisik</div>
+                      <div className="text-[10px] text-gray-500">Küsin pakkumist</div>
                     </button>
                   </div>
                 </div>
 
+                {role === 'contractor_b2b' && (
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-700 mb-1">
+                      Ettevõtte nimi (Peatöövõtja / Arendaja) *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={companyName}
+                      onChange={(e) => setCompanyName(e.target.value)}
+                      placeholder="nt Ehitus OÜ"
+                      className="input text-xs"
+                    />
+                  </div>
+                )}
+
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1">
-                    {role === 'tiler' ? 'Nimi või ettevõtte nimi *' : 'Sinu nimi *'}
+                    {role === 'tiler' ? 'Nimi või ettevõtte nimi *' : role === 'contractor_b2b' ? 'Projektijuhi / kontaktisiku nimi *' : 'Sinu nimi *'}
                   </label>
                   <input
                     type="text"
                     required
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    placeholder={role === 'tiler' ? 'nt OÜ Plaatimine / Jüri' : 'nt Kati Kask'}
+                    placeholder={role === 'tiler' ? 'nt OÜ Plaatimine / Jüri' : 'Sinu ees- ja perekonnanimi'}
                     className="input text-xs"
                   />
                 </div>

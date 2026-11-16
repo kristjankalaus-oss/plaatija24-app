@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useMemo } from 'react'
+import { useState, useRef, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   ProjectInquiry,
@@ -16,6 +16,7 @@ import { calculateAIEstimate, SYSTEM_BRAND_INFO } from '@/lib/pricing-calculator
 import { getAIVisualizations } from '@/lib/ai-visualizer'
 import { saveProject, ESTONIAN_REGIONS } from '@/lib/data-store'
 import AdBanner from '@/components/ads/AdBanner'
+import { useAuth } from '@/lib/useAuth'
 
 const TILE_SIZES = [
   { id: 'standard_30x60', label: 'Standard 30x60 cm' },
@@ -186,6 +187,18 @@ export default function RequestForm() {
   const [clientPhone, setClientPhone] = useState('')
   const [city, setCity] = useState('Tallinn ja Harjumaa')
   const [address, setAddress] = useState('')
+
+  const { user, role, fullName, companyName: authCompany } = useAuth()
+
+  useEffect(() => {
+    if (!user) return
+    if (role === 'contractor_b2b') {
+      setClientType('contractor_b2b')
+      if (authCompany && !companyName) setCompanyName(authCompany)
+    }
+    if (fullName && !clientName) setClientName(fullName)
+    if (user.email && !clientEmail) setClientEmail(user.email)
+  }, [user, role, fullName, authCompany])
 
   // Reaalajas koostatav Scope
   const currentScope: ScopeOfWork = useMemo(() => ({

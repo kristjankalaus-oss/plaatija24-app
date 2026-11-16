@@ -7,14 +7,15 @@ import { useAuth } from '@/lib/useAuth'
 
 export default function Navbar() {
   const pathname = usePathname()
-  const { user, role, fullName, signOut } = useAuth()
+  const { user, role, fullName, companyName, signOut } = useAuth()
 
   const links = [
     { href: '/', label: 'Avaleht' },
     { href: '/request', label: 'Küsi pakkumist (AI)', highlight: true },
     { href: '/tilers', label: 'Paigaldajad' },
     { href: '/pricing', label: 'Meistrite paketid' },
-    { href: '/pro/requests', label: '🔨 Töölaud' },
+    ...(role === 'contractor_b2b' || role === 'client' ? [{ href: '/my-projects', label: role === 'contractor_b2b' ? '🏢 Minu hanked' : '📋 Minu päringud' }] : []),
+    ...(role === 'tiler' || role === 'admin' || !user ? [{ href: '/pro/requests', label: '🔨 Töölaud' }] : []),
     ...(role === 'admin' ? [{ href: '/admin', label: '⚙️ Admin' }] : []),
   ]
 
@@ -86,10 +87,10 @@ export default function Navbar() {
             {user ? (
               <div className="hidden sm:flex items-center gap-2">
                 <Link
-                  href={role === 'tiler' ? '/pro/profile' : role === 'admin' ? '/admin' : '/request'}
+                  href={role === 'tiler' ? '/pro/profile' : role === 'admin' ? '/admin' : '/my-projects'}
                   className="text-xs font-bold px-3 py-1.5 rounded-lg bg-gray-100 text-gray-900 hover:bg-gray-200 transition-colors"
                 >
-                  {role === 'tiler' ? '🧱' : role === 'admin' ? '⚙️' : '🏠'} {fullName}
+                  {role === 'tiler' ? '🧱' : role === 'contractor_b2b' ? '🏢' : role === 'admin' ? '⚙️' : '🏠'} {companyName || fullName}
                 </Link>
                 <button
                   type="button"

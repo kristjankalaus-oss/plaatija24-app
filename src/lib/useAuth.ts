@@ -4,12 +4,13 @@ import { useState, useEffect } from 'react'
 import { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 
-export type UserRole = 'client' | 'tiler' | 'admin'
+export type UserRole = 'client' | 'contractor_b2b' | 'tiler' | 'admin'
 
 export interface AuthState {
   user: User | null
   role: UserRole | null
   fullName: string
+  companyName: string
   loading: boolean
   signOut: () => Promise<void>
 }
@@ -46,7 +47,7 @@ export function useAuth(): AuthState {
       role = 'admin'
     } else {
       const metaRole = user.user_metadata?.role
-      if (metaRole === 'tiler' || metaRole === 'admin' || metaRole === 'client') {
+      if (metaRole === 'tiler' || metaRole === 'contractor_b2b' || metaRole === 'admin' || metaRole === 'client') {
         role = metaRole
       } else {
         role = 'client'
@@ -59,10 +60,12 @@ export function useAuth(): AuthState {
     user?.email?.split('@')[0] ||
     ''
 
+  const companyName = user?.user_metadata?.company_name || ''
+
   const signOut = async () => {
     await supabase.auth.signOut()
     setUser(null)
   }
 
-  return { user, role, fullName, loading, signOut }
+  return { user, role, fullName, companyName, loading, signOut }
 }
