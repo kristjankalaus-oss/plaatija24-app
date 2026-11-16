@@ -30,11 +30,17 @@ export interface MicrocementSpecs {
 }
 
 export interface ScopeOfWork {
-  // Mahud
+  // Mahud kokku
   floorArea: number // m²
   wallArea: number // m²
   wallHeight: number // m
   perimeter: number // jm
+
+  // Eraldi pinnakatete jaotused (kui osa on plaat ja osa mikrotsement)
+  tileFloorArea?: number // Põrand: plaatimine (m²)
+  microFloorArea?: number // Põrand: mikrotsement (m²)
+  tileWallArea?: number // Seinad: plaatimine (m²)
+  microWallArea?: number // Seinad: mikrotsement (m²)
 
   // Töölõigud
   levelingRequired: boolean // tasandus / pinna ettevalmistus

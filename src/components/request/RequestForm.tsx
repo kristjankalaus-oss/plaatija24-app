@@ -57,6 +57,105 @@ export default function RequestForm() {
   const [wallHeight, setWallHeight] = useState<number>(2.5)
   const [perimeter, setPerimeter] = useState<number>(10)
 
+  // Eraldi pinnakatete jaotused (kui osa on plaat ja osa mikrotsement)
+  const [tileFloorArea, setTileFloorArea] = useState<number>(6)
+  const [microFloorArea, setMicroFloorArea] = useState<number>(0)
+  const [tileWallArea, setTileWallArea] = useState<number>(18)
+  const [microWallArea, setMicroWallArea] = useState<number>(0)
+
+  const handleSelectServiceType = (t: ServiceType) => {
+    setServiceType(t)
+    if (t === 'plaat') {
+      setTileFloorArea(floorArea)
+      setMicroFloorArea(0)
+      setTileWallArea(wallArea)
+      setMicroWallArea(0)
+    } else if (t === 'mikrotsement') {
+      setTileFloorArea(0)
+      setMicroFloorArea(floorArea)
+      setTileWallArea(0)
+      setMicroWallArea(wallArea)
+    } else if (t === 'mõlemad') {
+      const showerWall = Math.min(6, wallArea)
+      setTileWallArea(showerWall)
+      setMicroWallArea(Math.max(0, wallArea - showerWall))
+      setTileFloorArea(floorArea)
+      setMicroFloorArea(0)
+    }
+  }
+
+  const handleUpdateTileWall = (val: number) => {
+    const v = Math.max(0, val)
+    setTileWallArea(v)
+    const newTotal = v + microWallArea
+    setWallArea(newTotal)
+    if (v > 0 && microWallArea > 0 && serviceType !== 'mõlemad') {
+      setServiceType('mõlemad')
+    }
+  }
+
+  const handleUpdateMicroWall = (val: number) => {
+    const v = Math.max(0, val)
+    setMicroWallArea(v)
+    const newTotal = tileWallArea + v
+    setWallArea(newTotal)
+    if (tileWallArea > 0 && v > 0 && serviceType !== 'mõlemad') {
+      setServiceType('mõlemad')
+    }
+  }
+
+  const handleUpdateTileFloor = (val: number) => {
+    const v = Math.max(0, val)
+    setTileFloorArea(v)
+    const newTotal = v + microFloorArea
+    setFloorArea(newTotal)
+    if (v > 0 && microFloorArea > 0 && serviceType !== 'mõlemad') {
+      setServiceType('mõlemad')
+    }
+  }
+
+  const handleUpdateMicroFloor = (val: number) => {
+    const v = Math.max(0, val)
+    setMicroFloorArea(v)
+    const newTotal = tileFloorArea + v
+    setFloorArea(newTotal)
+    if (tileFloorArea > 0 && v > 0 && serviceType !== 'mõlemad') {
+      setServiceType('mõlemad')
+    }
+  }
+
+  const handleUpdateTotalWall = (val: number) => {
+    const v = Math.max(0, val)
+    setWallArea(v)
+    if (serviceType === 'plaat') {
+      setTileWallArea(v)
+      setMicroWallArea(0)
+    } else if (serviceType === 'mikrotsement') {
+      setTileWallArea(0)
+      setMicroWallArea(v)
+    } else {
+      const tWall = Math.min(tileWallArea, v)
+      setTileWallArea(tWall)
+      setMicroWallArea(v - tWall)
+    }
+  }
+
+  const handleUpdateTotalFloor = (val: number) => {
+    const v = Math.max(0, val)
+    setFloorArea(v)
+    if (serviceType === 'plaat') {
+      setTileFloorArea(v)
+      setMicroFloorArea(0)
+    } else if (serviceType === 'mikrotsement') {
+      setTileFloorArea(0)
+      setMicroFloorArea(v)
+    } else {
+      const tFloor = Math.min(tileFloorArea, v)
+      setTileFloorArea(tFloor)
+      setMicroFloorArea(v - tFloor)
+    }
+  }
+
   // 4. Süsteemi valik & Töölõigud (2. samm)
   const [systemBrand, setSystemBrand] = useState<SystemBrand>('mira')
   const [levelingRequired, setLevelingRequired] = useState(true)
@@ -94,6 +193,10 @@ export default function RequestForm() {
     wallArea: Number(wallArea) || 0,
     wallHeight: Number(wallHeight) || 2.5,
     perimeter: Number(perimeter) || 0,
+    tileFloorArea: Number(tileFloorArea) || 0,
+    microFloorArea: Number(microFloorArea) || 0,
+    tileWallArea: Number(tileWallArea) || 0,
+    microWallArea: Number(microWallArea) || 0,
     levelingRequired,
     waterproofingArea: Number(waterproofingArea) || 0,
     corners45degCount: Number(corners45degCount) || 0,
@@ -103,9 +206,10 @@ export default function RequestForm() {
     demolitionRequired,
     extras: []
   }), [
-    floorArea, wallArea, wallHeight, perimeter, levelingRequired,
-    waterproofingArea, corners45degCount, nichesCount, drainsCount,
-    siliconeLength, demolitionRequired
+    floorArea, wallArea, wallHeight, perimeter,
+    tileFloorArea, microFloorArea, tileWallArea, microWallArea,
+    levelingRequired, waterproofingArea, corners45degCount, nichesCount,
+    drainsCount, siliconeLength, demolitionRequired
   ])
 
   const currentTileSpecs: TileSpecs = useMemo(() => ({
@@ -312,7 +416,7 @@ export default function RequestForm() {
                         <button
                           key={t.id}
                           type="button"
-                          onClick={() => setServiceType(t.id as ServiceType)}
+                          onClick={() => handleSelectServiceType(t.id as ServiceType)}
                           className={`p-3.5 rounded-xl border-2 text-left transition-all ${
                             serviceType === t.id
                               ? 'border-blue-600 bg-blue-50/70 shadow-xs'
@@ -412,54 +516,183 @@ export default function RequestForm() {
                   </div>
 
                   {/* Esialgsed pinnad ja mõõdud */}
-                  <div className="p-4 bg-gray-50/70 rounded-2xl border border-gray-200">
-                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
-                      Pinnad ja esialgsed mahud (kui on teada)
-                    </label>
+                  <div className="p-4 sm:p-5 bg-gray-50/70 rounded-2xl border border-gray-200 space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                      <label className="block text-xs font-bold text-gray-800 uppercase tracking-wider">
+                        Pinnad ja esialgsed mahud (kui on teada)
+                      </label>
+                      <span className="text-[11px] text-gray-500 font-medium">
+                        Kogu ruumi mõõdud ja viimistlusmaterjalide jaotus
+                      </span>
+                    </div>
+
+                    {/* Kogumahud */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       <div>
-                        <span className="text-xs text-gray-600 block mb-1">Põranda pind (m²)</span>
+                        <span className="text-xs text-gray-600 block mb-1 font-medium">Põranda kogupind (m²)</span>
                         <input
                           type="number"
                           step="0.5"
                           min="0"
                           value={floorArea}
-                          onChange={(e) => setFloorArea(parseFloat(e.target.value) || 0)}
-                          className="input font-semibold bg-white"
+                          onChange={(e) => handleUpdateTotalFloor(parseFloat(e.target.value) || 0)}
+                          className="input font-bold text-gray-900 bg-white"
                         />
                       </div>
                       <div>
-                        <span className="text-xs text-gray-600 block mb-1">Seinte pind (m²)</span>
+                        <span className="text-xs text-gray-600 block mb-1 font-medium">Seinte kogupind (m²)</span>
                         <input
                           type="number"
                           step="0.5"
                           min="0"
                           value={wallArea}
-                          onChange={(e) => setWallArea(parseFloat(e.target.value) || 0)}
-                          className="input font-semibold bg-white"
+                          onChange={(e) => handleUpdateTotalWall(parseFloat(e.target.value) || 0)}
+                          className="input font-bold text-gray-900 bg-white"
                         />
                       </div>
                       <div>
-                        <span className="text-xs text-gray-600 block mb-1">Ruumi kõrgus (m)</span>
+                        <span className="text-xs text-gray-600 block mb-1 font-medium">Ruumi kõrgus (m)</span>
                         <input
                           type="number"
                           step="0.1"
                           min="1"
                           value={wallHeight}
                           onChange={(e) => setWallHeight(parseFloat(e.target.value) || 2.5)}
-                          className="input font-semibold bg-white"
+                          className="input font-bold text-gray-900 bg-white"
                         />
                       </div>
                       <div>
-                        <span className="text-xs text-gray-600 block mb-1">Perimeeter (jm)</span>
+                        <span className="text-xs text-gray-600 block mb-1 font-medium">Perimeeter (jm)</span>
                         <input
                           type="number"
                           step="0.5"
                           min="0"
                           value={perimeter}
                           onChange={(e) => setPerimeter(parseFloat(e.target.value) || 0)}
-                          className="input font-semibold bg-white"
+                          className="input font-bold text-gray-900 bg-white"
                         />
+                      </div>
+                    </div>
+
+                    {/* ERALDI JAOTUS: SEINAD JA PÕRAND (PLAAT VS MIKROTSEMENT) */}
+                    <div className="pt-3 border-t border-gray-200">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
+                        <span className="text-xs font-bold text-gray-900 flex items-center gap-1.5 uppercase tracking-wider">
+                          <span>🔀</span>
+                          <span>Pinnakatete jaotus: Plaatimine vs Mikrotsement</span>
+                        </span>
+                        {((tileWallArea > 0 && microWallArea > 0) || (tileFloorArea > 0 && microFloorArea > 0)) && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 self-start sm:self-auto">
+                            ✨ Kombineeritud lahendus aktiivne
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-gray-500 mb-3">
+                        Täida need väljad, kui ruumis kombineeritakse plaati ja mikrotsementi (nt märgala / dušinurk plaaditud, ülejäänud seinad mikrotsement).
+                      </p>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                        {/* SEINAD */}
+                        <div className="p-3.5 bg-white rounded-xl border border-gray-200 shadow-2xs space-y-2.5">
+                          <div className="flex items-center justify-between pb-1 border-b border-gray-100">
+                            <span className="text-xs font-bold text-gray-900 flex items-center gap-1">
+                              <span>🧱</span>
+                              <span>Seinte viimistlusjaotus</span>
+                            </span>
+                            <span className="text-[11px] font-mono font-semibold text-gray-500">
+                              Kokku: {wallArea} m²
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-2.5">
+                            <div className="bg-blue-50/40 p-2.5 rounded-lg border border-blue-100">
+                              <span className="text-[11px] font-bold text-blue-950 block mb-1">
+                                Seinad: plaatimine
+                              </span>
+                              <div className="flex items-center gap-1">
+                                <input
+                                  type="number"
+                                  step="0.5"
+                                  min="0"
+                                  value={tileWallArea}
+                                  onChange={(e) => handleUpdateTileWall(parseFloat(e.target.value) || 0)}
+                                  className="w-full px-2 py-1.5 border border-gray-300 rounded font-bold text-sm text-right text-gray-900 bg-white focus:ring-2 focus:ring-blue-500"
+                                />
+                                <span className="text-xs font-semibold text-gray-500">m²</span>
+                              </div>
+                              <span className="text-[10px] text-gray-500 block mt-1">nt dušinurk / märgala</span>
+                            </div>
+
+                            <div className="bg-gray-50 p-2.5 rounded-lg border border-gray-200">
+                              <span className="text-[11px] font-bold text-gray-900 block mb-1">
+                                Seinad: mikrotsement
+                              </span>
+                              <div className="flex items-center gap-1">
+                                <input
+                                  type="number"
+                                  step="0.5"
+                                  min="0"
+                                  value={microWallArea}
+                                  onChange={(e) => handleUpdateMicroWall(parseFloat(e.target.value) || 0)}
+                                  className="w-full px-2 py-1.5 border border-gray-300 rounded font-bold text-sm text-right text-gray-900 bg-white focus:ring-2 focus:ring-blue-500"
+                                />
+                                <span className="text-xs font-semibold text-gray-500">m²</span>
+                              </div>
+                              <span className="text-[10px] text-gray-500 block mt-1">nt kuivemad seinapinnad</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* PÕRAND */}
+                        <div className="p-3.5 bg-white rounded-xl border border-gray-200 shadow-2xs space-y-2.5">
+                          <div className="flex items-center justify-between pb-1 border-b border-gray-100">
+                            <span className="text-xs font-bold text-gray-900 flex items-center gap-1">
+                              <span>🎨</span>
+                              <span>Põranda viimistlusjaotus</span>
+                            </span>
+                            <span className="text-[11px] font-mono font-semibold text-gray-500">
+                              Kokku: {floorArea} m²
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-2.5">
+                            <div className="bg-blue-50/40 p-2.5 rounded-lg border border-blue-100">
+                              <span className="text-[11px] font-bold text-blue-950 block mb-1">
+                                Põrand: plaatimine
+                              </span>
+                              <div className="flex items-center gap-1">
+                                <input
+                                  type="number"
+                                  step="0.5"
+                                  min="0"
+                                  value={tileFloorArea}
+                                  onChange={(e) => handleUpdateTileFloor(parseFloat(e.target.value) || 0)}
+                                  className="w-full px-2 py-1.5 border border-gray-300 rounded font-bold text-sm text-right text-gray-900 bg-white focus:ring-2 focus:ring-blue-500"
+                                />
+                                <span className="text-xs font-semibold text-gray-500">m²</span>
+                              </div>
+                              <span className="text-[10px] text-gray-500 block mt-1">nt keraamiline plaat</span>
+                            </div>
+
+                            <div className="bg-gray-50 p-2.5 rounded-lg border border-gray-200">
+                              <span className="text-[11px] font-bold text-gray-900 block mb-1">
+                                Põrand: mikrotsement
+                              </span>
+                              <div className="flex items-center gap-1">
+                                <input
+                                  type="number"
+                                  step="0.5"
+                                  min="0"
+                                  value={microFloorArea}
+                                  onChange={(e) => handleUpdateMicroFloor(parseFloat(e.target.value) || 0)}
+                                  className="w-full px-2 py-1.5 border border-gray-300 rounded font-bold text-sm text-right text-gray-900 bg-white focus:ring-2 focus:ring-blue-500"
+                                />
+                                <span className="text-xs font-semibold text-gray-500">m²</span>
+                              </div>
+                              <span className="text-[10px] text-gray-500 block mt-1">nt vuugivaba põrand</span>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>

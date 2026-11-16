@@ -295,10 +295,16 @@ export default function ProRequestsPage() {
                   <div className="p-3 bg-gray-50 rounded-xl">
                     <span className="text-gray-400 block text-[10px]">Põranda maht:</span>
                     <span className="font-extrabold text-gray-900 text-sm">{currentProject.scope.floorArea} m²</span>
+                    {currentProject.scope.tileFloorArea !== undefined && currentProject.scope.microFloorArea !== undefined && (currentProject.scope.tileFloorArea > 0 && currentProject.scope.microFloorArea > 0) && (
+                      <span className="text-[10px] text-blue-700 block font-medium mt-0.5">{currentProject.scope.tileFloorArea}m² pl / {currentProject.scope.microFloorArea}m² mikro</span>
+                    )}
                   </div>
                   <div className="p-3 bg-gray-50 rounded-xl">
                     <span className="text-gray-400 block text-[10px]">Seinte maht:</span>
                     <span className="font-extrabold text-gray-900 text-sm">{currentProject.scope.wallArea} m²</span>
+                    {currentProject.scope.tileWallArea !== undefined && currentProject.scope.microWallArea !== undefined && (currentProject.scope.tileWallArea > 0 && currentProject.scope.microWallArea > 0) && (
+                      <span className="text-[10px] text-blue-700 block font-medium mt-0.5">{currentProject.scope.tileWallArea}m² pl / {currentProject.scope.microWallArea}m² mikro</span>
+                    )}
                   </div>
                   <div className="p-3 bg-gray-50 rounded-xl">
                     <span className="text-gray-400 block text-[10px]">Eelistatud süsteem:</span>

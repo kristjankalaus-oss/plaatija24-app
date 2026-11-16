@@ -85,7 +85,13 @@ export default function ProjectDetailPage() {
                 <span>·</span>
                 <span>Tellija: {project.clientName}</span>
                 <span>·</span>
-                <span>Mahud: {project.scope.floorArea} m² põrand / {project.scope.wallArea} m² seinad</span>
+                <span>
+                  Mahud: {project.scope.floorArea} m² põrand
+                  {project.scope.tileFloorArea !== undefined && project.scope.microFloorArea !== undefined && (project.scope.tileFloorArea > 0 && project.scope.microFloorArea > 0) ? ` (${project.scope.tileFloorArea}m² plaat + ${project.scope.microFloorArea}m² mikro)` : ''}
+                  {' / '}
+                  {project.scope.wallArea} m² seinad
+                  {project.scope.tileWallArea !== undefined && project.scope.microWallArea !== undefined && (project.scope.tileWallArea > 0 && project.scope.microWallArea > 0) ? ` (${project.scope.tileWallArea}m² plaat + ${project.scope.microWallArea}m² mikro)` : ''}
+                </span>
               </p>
             </div>
 

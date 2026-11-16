@@ -194,13 +194,24 @@ export function calculateAIEstimate(
     technicalNotes.push(`Valitud hüdroisolatsioonisüsteem: ${brandInfo.name}. Märgruumides kohustuslik – tagab ehitusjärelevalve nõuetele vastava veetiheduse.`)
   }
 
-  // 3. PLAATIMISTÖÖD (kui teenus on 'plaat' või 'mõlemad')
-  if (serviceType === 'plaat' || serviceType === 'mõlemad') {
-    let tFloor = serviceType === 'mõlemad' ? Math.round(floorArea * 0.5) : floorArea
-    let tWall = serviceType === 'mõlemad' ? Math.round(wallArea * 0.5) : wallArea
-    if (tFloor === 0 && tWall === 0 && totalArea > 0) {
-      tFloor = Math.round(totalArea * 0.25)
-      tWall = totalArea - tFloor
+  // 3. PLAATIMISTÖÖD (kui teenus on 'plaat' või 'mõlemad', või kui on määratud plaaditavad ruudud)
+  const hasTileExplicit = (scope.tileFloorArea !== undefined && scope.tileFloorArea > 0) || (scope.tileWallArea !== undefined && scope.tileWallArea > 0)
+  const isTileService = serviceType === 'plaat' || serviceType === 'mõlemad' || hasTileExplicit
+
+  if (isTileService) {
+    let tFloor = 0
+    let tWall = 0
+
+    if (scope.tileFloorArea !== undefined || scope.tileWallArea !== undefined) {
+      tFloor = Number(scope.tileFloorArea || 0)
+      tWall = Number(scope.tileWallArea || 0)
+    } else {
+      tFloor = serviceType === 'mõlemad' ? Math.round(floorArea * 0.5) : floorArea
+      tWall = serviceType === 'mõlemad' ? Math.round(wallArea * 0.5) : wallArea
+      if (tFloor === 0 && tWall === 0 && totalArea > 0) {
+        tFloor = Math.round(totalArea * 0.25)
+        tWall = totalArea - tFloor
+      }
     }
 
     const isMosaic = tileSpecs?.size === 'mosaic'
@@ -402,12 +413,23 @@ export function calculateAIEstimate(
   }
 
   // 4. MIKROTSEMENT (Topciment süsteem)
-  if (serviceType === 'mikrotsement' || serviceType === 'mõlemad') {
-    let mFloor = serviceType === 'mõlemad' ? Math.round(floorArea * 0.5) : floorArea
-    let mWall = serviceType === 'mõlemad' ? Math.round(wallArea * 0.5) : wallArea
-    if (mFloor === 0 && mWall === 0 && totalArea > 0) {
-      mFloor = Math.round(totalArea * 0.25)
-      mWall = totalArea - mFloor
+  const hasMicroExplicit = (scope.microFloorArea !== undefined && scope.microFloorArea > 0) || (scope.microWallArea !== undefined && scope.microWallArea > 0)
+  const isMicroService = serviceType === 'mikrotsement' || serviceType === 'mõlemad' || hasMicroExplicit
+
+  if (isMicroService) {
+    let mFloor = 0
+    let mWall = 0
+
+    if (scope.microFloorArea !== undefined || scope.microWallArea !== undefined) {
+      mFloor = Number(scope.microFloorArea || 0)
+      mWall = Number(scope.microWallArea || 0)
+    } else {
+      mFloor = serviceType === 'mõlemad' ? Math.round(floorArea * 0.5) : floorArea
+      mWall = serviceType === 'mõlemad' ? Math.round(wallArea * 0.5) : wallArea
+      if (mFloor === 0 && mWall === 0 && totalArea > 0) {
+        mFloor = Math.round(totalArea * 0.25)
+        mWall = totalArea - mFloor
+      }
     }
     const totalMicro = mFloor + mWall
 
