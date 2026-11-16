@@ -239,6 +239,7 @@ export default function HomePage() {
             <Link href="/tilers" className="hover:text-white transition-colors">Paigaldajad</Link>
             <Link href="/pricing" className="hover:text-white transition-colors">Meistrite paketid (12.90€ / 49€)</Link>
             <Link href="/pro/requests" className="hover:text-white transition-colors">Töölaud</Link>
+            <Link href="/feedback" className="hover:text-white transition-colors">Tagasiside</Link>
             <Link href="/login" className="hover:text-white transition-colors">Logi sisse</Link>
             <Link href="/admin" className="text-blue-400 hover:text-blue-300 transition-colors">⚙️ Admin Paneel</Link>
           </div>

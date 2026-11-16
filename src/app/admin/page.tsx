@@ -14,7 +14,9 @@ import {
   getProjects,
   getPricingRules,
   savePricingRules,
-  resetPricingRules
+  resetPricingRules,
+  getFeedbacks,
+  resolveFeedback
 } from '@/lib/data-store'
 import {
   AdminProduct,
@@ -24,7 +26,8 @@ import {
   ProjectInquiry,
   SystemBrand,
   SubscriptionTier,
-  WorkPricingRule
+  WorkPricingRule,
+  PlatformFeedback
 } from '@/types'
 import { calculateAIEstimate } from '@/lib/pricing-calculator'
 import { useAuth } from '@/lib/useAuth'
@@ -35,7 +38,7 @@ export default function AdminPage() {
   const [adminPass, setAdminPass] = useState('')
   const [adminAuthError, setAdminAuthError] = useState('')
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'pricing' | 'products' | 'clients' | 'plans' | 'ads'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'pricing' | 'products' | 'clients' | 'plans' | 'ads' | 'feedback'>('overview')
 
   // Andmed
   const [products, setProducts] = useState<AdminProduct[]>([])
@@ -44,6 +47,7 @@ export default function AdminPage() {
   const [tilers, setTilers] = useState<TilerProfile[]>([])
   const [projects, setProjects] = useState<ProjectInquiry[]>([])
   const [pricingRules, setPricingRules] = useState<WorkPricingRule[]>([])
+  const [feedbacks, setFeedbacks] = useState<PlatformFeedback[]>([])
   const [notice, setNotice] = useState<string>('')
 
   // Simulaatori state
@@ -87,6 +91,7 @@ export default function AdminPage() {
     setTilers(getTilers())
     setProjects(getProjects())
     setPricingRules(getPricingRules())
+    setFeedbacks(getFeedbacks())
   }
 
   useEffect(() => {
@@ -381,6 +386,7 @@ export default function AdminPage() {
             { id: 'plans', label: '💰 Paketid & Hinnastus (12.90€ / 49€)' },
             { id: 'clients', label: `👥 Meistrid & Peatöövõtjad (${tilers.length})` },
             { id: 'ads', label: `📢 Reklaamibännerid (${ads.length})` },
+            { id: 'feedback', label: `💬 Tagasiside & Raportid (${feedbacks.length})` },
           ].map(tab => (
             <button
               key={tab.id}
@@ -1481,6 +1487,68 @@ export default function AdminPage() {
               </div>
             </div>
 
+          </div>
+        )}
+
+        {/* TAB: TAGASISIDE & RAPORTID */}
+        {activeTab === 'feedback' && (
+          <div className="card p-6 border border-gray-200 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-gray-900 text-base">Klientide ja meistrite tagasiside & raportid</h3>
+                <p className="text-xs text-gray-500">Siia jõuavad nii klientide hinnangud, ettepanekud kui ka meistrite teated tühjade päringute kohta</p>
+              </div>
+            </div>
+
+            {feedbacks.length === 0 ? (
+              <div className="py-12 text-center text-gray-400 text-sm">
+                <span className="text-4xl block mb-2">💬</span>
+                Hetkel pole veel ühtegi tagasisidet ega raportit saabunud.
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {feedbacks.map(fb => (
+                  <div key={fb.id} className="p-4 rounded-xl border border-gray-200 bg-gray-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="space-y-1 text-xs">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className={`px-2 py-0.5 rounded font-bold uppercase text-[10px] ${
+                          fb.category === 'report_spam_lead'
+                            ? 'bg-red-100 text-red-800'
+                            : fb.category === 'review_tiler'
+                            ? 'bg-amber-100 text-amber-900'
+                            : 'bg-blue-100 text-blue-800'
+                        }`}>
+                          {fb.category === 'report_spam_lead' ? '🚩 Libapäringu raport' : fb.category === 'review_tiler' ? `⭐ Hinnang (${fb.rating}/5)` : fb.category}
+                        </span>
+                        <span className="font-bold text-gray-900">{fb.senderName}</span>
+                        <span className="text-gray-400">({fb.senderRole})</span>
+                        <span className="text-gray-400">· {new Date(fb.createdAt).toLocaleString('et-EE')}</span>
+                      </div>
+                      <p className="text-gray-700 text-sm mt-1">{fb.message}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {fb.status === 'lahendatud' ? (
+                        <span className="px-3 py-1 rounded-lg bg-emerald-100 text-emerald-800 text-xs font-bold">
+                          ✓ Lahendatud
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            resolveFeedback(fb.id)
+                            refreshAll()
+                            flashNotice('✅ Tagasiside märgitud lahendatuks!')
+                          }}
+                          className="btn-secondary py-1.5 px-3 text-xs font-bold whitespace-nowrap"
+                        >
+                          Märgi lahendatuks
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

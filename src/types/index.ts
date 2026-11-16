@@ -112,6 +112,7 @@ export interface ProjectInquiry {
   roomType: string
   roomTypeLabel: string
   serviceType: ServiceType
+  timeline?: 'urgent_1_month' | 'planned_1_3_months' | 'just_browsing'
 
   // Süsteemi eelistus (MIRA, Mapei, Weber jne)
   systemBrand: SystemBrand
@@ -269,4 +270,18 @@ export interface WorkPricingRule {
   minArea?: number        // nt alla 10 m²
   minProjectFee?: number  // minimaalne tasu väikeobjektil
   enabled: boolean
+}
+
+export interface PlatformFeedback {
+  id: string
+  createdAt: string
+  senderRole: 'client' | 'contractor_b2b' | 'tiler'
+  senderName: string
+  senderEmail?: string
+  category: 'review_tiler' | 'report_spam_lead' | 'platform_feedback' | 'bug_report'
+  rating?: number
+  projectId?: string
+  tilerId?: string
+  message: string
+  status: 'uus' | 'lahendatud'
 }

@@ -16,6 +16,7 @@ export default function Navbar() {
     { href: '/pricing', label: 'Meistrite paketid' },
     ...(role === 'contractor_b2b' || role === 'client' ? [{ href: '/my-projects', label: role === 'contractor_b2b' ? '🏢 Minu hanked' : '📋 Minu päringud' }] : []),
     ...(role === 'tiler' || role === 'admin' || !user ? [{ href: '/pro/requests', label: '🔨 Töölaud' }] : []),
+    { href: '/feedback', label: '💬 Tagasiside' },
     ...(role === 'admin' ? [{ href: '/admin', label: '⚙️ Admin' }] : []),
   ]
 

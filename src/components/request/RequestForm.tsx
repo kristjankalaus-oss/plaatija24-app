@@ -187,6 +187,10 @@ export default function RequestForm() {
   const [clientPhone, setClientPhone] = useState('')
   const [city, setCity] = useState('Tallinn ja Harjumaa')
   const [address, setAddress] = useState('')
+  const [timeline, setTimeline] = useState<'urgent_1_month' | 'planned_1_3_months' | 'just_browsing'>('urgent_1_month')
+  const [budgetConfirmed, setBudgetConfirmed] = useState(false)
+  const [submitError, setSubmitError] = useState('')
+  const [browsingSummaryOpen, setBrowsingSummaryOpen] = useState(false)
 
   const { user, role, fullName, companyName: authCompany } = useAuth()
 
@@ -259,6 +263,23 @@ export default function RequestForm() {
   }
 
   const handleSubmit = async () => {
+    setSubmitError('')
+
+    if (timeline === 'just_browsing') {
+      setBrowsingSummaryOpen(true)
+      return
+    }
+
+    if (!clientPhone || clientPhone.trim().length < 6) {
+      setSubmitError('Palun sisesta kehtiv telefoninumber, et meistrid saaksid objekti ülevaatuse kokku leppida.')
+      return
+    }
+
+    if (!budgetConfirmed) {
+      setSubmitError('Palun kinnita enne saatmist, et oled tutvunud orienteeruva turuhinnaga.')
+      return
+    }
+
     setLoading(true)
 
     const finalEstimate = calculateAIEstimate(serviceType, currentScope, currentTileSpecs, currentMicroSpecs, systemBrand)
@@ -287,6 +308,7 @@ export default function RequestForm() {
       roomType: 'objekt',
       roomTypeLabel: projectTitle,
       serviceType,
+      timeline,
       systemBrand,
       systemBrandLabel: SYSTEM_BRAND_INFO[systemBrand]?.name || 'Sertifitseeritud süsteem',
       scope: currentScope,
@@ -1039,9 +1061,12 @@ export default function RequestForm() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-gray-700 mb-1">Telefoninumber</label>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1">
+                        Telefoninumber {timeline !== 'just_browsing' && '*'}
+                      </label>
                       <input
                         type="tel"
+                        required={timeline !== 'just_browsing'}
                         value={clientPhone}
                         onChange={(e) => setClientPhone(e.target.value)}
                         placeholder="+372 5xx xxxxx"
@@ -1063,6 +1088,38 @@ export default function RequestForm() {
                     </div>
                   </div>
 
+                  {/* Tööde algusaeg ja valmisoleku filter */}
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">
+                      Millal plaanite töödega alustada? *
+                    </label>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                      {[
+                        { id: 'urgent_1_month', label: '🔥 Kohe / 1 kuu jooksul', desc: 'Saadetakse meistritele eelisjärjekorras' },
+                        { id: 'planned_1_3_months', label: '📅 1–3 kuu jooksul', desc: 'Planeeritud ehitus, ootan pakkumisi' },
+                        { id: 'just_browsing', label: '👀 Alles uurin hindu', desc: 'Vaatan vaid AI hinnakalkulatsiooni' },
+                      ].map(opt => (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          onClick={() => {
+                            setTimeline(opt.id as typeof timeline)
+                            setBrowsingSummaryOpen(false)
+                            setSubmitError('')
+                          }}
+                          className={`p-3 rounded-xl border-2 text-left transition-all ${
+                            timeline === opt.id
+                              ? 'border-blue-600 bg-blue-50/70'
+                              : 'border-gray-200 hover:border-gray-300 bg-white'
+                          }`}
+                        >
+                          <div className="text-xs font-bold text-gray-900">{opt.label}</div>
+                          <div className="text-[10px] text-gray-500 mt-0.5">{opt.desc}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-2 text-xs">
                     <div className="font-bold text-gray-900 text-sm">📋 Objekti kokkuvõte:</div>
                     <div className="grid grid-cols-2 gap-2 text-gray-600">
@@ -1072,6 +1129,47 @@ export default function RequestForm() {
                       <div>📎 Lisatud faile: <span className="font-semibold text-gray-800">{files.length} tk</span></div>
                     </div>
                   </div>
+
+                  {timeline !== 'just_browsing' && (
+                    <label className="flex items-start gap-2.5 p-3.5 rounded-xl bg-blue-50/50 border border-blue-200 cursor-pointer text-xs text-gray-800">
+                      <input
+                        type="checkbox"
+                        checked={budgetConfirmed}
+                        onChange={(e) => setBudgetConfirmed(e.target.checked)}
+                        className="mt-0.5 rounded text-blue-600 focus:ring-blue-500"
+                      />
+                      <span>
+                        Kinnitan, et olen tutvunud orienteeruva turuhinnaga (<strong>~{liveEstimate.grossTotal.toLocaleString('et-EE')} €</strong> KM-ga) ja soovin saada sellele tööle reaalseid hinnapakkumisi.
+                      </span>
+                    </label>
+                  )}
+
+                  {submitError && (
+                    <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs font-semibold rounded-xl">
+                      ⚠️ {submitError}
+                    </div>
+                  )}
+
+                  {browsingSummaryOpen && (
+                    <div className="p-5 rounded-2xl bg-blue-50 border-2 border-blue-400 space-y-3">
+                      <div className="font-extrabold text-blue-950 text-sm">
+                        📊 Sinu AI hinnaprognoos on valmis (meistrite töölauale ei saadetud)
+                      </div>
+                      <p className="text-xs text-blue-900">
+                        Orienteeruv eelarve on <strong>{liveEstimate.priceRange.min.toLocaleString('et-EE')} – {liveEstimate.priceRange.max.toLocaleString('et-EE')} €</strong> (töö ~{liveEstimate.laborSubtotal.toLocaleString('et-EE')} €, materjal ~{liveEstimate.materialSubtotal.toLocaleString('et-EE')} €, kestus u {liveEstimate.estimatedDays} tööpäeva).
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setTimeline('planned_1_3_months')
+                          setBrowsingSummaryOpen(false)
+                        }}
+                        className="btn-primary py-2 px-5 text-xs font-bold"
+                      >
+                        Soovin siiski meistritelt pakkumisi saada →
+                      </button>
+                    </div>
+                  )}
 
                   <div className="pt-4 flex justify-between">
                     <button
@@ -1087,7 +1185,11 @@ export default function RequestForm() {
                       disabled={loading}
                       className="btn-primary py-3 px-8 text-sm font-bold shadow-md"
                     >
-                      {loading ? '⏳ Koostan AI pakkumist ja pilte...' : '🤖 Genereeri esialgne pakkumine ja pildid →'}
+                      {loading
+                        ? '⏳ Koostan AI pakkumist ja pilte...'
+                        : timeline === 'just_browsing'
+                        ? '📊 Kuva täpne AI hinnaprognoos'
+                        : '🤖 Avalda päring ja saa pakkumised →'}
                     </button>
                   </div>
                 </div>

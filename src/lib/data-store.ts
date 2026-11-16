@@ -14,7 +14,8 @@ import {
   PricingPlan,
   SubscriptionTier,
   SystemBrand,
-  WorkPricingRule
+  WorkPricingRule,
+  PlatformFeedback
 } from '@/types'
 import { supabase } from '@/lib/supabase'
 
@@ -290,7 +291,8 @@ const STORAGE_KEYS = {
   ADS: 'plaatija24_ads_v3',
   PRODUCTS: 'plaatija24_products_v3',
   PRICING: 'plaatija24_pricing_v4',
-  PRICING_RULES: 'plaatija24_pricing_rules_v2'
+  PRICING_RULES: 'plaatija24_pricing_rules_v2',
+  FEEDBACK: 'plaatija24_feedback_v1'
 }
 
 // HINNAKIRJA REEGLITE HALDUS (2026 turg: Topciment & Remondisemu)
@@ -730,4 +732,27 @@ export function sendChatMessage(message: ChatMessage): void {
   } catch (err) {
     console.debug('Supabase sync skipped:', err)
   }
+}
+
+// TAGASISIDE JA RAPORTID (kliendid & paigaldajad)
+export function getFeedbacks(): PlatformFeedback[] {
+  if (typeof window === 'undefined') return []
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.FEEDBACK)
+    return raw ? JSON.parse(raw) : []
+  } catch {
+    return []
+  }
+}
+
+export function addFeedback(fb: PlatformFeedback): void {
+  if (typeof window === 'undefined') return
+  const list = getFeedbacks()
+  localStorage.setItem(STORAGE_KEYS.FEEDBACK, JSON.stringify([fb, ...list]))
+}
+
+export function resolveFeedback(id: string): void {
+  if (typeof window === 'undefined') return
+  const updated = getFeedbacks().map(f => f.id === id ? { ...f, status: 'lahendatud' as const } : f)
+  localStorage.setItem(STORAGE_KEYS.FEEDBACK, JSON.stringify(updated))
 }

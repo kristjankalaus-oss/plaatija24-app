@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
-import { getProjects, getTilers, addQuote, getQuotesForProject, fetchProjectsFromSupabase } from '@/lib/data-store'
+import { getProjects, getTilers, addQuote, getQuotesForProject, fetchProjectsFromSupabase, addFeedback } from '@/lib/data-store'
 import { ProjectInquiry, ContractorQuote, TilerProfile } from '@/types'
 import { useAuth } from '@/lib/useAuth'
 
@@ -25,6 +25,7 @@ export default function ProRequestsPage() {
   const [submitting, setSubmitting] = useState<boolean>(false)
   const [successMsg, setSuccessMsg] = useState<string>('')
   const [errorMsg, setErrorMsg] = useState<string>('')
+  const [reportSent, setReportSent] = useState<string>('')
 
   const refreshData = () => {
     const pList = getProjects()
@@ -305,6 +306,24 @@ export default function ProRequestsPage() {
                     Süsteem: <span className="font-bold text-gray-700">{p.systemBrandLabel}</span>
                   </div>
 
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {p.timeline === 'urgent_1_month' && (
+                      <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-900 text-[10px] font-bold">
+                        🔥 Kiire (1 kuu)
+                      </span>
+                    )}
+                    {p.timeline === 'planned_1_3_months' && (
+                      <span className="px-2 py-0.5 rounded bg-gray-100 text-gray-700 text-[10px] font-bold">
+                        📅 1–3 kuud
+                      </span>
+                    )}
+                    {p.files && p.files.length > 0 && (
+                      <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                        📸 Fotod ({p.files.length})
+                      </span>
+                    )}
+                  </div>
+
                   <div className="mt-3 pt-2 border-t border-gray-100 flex items-center justify-between text-xs">
                     <span className="text-gray-500">AI Turuhind:</span>
                     <span className="font-black text-gray-900">~{p.aiEstimate.grossTotal.toLocaleString('et-EE')} €</span>
@@ -344,6 +363,45 @@ export default function ProRequestsPage() {
                     <p className="text-xs text-gray-500">
                       Tellija: <span className="font-semibold text-gray-800">{currentProject.clientName}</span> {currentProject.companyName && `(${currentProject.companyName})`} · Tel: {currentProject.clientPhone}
                     </p>
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      {currentProject.files && currentProject.files.length > 0 && (
+                        <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                          📸 Fotod / joonised lisatud ({currentProject.files.length})
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          addFeedback({
+                            id: 'fb-' + Date.now(),
+                            createdAt: new Date().toISOString(),
+                            senderRole: 'tiler',
+                            senderName: currentTiler?.name || user?.email || 'Meister',
+                            senderEmail: user?.email || undefined,
+                            category: 'report_spam_lead',
+                            projectId: currentProject.id,
+                            message: `Meister teatas tühjast/mittevastavast päringust: ${currentProject.roomTypeLabel} (${currentProject.clientName}, ${currentProject.clientPhone})`,
+                            status: 'uus',
+                          })
+                          fetch('/api/notify', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              type: 'feedback',
+                              feedbackSender: currentTiler?.name || user?.email || 'Meister',
+                              feedbackRole: 'tiler',
+                              feedbackCategory: 'report_spam_lead',
+                              projectId: currentProject.id,
+                              feedbackMessage: `Meister teatas tühjast päringust: ${currentProject.roomTypeLabel} (${currentProject.clientPhone})`,
+                            }),
+                          }).catch(() => {})
+                          setReportSent(currentProject.id)
+                        }}
+                        className="text-[11px] font-semibold text-gray-400 hover:text-red-600 transition-colors"
+                      >
+                        {reportSent === currentProject.id ? '✅ Teade adminile saadetud' : '🚩 Teata tühjast päringust'}
+                      </button>
+                    </div>
                   </div>
 
                   <Link

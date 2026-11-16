@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 interface NotifyPayload {
-  type: 'new_inquiry' | 'new_quote'
+  type: 'new_inquiry' | 'new_quote' | 'feedback'
   projectTitle?: string
   projectId?: string
   city?: string
@@ -11,6 +11,11 @@ interface NotifyPayload {
   tilerName?: string
   tilerCompany?: string
   quoteTotal?: number
+  feedbackCategory?: string
+  feedbackMessage?: string
+  feedbackSender?: string
+  feedbackRole?: string
+  rating?: number
 }
 
 export async function POST(req: Request) {
@@ -45,6 +50,20 @@ export async function POST(req: Request) {
       if (body.clientEmail && body.clientEmail.includes('@')) {
         recipients.push(body.clientEmail)
       }
+    } else if (body.type === 'feedback') {
+      subject = `💬 Uus tagasiside / raport (${body.feedbackCategory || 'Üldine'})`
+      html = `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 12px;">
+          <h2 style="color: #0d5ed9; margin-top: 0;">Plaatija24 – Tagasiside & Raport</h2>
+          <ul style="line-height: 1.7;">
+            <li><strong>Saatja:</strong> ${body.feedbackSender || '-'} (${body.feedbackRole || '-'})</li>
+            <li><strong>Kategooria:</strong> ${body.feedbackCategory || '-'}</li>
+            ${body.rating ? `<li><strong>Hinnang:</strong> ${body.rating}/5 ★</li>` : ''}
+            ${body.projectId ? `<li><strong>Projekti ID:</strong> ${body.projectId}</li>` : ''}
+          </ul>
+          <p style="background: #f9fafb; padding: 12px; border-radius: 8px; border: 1px solid #e5e7eb;">${body.feedbackMessage || ''}</p>
+        </div>
+      `
     } else if (body.type === 'new_quote') {
       subject = `💬 Uus meistri pakkumine projektile: ${body.projectTitle || body.projectId}`
       html = `
@@ -63,6 +82,20 @@ export async function POST(req: Request) {
       if (body.clientEmail && body.clientEmail.includes('@')) {
         recipients.push(body.clientEmail)
       }
+    } else if (body.type === 'feedback') {
+      subject = `💬 Uus tagasiside / raport (${body.feedbackCategory || 'Üldine'})`
+      html = `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 12px;">
+          <h2 style="color: #0d5ed9; margin-top: 0;">Plaatija24 – Tagasiside & Raport</h2>
+          <ul style="line-height: 1.7;">
+            <li><strong>Saatja:</strong> ${body.feedbackSender || '-'} (${body.feedbackRole || '-'})</li>
+            <li><strong>Kategooria:</strong> ${body.feedbackCategory || '-'}</li>
+            ${body.rating ? `<li><strong>Hinnang:</strong> ${body.rating}/5 ★</li>` : ''}
+            ${body.projectId ? `<li><strong>Projekti ID:</strong> ${body.projectId}</li>` : ''}
+          </ul>
+          <p style="background: #f9fafb; padding: 12px; border-radius: 8px; border: 1px solid #e5e7eb;">${body.feedbackMessage || ''}</p>
+        </div>
+      `
     }
 
     if (!resendKey) {
