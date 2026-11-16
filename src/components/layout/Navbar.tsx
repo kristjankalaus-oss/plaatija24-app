@@ -26,20 +26,27 @@ export default function Navbar() {
       <AdBanner position="top_header" />
 
       {/* Põhiline Päis */}
-      <header className="bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-2xs">
+      <header className="bg-white/85 backdrop-blur-xl border-b border-gray-200/70 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white font-extrabold text-lg shadow-xs"
-                 style={{ backgroundColor: 'var(--color-brand-500)' }}>
-              P
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform relative overflow-hidden"
+              style={{ background: 'linear-gradient(135deg, #0d5ed9 0%, #073377 100%)' }}
+            >
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                <rect x="3" y="3" width="8" height="8" rx="1.5" className="fill-white/25" />
+                <rect x="13" y="3" width="8" height="8" rx="1.5" />
+                <rect x="3" y="13" width="8" height="8" rx="1.5" />
+                <rect x="13" y="13" width="8" height="8" rx="1.5" className="fill-white/90" />
+              </svg>
             </div>
             <div>
-              <span className="text-xl font-extrabold tracking-tight text-gray-900">
+              <span className="text-xl font-black tracking-tight text-gray-950">
                 Plaatija<span style={{ color: 'var(--color-brand-500)' }}>24</span>
               </span>
-              <span className="hidden sm:inline-block text-[10px] font-bold text-gray-500 ml-1.5 px-1.5 py-0.5 bg-gray-100 rounded">
+              <span className="hidden sm:inline-block text-[10px] font-bold text-blue-900 ml-1.5 px-2 py-0.5 bg-blue-50 border border-blue-100 rounded-md">
                 & Mikrotsement
               </span>
             </div>

@@ -7,59 +7,161 @@ export default function HomePage() {
     <div className="min-h-screen bg-white flex flex-col">
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="pt-14 pb-18 px-4 sm:px-6 bg-gradient-to-br from-blue-50/70 via-white to-slate-50/80 border-b border-gray-100">
-        <div className="max-w-5xl mx-auto text-center">
-          
-          <div className="inline-flex items-center gap-2 bg-blue-100/90 text-blue-900 border border-blue-200/70 text-xs font-bold px-3.5 py-1.5 rounded-full mb-6 uppercase tracking-wider shadow-2xs">
-            <span>🇪🇪</span> Kliendile 100% tasuta · AI Hinnakalkulaator & Visualiseering
+      {/* HERO SECTION: Arhitektuurne plaadivõrgustik & Vaarao sinine kuma */}
+      <section className="relative overflow-hidden pt-14 pb-20 px-4 sm:px-6 bg-tile-grid border-b border-gray-200/70">
+        {/* Taustakuma efektid */}
+        <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-[780px] h-[380px] rounded-full bg-blue-500/10 blur-3xl" />
+        <div className="pointer-events-none absolute bottom-0 right-0 w-[420px] h-[280px] rounded-full bg-blue-600/10 blur-3xl" />
+
+        <div className="relative max-w-6xl mx-auto">
+          <div className="text-center max-w-4xl mx-auto">
+            <div className="inline-flex items-center gap-2.5 bg-white/90 backdrop-blur-md text-blue-950 border border-blue-200/80 text-xs font-bold px-4 py-1.5 rounded-full mb-6 uppercase tracking-wider shadow-xs">
+              <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+              <span>🇪🇪 Kliendile 100% tasuta · AI Hinnakalkulaator & Visualiseering</span>
+            </div>
+
+            <h1 className="text-4xl sm:text-6xl font-black text-gray-950 tracking-tight leading-[1.1] mb-5">
+              Leia usaldusväärne{' '}
+              <span className="bg-gradient-to-r from-blue-600 via-blue-700 to-gray-950 bg-clip-text text-transparent">
+                plaatija või mikrotsemendi
+              </span>{' '}
+              meister kiirelt ja vaevata.
+            </h1>
+
+            <p className="text-lg sm:text-xl font-bold mb-4 text-blue-700">
+              Nutikas 2026. aasta turuhindade kalkulaator ja AI-põhine disainilahendus.
+            </p>
+
+            <p className="text-sm sm:text-base text-gray-600 mb-9 max-w-2xl mx-auto leading-relaxed">
+              Sisesta ruumi mõõdud, fotod või visandid ning meie süsteem koostab kohese eelarve ja realistliku visiooni valminud projektist. Vali kontrollitud spetsialistide hulgast parim partner.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link
+                href="/request"
+                className="btn-primary text-sm sm:text-base py-4 px-8 pharaoh-glow"
+              >
+                <span>🤖 Küsi tasuta pakkumist & koosta AI pildid</span>
+                <span>→</span>
+              </Link>
+              <Link
+                href="/pricing"
+                className="btn-secondary text-sm sm:text-base py-4 px-8"
+              >
+                <span>🔨 Liitu meistrina (0 € – 49 €/k)</span>
+              </Link>
+            </div>
+
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs font-semibold text-gray-500">
+              <span className="flex items-center gap-1.5"><span className="text-blue-600 font-black">✓</span> Kliendile täiesti tasuta</span>
+              <span className="flex items-center gap-1.5"><span className="text-blue-600 font-black">✓</span> Eraldi seina ja põranda kalkulatsioon</span>
+              <span className="flex items-center gap-1.5"><span className="text-blue-600 font-black">✓</span> AI fotorealistlikud pildid</span>
+              <span className="flex items-center gap-1.5"><span className="text-blue-600 font-black">✓</span> Otsevestlus kiirsõnumites</span>
+            </div>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-black text-gray-950 tracking-tight leading-[1.15] mb-4">
-            Leia usaldusväärne plaatija või mikrotsemendi meister kiirelt ja vaevata.
-          </h1>
+          {/* GRAFILINE BENTO-GALERII: Teenuste & Materjalide Visuaalne Esitlus */}
+          <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Kaart 1: Keraamika & Suurformaat */}
+            <div className="group relative overflow-hidden rounded-2xl bg-gray-950 text-white p-6 border border-gray-800 shadow-lg hover:-translate-y-1 transition-all duration-300">
+              <div className="absolute inset-0 bg-tile-grid-dark opacity-70" />
+              <div className="absolute -right-6 -top-6 w-28 h-28 rounded-full bg-blue-600/20 blur-xl group-hover:bg-blue-500/30 transition-colors" />
+              <div className="relative z-10 flex flex-col justify-between h-full min-h-[170px]">
+                <div className="flex items-center justify-between">
+                  <span className="w-10 h-10 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="3" y="3" width="8" height="8" rx="1" />
+                      <rect x="13" y="3" width="8" height="8" rx="1" />
+                      <rect x="3" y="13" width="8" height="8" rx="1" />
+                      <rect x="13" y="13" width="8" height="8" rx="1" />
+                    </svg>
+                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-300 bg-blue-950/80 border border-blue-800 px-2.5 py-0.5 rounded-full">
+                    Keraamika
+                  </span>
+                </div>
+                <div className="mt-6">
+                  <h3 className="font-extrabold text-base text-white">Plaatimine & Suurformaat</h3>
+                  <p className="text-xs text-gray-400 mt-1">30×60 · 60×120 · XXL Slabid · Kalasaba · 45° Jiirid</p>
+                </div>
+              </div>
+            </div>
 
-          <p className="text-xl sm:text-2xl font-bold mb-6 text-blue-600">
-            Nutikas hinnakalkulaator ja AI-põhine disainilahendus.
-          </p>
+            {/* Kaart 2: Mikrotsement */}
+            <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-100 via-white to-blue-50 text-gray-950 p-6 border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+              <svg className="absolute -right-8 -bottom-8 w-40 h-40 text-blue-600/5 group-hover:text-blue-600/10 transition-colors" viewBox="0 0 100 100" fill="currentColor">
+                <circle cx="50" cy="50" r="45" />
+              </svg>
+              <div className="relative z-10 flex flex-col justify-between h-full min-h-[170px]">
+                <div className="flex items-center justify-between">
+                  <span className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-sm">
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+                    </svg>
+                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-800 bg-blue-100 px-2.5 py-0.5 rounded-full">
+                    Vuugivaba
+                  </span>
+                </div>
+                <div className="mt-6">
+                  <h3 className="font-extrabold text-base text-gray-950">Mikrotsement</h3>
+                  <p className="text-xs text-gray-600 mt-1">Seinad & põrandad · 2K PU kaitsekiht · Plaadile katmine</p>
+                </div>
+              </div>
+            </div>
 
-          <p className="text-base sm:text-lg text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed">
-            Sisesta ruumi mõõdud, fotod või visandid ning meie intelligentne süsteem koostab kohese eelarve ja realistliku 3D-visiooni valminud projektist. Vali parimate spetsialistide hulgast välja sobiv partner ning vii oma projekt muretult ellu.
-          </p>
+            {/* Kaart 3: Märgruumi Hüdroisolatsioon */}
+            <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 to-blue-900 text-white p-6 border border-blue-500 shadow-lg hover:-translate-y-1 transition-all duration-300">
+              <div className="absolute inset-0 bg-tile-grid-dark opacity-40" />
+              <div className="relative z-10 flex flex-col justify-between h-full min-h-[170px]">
+                <div className="flex items-center justify-between">
+                  <span className="w-10 h-10 rounded-xl bg-white/15 border border-white/25 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>
+                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-white bg-white/15 px-2.5 py-0.5 rounded-full">
+                    Veetihe
+                  </span>
+                </div>
+                <div className="mt-6">
+                  <h3 className="font-extrabold text-base text-white">Hüdroisolatsioon</h3>
+                  <p className="text-xs text-blue-100 mt-1">2 kihti mastiksit · Nurgalindid · Renntrapi kalded</p>
+                </div>
+              </div>
+            </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link
-              href="/request"
-              className="btn-primary text-base py-4 px-8 shadow-lg hover:shadow-xl transition-all"
-            >
-              🤖 Küsi tasuta pakkumist & koosta AI pildid →
-            </Link>
-            <Link
-              href="/pricing"
-              className="btn-secondary text-base py-4 px-8"
-            >
-              🔨 Liitu meistrina (alates 0 € kuni 49 €/k)
-            </Link>
+            {/* Kaart 4: AI Eelarve & Kombineeritud lahendus */}
+            <div className="group relative overflow-hidden rounded-2xl bg-white text-gray-950 p-6 border border-gray-200 shadow-sm hover:border-blue-400 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+              <div className="relative z-10 flex flex-col justify-between h-full min-h-[170px]">
+                <div className="flex items-center justify-between">
+                  <span className="w-10 h-10 rounded-xl bg-gray-950 text-white flex items-center justify-center">
+                    <svg className="w-5 h-5 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                    </svg>
+                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">
+                    Reaalajas
+                  </span>
+                </div>
+                <div className="mt-6">
+                  <h3 className="font-extrabold text-base text-gray-950">AI Hinnakalkulaator</h3>
+                  <p className="text-xs text-gray-600 mt-1">Töö + materjalid eraldi · Kombineeritud seinad & põrand</p>
+                </div>
+              </div>
+            </div>
           </div>
-
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs font-semibold text-gray-500">
-            <span className="flex items-center gap-1.5"><span className="text-blue-600 font-bold">✓</span> Kliendile täiesti tasuta</span>
-            <span className="flex items-center gap-1.5"><span className="text-blue-600 font-bold">✓</span> Täpne turuhindadega mahutabel</span>
-            <span className="flex items-center gap-1.5"><span className="text-blue-600 font-bold">✓</span> AI fotorealistlikud pildid</span>
-            <span className="flex items-center gap-1.5"><span className="text-blue-600 font-bold">✓</span> Otsevestlus kiirsõnumites</span>
-          </div>
-
         </div>
       </section>
 
       {/* Sertifitseeritud standardite riba */}
-      <section className="py-5 bg-gray-50 border-b border-gray-100">
+      <section className="py-4 bg-gray-950 text-white border-b border-gray-800">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-12 text-gray-500 font-bold text-xs uppercase tracking-wider">
-            <span className="text-gray-700 flex items-center gap-1.5"><span className="text-blue-600">🛡️</span> Sertifitseeritud hüdroisolatsioon</span>
-            <span className="text-gray-700 flex items-center gap-1.5"><span className="text-blue-600">📐</span> Täpne 2026 mahuarvestus</span>
-            <span className="text-gray-700 flex items-center gap-1.5"><span className="text-blue-600">🧱</span> Keraamika & Suurformaat</span>
-            <span className="text-gray-700 flex items-center gap-1.5"><span className="text-blue-600">🎨</span> Vuugivaba Mikrotsement</span>
+          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-12 font-bold text-xs uppercase tracking-wider">
+            <span className="text-gray-200 flex items-center gap-2"><span className="text-blue-400">🛡️</span> Sertifitseeritud hüdroisolatsioon</span>
+            <span className="text-gray-200 flex items-center gap-2"><span className="text-blue-400">📐</span> Täpne 2026 mahuarvestus</span>
+            <span className="text-gray-200 flex items-center gap-2"><span className="text-blue-400">🧱</span> Keraamika & Suurformaat</span>
+            <span className="text-gray-200 flex items-center gap-2"><span className="text-blue-400">🎨</span> Vuugivaba Mikrotsement</span>
           </div>
         </div>
       </section>
@@ -70,18 +172,18 @@ export default function HomePage() {
       </div>
 
       {/* Kuidas see töötab (4 sammu) */}
-      <section className="py-16 px-4 sm:px-6 bg-gray-50/60 border-y border-gray-100">
+      <section className="py-20 px-4 sm:px-6 bg-gray-50/70 border-b border-gray-100">
         <div className="max-w-6xl mx-auto">
           
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="text-xs uppercase font-extrabold tracking-wider text-blue-700 bg-blue-100 border border-blue-200/80 px-3.5 py-1 rounded-full">
+            <span className="text-xs uppercase font-extrabold tracking-wider text-blue-800 bg-blue-100 border border-blue-200/80 px-3.5 py-1 rounded-full">
               Kuidas teenus töötab?
             </span>
-            <h2 className="text-3xl font-extrabold text-gray-900 mt-3">
+            <h2 className="text-3xl sm:text-4xl font-black text-gray-950 mt-3 tracking-tight">
               Mugav tellijale, tulus meistrile
             </h2>
-            <p className="text-xs sm:text-sm text-gray-500 mt-1">
-              Platvorm viib kokku erakliendid, peatöövõtjad ja kvalifitseeritud meistrid
+            <p className="text-xs sm:text-sm text-gray-500 mt-2">
+              Platvorm viib kokku erakliendid, peatöövõtjad ja kvalifitseeritud meistrid üle Eesti
             </p>
           </div>
 
@@ -91,12 +193,12 @@ export default function HomePage() {
                 step: '01',
                 icon: '📐',
                 title: 'Sisesta andmed & mahud',
-                desc: 'Määra ruumi pindala, töölõigud (hüdroisolatsioon, 45° jiirid, nišid, vuugitüüp) ning laadi üles fotod ja plaanid.'
+                desc: 'Määra seinte ja põranda pindala (plaat vs mikrotsement), töölõigud ning laadi üles fotod ja joonised.'
               },
               {
                 step: '02',
                 icon: '🤖',
-                title: 'AI letihinnad & pildid',
+                title: 'AI hinnaprognoos & pildid',
                 desc: 'AI arvutab detailse turuhindadel põhineva kalkulatsiooni ning kujundab realistlikud fotod valmis ruumist.'
               },
               {
@@ -114,17 +216,20 @@ export default function HomePage() {
             ].map(item => (
               <div
                 key={item.step}
-                className="card p-6 border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all shadow-xs flex flex-col justify-between bg-white"
+                className="group card p-6 border border-gray-200 hover:border-blue-500 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between bg-white relative overflow-hidden"
               >
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 to-gray-950 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-3xl">{item.icon}</span>
-                    <span className="text-xs font-black text-blue-700 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded">
+                  <div className="flex items-center justify-between mb-5">
+                    <span className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                      {item.icon}
+                    </span>
+                    <span className="text-3xl font-black text-gray-200 group-hover:text-blue-200 font-mono transition-colors">
                       {item.step}
                     </span>
                   </div>
-                  <h3 className="font-bold text-gray-900 text-base mb-2">{item.title}</h3>
-                  <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
+                  <h3 className="font-extrabold text-gray-950 text-base mb-2">{item.title}</h3>
+                  <p className="text-xs text-gray-600 leading-relaxed">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -133,86 +238,85 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Peatöövõtjad ja B2B hanke esiletõst */}
-      <section className="py-14 px-4 sm:px-6 bg-gradient-to-r from-gray-950 via-slate-900 to-blue-950 text-white border-y border-gray-900">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
-          <div>
-            <span className="text-[10px] font-black uppercase tracking-wider bg-blue-600 text-white px-2.5 py-0.5 rounded">
-              💎 Peatöövõtjate & Arendajate B2B Kanal
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold mt-2">
-              Korterelamud, äripinnad ja suuremahulised hanked
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed">
-              Kas juhid ehitusobjekti või arendust? Sisesta korterite mahutabelid ja dwg joonised. Sinu hankele pääsevad pakkumisi tegema ainult kontrollitud <strong>B2B Äripaketiga (49 €/kuu)</strong> liitunud meistrid.
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-3 whitespace-nowrap">
-            <Link
-              href="/request"
-              className="px-6 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs shadow-md transition-colors text-center"
-            >
-              Sisesta B2B päring →
-            </Link>
-            <Link
-              href="/pricing"
-              className="px-6 py-3.5 bg-gray-900 hover:bg-gray-800 text-white font-bold rounded-xl text-xs border border-gray-700 transition-colors text-center"
-            >
-              Liitu 49€ B2B meistrina
-            </Link>
+      {/* B2B Peatöövõtjate & Arendajate Banner */}
+      <section className="py-16 px-4 sm:px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="relative overflow-hidden rounded-3xl bg-gray-950 bg-tile-grid-dark border border-gray-800 p-8 sm:p-12 text-white shadow-2xl flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
+            <div className="pointer-events-none absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-blue-600/20 blur-3xl" />
+
+            <div className="relative z-10 max-w-2xl">
+              <div className="inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider bg-blue-600/20 text-blue-300 border border-blue-500/30 px-3 py-1 rounded-full mb-4">
+                <span>🏢 Peatöövõtjatele & Arendajatele (B2B)</span>
+              </div>
+              <h2 className="text-2xl sm:text-4xl font-black text-white leading-tight">
+                Suured kortermajad, äripinnad & kiired alltöövõtu etapid
+              </h2>
+              <p className="text-sm text-gray-300 mt-3 leading-relaxed">
+                Kas juhid ehitusobjekti või vajad kiiresti lisajõudu lõpetamata etappidele? Lisa hanked koos mahutabelitega — suured põhihanked on avatud <strong>49 € Äri PRO</strong> brigaadidele ning kiired etapid ka <strong>12.90 € Meister PRO</strong> väikefirmadele.
+              </p>
+            </div>
+
+            <div className="relative z-10 flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+              <Link href="/request" className="btn-primary py-3.5 px-6 text-xs font-bold justify-center whitespace-nowrap pharaoh-glow">
+                + Sisesta B2B hange
+              </Link>
+              <Link href="/pricing" className="px-6 py-3.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-xl text-xs font-bold text-center whitespace-nowrap transition-all">
+                Liitu 49€ B2B meistrina
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Meistrite paketid eelvaade */}
-      <section className="py-16 px-4 sm:px-6 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-xs uppercase font-extrabold tracking-wider text-blue-700 bg-blue-100 border border-blue-200/80 px-3.5 py-1 rounded-full">
-              Plaatijate Paketid
+      {/* Meistrite Paketid (Eelvaade) */}
+      <section className="py-18 px-4 sm:px-6 bg-gray-50 border-t border-gray-200/70">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <span className="text-xs uppercase font-extrabold tracking-wider text-blue-800 bg-blue-100 border border-blue-200/80 px-3.5 py-1 rounded-full">
+              Liitu Platvormiga
             </span>
-            <h2 className="text-3xl font-extrabold text-gray-900 mt-3">
-              Kuidas plaatijana portaaliga liituda?
-            </h2>
-            <p className="text-xs text-gray-500 mt-1">
-              Alusta tasuta või vali piiramatu ligipääsuga PRO pakett
+            <h2 className="text-3xl font-black text-gray-950 mt-3">Meistrite & Ettevõtete paketid</h2>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">
+              Alusta tasuta või liitu PRO paketiga, et vastata kõigile erapäringutele ja B2B etappidele
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="card p-6 border border-gray-200 flex flex-col justify-between">
+            <div className="card p-6 border border-gray-200 flex flex-col justify-between bg-white hover:shadow-lg transition-all">
               <div>
-                <span className="text-xs font-bold text-gray-400 uppercase">Alustav Meister</span>
-                <div className="text-2xl font-black text-gray-900 mt-1">0 € <span className="text-xs font-normal text-gray-400">/ kuu</span></div>
-                <p className="text-xs text-gray-500 mt-1">Vasta kuni 3 päringule kuus tasuta. Kõik erapäringud on nähtaval.</p>
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Alustav Meister</span>
+                <div className="text-3xl font-black text-gray-950 mt-2">0 € <span className="text-xs font-normal text-gray-400">/ kuu</span></div>
+                <p className="text-xs text-gray-500 mt-2 leading-relaxed">Tutvu platvormiga tasuta. Kuni 3 pakkumist kuus erapäringutele.</p>
               </div>
-              <Link href="/pricing" className="btn-secondary w-full justify-center text-xs font-bold py-2 mt-6">
+              <Link href="/pricing" className="btn-secondary w-full justify-center text-xs font-bold py-2.5 mt-6">
                 Vaata paketti
               </Link>
             </div>
 
-            <div className="card p-6 border-2 border-blue-600 bg-blue-50/30 shadow-md flex flex-col justify-between relative">
-              <span className="absolute -top-3 right-6 bg-blue-600 text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full shadow-xs">
-                Populaarne
-              </span>
-              <div>
-                <span className="text-xs font-bold text-blue-700 uppercase">Aktiivne Meister PRO</span>
-                <div className="text-2xl font-black text-gray-900 mt-1">12.90 € <span className="text-xs font-normal text-gray-400">/ kuu</span></div>
-                <p className="text-xs text-gray-500 mt-1">Piiramatu arv erapäringuid + peatöövõtjate kiired etapid ja lisajõu tööd.</p>
+            <div className="card p-6 border-2 border-blue-600 relative shadow-xl flex flex-col justify-between bg-white pharaoh-glow">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-blue-600 text-white text-[10px] font-black uppercase tracking-wider">
+                Kõige populaarsem
               </div>
-              <Link href="/pricing" className="btn-primary w-full justify-center text-xs font-bold py-2 mt-6">
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-extrabold text-blue-700 uppercase tracking-wider">Aktiivne Meister PRO</span>
+                </div>
+                <div className="text-3xl font-black text-gray-950 mt-2">12.90 € <span className="text-xs font-normal text-gray-400">/ kuu</span></div>
+                <p className="text-xs text-gray-600 mt-2 leading-relaxed">Piiramatu arv erapäringuid + peatöövõtjate kiired etapid ja lisajõu tööd.</p>
+              </div>
+              <Link href="/pricing" className="btn-primary w-full justify-center text-xs font-bold py-2.5 mt-6">
                 Liitu 12.90 € paketiga
               </Link>
             </div>
 
-            <div className="card p-6 border-2 border-gray-950 bg-gray-950 text-white shadow-md flex flex-col justify-between">
+            <div className="card p-6 border-2 border-gray-950 bg-gray-950 bg-tile-grid-dark text-white shadow-xl flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-blue-400 uppercase">Peatöövõtjad & Äri PRO</span>
+                  <span className="text-xs font-bold text-blue-400 uppercase tracking-wider">Peatöövõtjad & Äri PRO</span>
                   <span className="text-[10px] bg-blue-600/30 text-blue-300 border border-blue-500/40 px-2 py-0.5 rounded font-bold">B2B Eliit</span>
                 </div>
-                <div className="text-2xl font-black text-white mt-1">49.00 € <span className="text-xs font-normal text-gray-400">/ kuu</span></div>
-                <p className="text-xs text-gray-300 mt-1">Täielik ligipääs PEATÖÖVÕTJATE B2B hangetele ja arendustele.</p>
+                <div className="text-3xl font-black text-white mt-2">49.00 € <span className="text-xs font-normal text-gray-400">/ kuu</span></div>
+                <p className="text-xs text-gray-300 mt-2 leading-relaxed">Täielik ligipääs PEATÖÖVÕTJATE B2B põhihangetele ja arendustele.</p>
               </div>
               <Link href="/pricing" className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl text-center mt-6 transition-colors shadow-xs">
                 Liitu 49.00 € paketiga

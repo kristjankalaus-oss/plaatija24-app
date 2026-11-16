@@ -25,26 +25,49 @@
   }
 }
 
+@layer utilities {
+  /* Arhitektuurne plaadivõrgustik heledal taustal */
+  .bg-tile-grid {
+    background-image:
+      linear-gradient(to right, rgba(13, 94, 217, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(13, 94, 217, 0.05) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  /* Arhitektuurne plaadivõrgustik tumedal taustal */
+  .bg-tile-grid-dark {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* Pehme Vaarao sinise kuma */
+  .pharaoh-glow {
+    box-shadow: 0 20px 50px -12px rgba(13, 94, 217, 0.28);
+  }
+}
+
 @layer components {
   .btn-primary {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
-    border-radius: 0.75rem;
-    background-color: var(--color-brand-500);
+    border-radius: 0.875rem;
+    background: linear-gradient(135deg, #0d5ed9 0%, #0a4bb3 100%);
     color: #ffffff;
     font-weight: 700;
-    box-shadow: 0 4px 12px -2px rgba(13, 94, 217, 0.35);
-    transition: all 0.2s ease-in-out;
+    box-shadow: 0 6px 18px -3px rgba(13, 94, 217, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .btn-primary:hover { 
-    background-color: var(--color-brand-600); 
-    box-shadow: 0 6px 16px -2px rgba(13, 94, 217, 0.45);
-    transform: translateY(-1px);
+    background: linear-gradient(135deg, #166ef0 0%, #0d5ed9 100%);
+    box-shadow: 0 10px 24px -4px rgba(13, 94, 217, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    transform: translateY(-1.5px);
   }
   .btn-primary:active { 
-    background-color: var(--color-brand-700); 
+    background: #083b8f;
     transform: translateY(0);
   }
 
@@ -53,16 +76,18 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
-    border-radius: 0.75rem;
+    border-radius: 0.875rem;
     border: 2px solid #09090b;
     background-color: #ffffff;
     color: #09090b;
     font-weight: 700;
-    transition: all 0.2s ease-in-out;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .btn-secondary:hover { 
     background-color: #09090b; 
     color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px -6px rgba(9, 9, 11, 0.35);
   }
 
   .btn-blue-outline {
@@ -70,7 +95,7 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
-    border-radius: 0.75rem;
+    border-radius: 0.875rem;
     border: 2px solid var(--color-brand-500);
     background-color: transparent;
     color: var(--color-brand-500);
@@ -83,24 +108,24 @@
 
   .card {
     background-color: #ffffff;
-    border-radius: 1rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+    border-radius: 1.25rem;
+    box-shadow: 0 4px 20px -2px rgba(9, 9, 11, 0.04), 0 1px 3px 0 rgba(9, 9, 11, 0.03);
     border: 1px solid #e2e8f0;
     padding: 1.5rem;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
   }
 
   .input {
     width: 100%;
-    padding: 0.625rem 1rem;
+    padding: 0.65rem 0.9rem;
     border-radius: 0.75rem;
     border: 1px solid #cbd5e1;
-    background-color: #ffffff;
-    color: #09090b;
-    outline: none;
-    transition: all 0.2s;
     font-size: 0.875rem;
+    background-color: #ffffff;
+    transition: all 0.2s;
   }
   .input:focus {
+    outline: none;
     border-color: var(--color-brand-500);
     box-shadow: 0 0 0 3px rgba(13, 94, 217, 0.15);
   }
