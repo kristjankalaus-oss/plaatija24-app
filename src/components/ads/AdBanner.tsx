@@ -38,7 +38,7 @@ export default function AdBanner({ position = 'inline', specificBrand }: AdBanne
             href={chosenAd.targetUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-bold underline text-amber-400 hover:text-amber-300 transition-colors whitespace-nowrap text-[11px]"
+            className="font-bold underline text-blue-400 hover:text-blue-300 transition-colors whitespace-nowrap text-[11px]"
           >
             {chosenAd.ctaText}
           </a>
@@ -49,7 +49,7 @@ export default function AdBanner({ position = 'inline', specificBrand }: AdBanne
 
   // Inline või sidebar
   return (
-    <div className="rounded-2xl overflow-hidden border border-gray-200/90 bg-gradient-to-br from-white via-gray-50/50 to-amber-50/30 p-5 shadow-xs relative">
+    <div className="rounded-2xl overflow-hidden border border-gray-200/90 bg-gradient-to-br from-white via-gray-50/50 to-blue-50/30 p-5 shadow-xs relative">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <span className="text-white text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded shadow-2xs"
@@ -72,7 +72,7 @@ export default function AdBanner({ position = 'inline', specificBrand }: AdBanne
             {chosenAd.subtitle}
           </p>
           {chosenAd.tagline && (
-            <div className="text-xs font-bold text-amber-700 mt-1.5 flex items-center gap-1">
+            <div className="text-xs font-bold text-blue-700 mt-1.5 flex items-center gap-1">
               <span>⭐</span> {chosenAd.tagline}
             </div>
           )}

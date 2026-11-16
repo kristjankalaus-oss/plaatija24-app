@@ -51,7 +51,7 @@ export default function LoginGatePage() {
         </div>
 
         <div className="text-center mb-8">
-          <span className="text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/30 px-3 py-1 rounded-full">
+          <span className="text-[10px] font-black uppercase tracking-wider bg-blue-600/20 text-blue-400 border border-blue-500/30 px-3 py-1 rounded-full">
             🔒 Testkeskkond · Privaatne ligipääs
           </span>
           <h1 className="text-xl font-bold text-white mt-3">
@@ -80,7 +80,7 @@ export default function LoginGatePage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Sisesta parool..."
-              className="w-full px-4 py-3 bg-gray-950 border border-gray-700 focus:border-amber-500 rounded-xl text-white text-sm outline-none transition-colors"
+              className="w-full px-4 py-3 bg-gray-950 border border-gray-700 focus:border-blue-500 rounded-xl text-white text-sm outline-none transition-colors"
             />
           </div>
 

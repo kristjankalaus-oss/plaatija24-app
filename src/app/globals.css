@@ -1,25 +1,25 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-50:  #fef9ec;
-  --color-brand-100: #fdf0cb;
-  --color-brand-200: #fbdf8d;
-  --color-brand-300: #f9c94e;
-  --color-brand-400: #f7b324;
-  --color-brand-500: #f09410;
-  --color-brand-600: #d4710a;
-  --color-brand-700: #b0530c;
-  --color-brand-800: #8f4110;
-  --color-brand-900: #763611;
-  --color-brand-950: #431b04;
+  --color-brand-50:  #eff6ff;
+  --color-brand-100: #dbeafe;
+  --color-brand-200: #bfdbfe;
+  --color-brand-300: #93c5fd;
+  --color-brand-400: #3b82f6;
+  --color-brand-500: #0d5ed9; /* Vaarao sinine (Pharaoh Blue) */
+  --color-brand-600: #0a4bb3;
+  --color-brand-700: #083b8f;
+  --color-brand-800: #073377;
+  --color-brand-900: #0b2c64;
+  --color-brand-950: #051636;
   --font-sans: 'Inter', system-ui, sans-serif;
 }
 
 @layer base {
   html { scroll-behavior: smooth; }
   body {
-    background-color: #f9fafb;
-    color: #111827;
+    background-color: #f8fafc;
+    color: #09090b;
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
   }
@@ -33,13 +33,20 @@
     padding: 0.75rem 1.5rem;
     border-radius: 0.75rem;
     background-color: var(--color-brand-500);
-    color: white;
-    font-weight: 600;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / .1);
-    transition: all 0.2s;
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 4px 12px -2px rgba(13, 94, 217, 0.35);
+    transition: all 0.2s ease-in-out;
   }
-  .btn-primary:hover { background-color: var(--color-brand-600); }
-  .btn-primary:active { background-color: var(--color-brand-700); }
+  .btn-primary:hover { 
+    background-color: var(--color-brand-600); 
+    box-shadow: 0 6px 16px -2px rgba(13, 94, 217, 0.45);
+    transform: translateY(-1px);
+  }
+  .btn-primary:active { 
+    background-color: var(--color-brand-700); 
+    transform: translateY(0);
+  }
 
   .btn-secondary {
     display: inline-flex;
@@ -47,18 +54,38 @@
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
     border-radius: 0.75rem;
-    border: 2px solid var(--color-brand-500);
-    color: var(--color-brand-600);
-    font-weight: 600;
-    transition: all 0.2s;
+    border: 2px solid #09090b;
+    background-color: #ffffff;
+    color: #09090b;
+    font-weight: 700;
+    transition: all 0.2s ease-in-out;
   }
-  .btn-secondary:hover { background-color: var(--color-brand-50); }
+  .btn-secondary:hover { 
+    background-color: #09090b; 
+    color: #ffffff;
+  }
+
+  .btn-blue-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    border: 2px solid var(--color-brand-500);
+    background-color: transparent;
+    color: var(--color-brand-500);
+    font-weight: 700;
+    transition: all 0.2s ease-in-out;
+  }
+  .btn-blue-outline:hover {
+    background-color: var(--color-brand-50);
+  }
 
   .card {
-    background-color: white;
+    background-color: #ffffff;
     border-radius: 1rem;
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / .05);
-    border: 1px solid #f3f4f6;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
     padding: 1.5rem;
   }
 
@@ -66,13 +93,15 @@
     width: 100%;
     padding: 0.625rem 1rem;
     border-radius: 0.75rem;
-    border: 1px solid #d1d5db;
+    border: 1px solid #cbd5e1;
+    background-color: #ffffff;
+    color: #09090b;
     outline: none;
     transition: all 0.2s;
     font-size: 0.875rem;
   }
   .input:focus {
-    border-color: transparent;
-    box-shadow: 0 0 0 2px var(--color-brand-400);
+    border-color: var(--color-brand-500);
+    box-shadow: 0 0 0 3px rgba(13, 94, 217, 0.15);
   }
 }

@@ -83,7 +83,7 @@ export default function ProjectChat({ projectId, clientName, selectedTiler }: Pr
             onClick={() => setAsRole('client')}
             className={`px-2.5 py-1 rounded-md transition-all ${
               asRole === 'client'
-                ? 'bg-amber-500 text-white font-bold shadow-xs'
+                ? 'bg-blue-600 text-white font-bold shadow-xs'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
@@ -94,7 +94,7 @@ export default function ProjectChat({ projectId, clientName, selectedTiler }: Pr
             onClick={() => setAsRole('tiler')}
             className={`px-2.5 py-1 rounded-md transition-all ${
               asRole === 'tiler'
-                ? 'bg-gray-800 text-white font-bold shadow-xs'
+                ? 'bg-gray-950 text-white font-bold shadow-xs'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
@@ -124,7 +124,7 @@ export default function ProjectChat({ projectId, clientName, selectedTiler }: Pr
                 className={`flex flex-col ${isClientMsg ? 'items-start' : 'items-end'}`}
               >
                 <div className="flex items-center gap-1.5 text-[11px] text-gray-400 mb-1 px-1">
-                  <span className={`font-semibold ${isClientMsg ? 'text-amber-700' : 'text-gray-700'}`}>
+                  <span className={`font-semibold ${isClientMsg ? 'text-blue-700' : 'text-gray-700'}`}>
                     {m.senderName}
                   </span>
                   <span>·</span>
@@ -133,8 +133,8 @@ export default function ProjectChat({ projectId, clientName, selectedTiler }: Pr
                 <div
                   className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed shadow-2xs ${
                     isClientMsg
-                      ? 'bg-amber-50 text-gray-800 border border-amber-200/60 rounded-tl-xs'
-                      : 'bg-gray-900 text-white rounded-tr-xs'
+                      ? 'bg-blue-50 text-gray-900 border border-blue-200/70 rounded-tl-xs'
+                      : 'bg-gray-950 text-white rounded-tr-xs'
                   }`}
                 >
                   {m.message}
@@ -154,7 +154,7 @@ export default function ProjectChat({ projectId, clientName, selectedTiler }: Pr
               key={idx}
               type="button"
               onClick={() => setInputText(q)}
-              className="whitespace-nowrap px-2.5 py-1 bg-white border border-gray-200 rounded-full text-gray-600 hover:border-amber-400 hover:text-amber-700 transition-colors"
+              className="whitespace-nowrap px-2.5 py-1 bg-white border border-gray-200 rounded-full text-gray-600 hover:border-blue-400 hover:text-blue-700 transition-colors"
             >
               {q}
             </button>

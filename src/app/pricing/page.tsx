@@ -37,7 +37,7 @@ export default function PricingPage() {
         
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <span className="text-xs uppercase font-extrabold tracking-wider px-3 py-1 bg-amber-100 text-amber-800 rounded-full">
+          <span className="text-xs uppercase font-extrabold tracking-wider px-3.5 py-1 bg-blue-100 text-blue-900 border border-blue-200/80 rounded-full">
             Meistrite Tellimuspaketid
           </span>
           <h1 className="text-3xl sm:text-4xl font-black text-gray-950 mt-3">
@@ -83,12 +83,12 @@ export default function PricingPage() {
               <div
                 key={plan.id}
                 className={`card p-8 flex flex-col justify-between transition-all duration-200 relative ${
-                  isCurrent
-                    ? 'border-2 border-amber-500 shadow-lg ring-2 ring-amber-400/30'
+                  isVip
+                    ? 'border-2 border-gray-950 bg-gray-950 text-white shadow-xl'
+                    : isCurrent
+                    ? 'border-2 border-blue-600 shadow-lg ring-2 ring-blue-500/30'
                     : isPro
-                    ? 'border-2 border-amber-300 shadow-md'
-                    : isVip
-                    ? 'border-2 border-blue-400 bg-gradient-to-b from-blue-50/20 to-white shadow-md'
+                    ? 'border-2 border-blue-500 shadow-md bg-blue-50/20'
                     : 'border border-gray-200'
                 }`}
               >
@@ -96,7 +96,7 @@ export default function PricingPage() {
                 {plan.badge && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                     <span className={`text-[11px] font-black uppercase tracking-wider px-3 py-1 rounded-full text-white shadow-xs ${
-                      isVip ? 'bg-blue-600' : 'bg-amber-500'
+                      isVip ? 'bg-blue-600' : 'bg-blue-600'
                     }`}>
                       {plan.badge}
                     </span>
@@ -105,14 +105,14 @@ export default function PricingPage() {
 
                 <div>
                   <div className="mb-4">
-                    <h3 className="text-xl font-black text-gray-950">{plan.name}</h3>
-                    <p className="text-xs text-gray-500 mt-1 min-h-[32px]">{plan.description}</p>
+                    <h3 className={`text-xl font-black ${isVip ? 'text-white' : 'text-gray-950'}`}>{plan.name}</h3>
+                    <p className={`text-xs mt-1 min-h-[32px] ${isVip ? 'text-gray-300' : 'text-gray-500'}`}>{plan.description}</p>
                   </div>
 
                   {/* Hind */}
-                  <div className="py-4 border-y border-gray-100 mb-6">
+                  <div className={`py-4 border-y mb-6 ${isVip ? 'border-gray-800' : 'border-gray-100'}`}>
                     <div className="flex items-baseline gap-1">
-                      <span className="text-4xl font-black text-gray-950">
+                      <span className={`text-4xl font-black ${isVip ? 'text-white' : 'text-gray-950'}`}>
                         {plan.priceMonthly === 0 ? '0 €' : `${plan.priceMonthly.toFixed(2)} €`}
                       </span>
                       <span className="text-xs font-semibold text-gray-400">/ kuu</span>
@@ -123,10 +123,10 @@ export default function PricingPage() {
                   </div>
 
                   {/* Omadused */}
-                  <ul className="space-y-3 text-xs text-gray-700 mb-8">
+                  <ul className={`space-y-3 text-xs mb-8 ${isVip ? 'text-gray-300' : 'text-gray-700'}`}>
                     {plan.features.map((feat, idx) => (
                       <li key={idx} className="flex items-start gap-2.5">
-                        <span className={`font-black ${isVip ? 'text-blue-600' : 'text-amber-500'}`}>✓</span>
+                        <span className={`font-black ${isVip ? 'text-blue-400' : 'text-blue-600'}`}>✓</span>
                         <span className="leading-snug">{feat}</span>
                       </li>
                     ))}
@@ -142,7 +142,7 @@ export default function PricingPage() {
                       isCurrent
                         ? 'bg-emerald-600 text-white cursor-default'
                         : isVip
-                        ? 'bg-blue-600 text-white hover:bg-blue-700'
+                        ? 'bg-blue-600 text-white hover:bg-blue-500'
                         : isPro
                         ? 'btn-primary justify-center'
                         : 'btn-secondary justify-center'
@@ -161,7 +161,7 @@ export default function PricingPage() {
         </div>
 
         {/* B2B peatöövõtjate selgituskast */}
-        <div className="mt-16 card p-8 border border-blue-200 bg-gradient-to-r from-blue-50/40 via-white to-amber-50/30">
+        <div className="mt-16 card p-8 border border-blue-200 bg-gradient-to-r from-blue-50/50 via-white to-slate-50/40">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div>
               <span className="text-[10px] font-black uppercase tracking-wider bg-blue-100 text-blue-800 px-2.5 py-0.5 rounded">

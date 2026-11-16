@@ -59,7 +59,7 @@ export default function TilerProfilePage() {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3 mt-3 text-xs">
-                  <span className="font-extrabold text-amber-600 text-sm flex items-center gap-1">
+                  <span className="font-extrabold text-blue-700 text-sm flex items-center gap-1">
                     ★ {tiler.rating}
                     <span className="text-gray-400 font-normal text-xs">({tiler.reviewsCount} arvustust)</span>
                   </span>
@@ -92,7 +92,7 @@ export default function TilerProfilePage() {
               {tiler.badges.map((b, idx) => (
                 <span
                   key={idx}
-                  className="text-xs font-bold px-3 py-1 bg-amber-50 text-amber-900 border border-amber-200/60 rounded-lg"
+                  className="text-xs font-bold px-3 py-1 bg-blue-50 text-blue-900 border border-blue-200/70 rounded-lg"
                 >
                   ✓ {b}
                 </span>
@@ -132,7 +132,7 @@ export default function TilerProfilePage() {
                   onClick={() => setActiveFilter(tab.id as typeof activeFilter)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                     activeFilter === tab.id
-                      ? 'bg-amber-500 text-white shadow-xs'
+                      ? 'bg-blue-600 text-white shadow-xs'
                       : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
                   }`}
                 >
@@ -148,7 +148,7 @@ export default function TilerProfilePage() {
               <div
                 key={item.id}
                 onClick={() => setSelectedPhoto(item)}
-                className="card p-0 overflow-hidden border border-gray-200 hover:border-amber-400 transition-all shadow-xs hover:shadow-md cursor-pointer group flex flex-col"
+                className="card p-0 overflow-hidden border border-gray-200 hover:border-blue-400 transition-all shadow-xs hover:shadow-md cursor-pointer group flex flex-col"
               >
                 <div className="relative h-64 overflow-hidden bg-gray-100">
                   <img
@@ -159,14 +159,14 @@ export default function TilerProfilePage() {
                   <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1 rounded-md">
                     {item.roomType} {item.completedYear && `· ${item.completedYear}`}
                   </div>
-                  <div className="absolute top-3 right-3 bg-amber-500 text-white text-[10px] font-bold px-2 py-1 rounded-md">
+                  <div className="absolute top-3 right-3 bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-xs">
                     {item.serviceType === 'plaat' ? 'Plaat' : 'Mikrotsement'}
                   </div>
                 </div>
 
                 <div className="p-4 bg-white flex-1 flex flex-col justify-between">
                   <div>
-                    <h4 className="font-bold text-gray-900 text-sm mb-1 group-hover:text-amber-700 transition-colors">
+                    <h4 className="font-bold text-gray-900 text-sm mb-1 group-hover:text-blue-600 transition-colors">
                       {item.title}
                     </h4>
                     {item.description && (
@@ -175,7 +175,7 @@ export default function TilerProfilePage() {
                       </p>
                     )}
                   </div>
-                  <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-amber-700 font-semibold">
+                  <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-blue-700 font-semibold">
                     <span>Vaata lähemalt</span>
                     <span>🔍 Suurenda</span>
                   </div>
@@ -211,7 +211,7 @@ export default function TilerProfilePage() {
               </div>
               <div className="p-6">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-bold text-amber-700 uppercase tracking-wider">
+                  <span className="text-xs font-bold text-blue-700 uppercase tracking-wider">
                     {selectedPhoto.serviceType} · {selectedPhoto.roomType}
                   </span>
                   {selectedPhoto.completedYear && (

@@ -112,7 +112,7 @@ export default function ProjectDetailPage() {
                 onClick={() => setActiveTab(tab.id as typeof activeTab)}
                 className={`py-3 px-4 border-b-2 whitespace-nowrap transition-all ${
                   activeTab === tab.id
-                    ? 'border-amber-500 text-gray-900 font-bold'
+                    ? 'border-blue-600 text-gray-950 font-bold'
                     : 'border-transparent text-gray-500 hover:text-gray-900'
                 }`}
               >
@@ -130,10 +130,10 @@ export default function ProjectDetailPage() {
             <div className="lg:col-span-2 space-y-6">
               
               {/* Kokkuvõtte kaart */}
-              <div className="card p-6 bg-gradient-to-br from-amber-50/70 via-white to-orange-50/50 border border-amber-200">
+              <div className="card p-6 bg-gradient-to-br from-blue-50/70 via-white to-slate-50/60 border border-blue-200">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <span className="w-8 h-8 rounded-lg bg-amber-500 text-white flex items-center justify-center font-bold text-sm">
+                    <span className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-xs">
                       AI
                     </span>
                     <div>
@@ -147,7 +147,7 @@ export default function ProjectDetailPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-4 border-y border-amber-100">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-4 border-y border-blue-100">
                   <div>
                     <div className="text-xs text-gray-500">Tööde maksumus:</div>
                     <div className="text-lg font-black text-gray-900">{aiEstimate.laborSubtotal.toLocaleString('et-EE')} €</div>
@@ -162,11 +162,11 @@ export default function ProjectDetailPage() {
                   </div>
                   <div>
                     <div className="text-xs text-gray-500">Koguhind KM-ga:</div>
-                    <div className="text-xl font-black text-amber-700">{aiEstimate.grossTotal.toLocaleString('et-EE')} €</div>
+                    <div className="text-xl font-black text-blue-700">{aiEstimate.grossTotal.toLocaleString('et-EE')} €</div>
                   </div>
                 </div>
 
-                <div className="mt-3 flex items-center justify-between text-xs text-amber-900 font-medium bg-amber-100/60 p-2.5 rounded-lg">
+                <div className="mt-3 flex items-center justify-between text-xs text-blue-900 font-medium bg-blue-100/70 p-2.5 rounded-lg border border-blue-200/60">
                   <span>💡 Realistlik turuvahemik sõltuvalt aluspinna sirgusest:</span>
                   <span className="font-bold">
                     {aiEstimate.priceRange.min.toLocaleString('et-EE')} – {aiEstimate.priceRange.max.toLocaleString('et-EE')} €
@@ -279,7 +279,7 @@ export default function ProjectDetailPage() {
                   </h4>
                   <button
                     onClick={() => setActiveTab('visuals')}
-                    className="text-xs text-amber-600 font-bold hover:underline"
+                    className="text-xs text-blue-600 font-bold hover:underline"
                   >
                     Vaata suurelt →
                   </button>
@@ -305,7 +305,7 @@ export default function ProjectDetailPage() {
                 </h4>
                 {project.tileSpecs && (
                   <div className="p-3 bg-gray-50 rounded-xl space-y-1">
-                    <div className="font-bold text-amber-900">Keraamiline plaat:</div>
+                    <div className="font-bold text-blue-950">Keraamiline plaat:</div>
                     <div className="text-gray-600">Formaat: {project.tileSpecs.sizeLabel}</div>
                     <div className="text-gray-600">Stiil: {project.tileSpecs.colorStyle}</div>
                     <div className="text-gray-600">Viimistlus: {project.tileSpecs.finish}</div>
@@ -314,7 +314,7 @@ export default function ProjectDetailPage() {
                 )}
                 {project.microcementSpecs && (
                   <div className="p-3 bg-gray-50 rounded-xl space-y-1">
-                    <div className="font-bold text-amber-900">Mikrotsement:</div>
+                    <div className="font-bold text-blue-950">Mikrotsement:</div>
                     <div className="text-gray-600">Süsteem: {project.microcementSpecs.systemLabel}</div>
                     <div className="text-gray-600">Toon: {project.microcementSpecs.colorTone}</div>
                     <div className="text-gray-600">Viimistlus: {project.microcementSpecs.finish}</div>
@@ -323,23 +323,23 @@ export default function ProjectDetailPage() {
               </div>
 
               {/* AI Tehnilised soovitused */}
-              <div className="card p-5 border border-amber-200 bg-amber-50/30 space-y-3 text-xs">
-                <h4 className="font-bold text-amber-950 text-sm flex items-center gap-2">
+              <div className="card p-5 border border-blue-200 bg-blue-50/30 space-y-3 text-xs">
+                <h4 className="font-bold text-blue-950 text-sm flex items-center gap-2">
                   <span>💡</span> AI Meistri märkused
                 </h4>
                 <ul className="space-y-2 text-gray-700">
                   {aiEstimate.technicalNotes.map((note, idx) => (
                     <li key={idx} className="flex items-start gap-2">
-                      <span className="text-amber-600 font-bold">•</span>
+                      <span className="text-blue-600 font-bold">•</span>
                       <span>{note}</span>
                     </li>
                   ))}
                 </ul>
-                <div className="pt-2 border-t border-amber-200/60">
+                <div className="pt-2 border-t border-blue-200/60">
                   <div className="font-bold text-gray-800 mb-1">Soovitatavad tooted:</div>
                   <div className="flex flex-wrap gap-1.5">
                     {aiEstimate.recommendedMaterials.map((mat, idx) => (
-                      <span key={idx} className="bg-white border border-amber-200 px-2 py-0.5 rounded text-[11px] font-medium text-amber-900">
+                      <span key={idx} className="bg-white border border-blue-200 px-2 py-0.5 rounded text-[11px] font-medium text-blue-900">
                         {mat}
                       </span>
                     ))}
@@ -357,7 +357,7 @@ export default function ProjectDetailPage() {
           <div className="space-y-6">
             <div className="card p-6 border border-gray-200">
               <div className="max-w-2xl mb-6">
-                <span className="text-xs font-bold uppercase tracking-wider text-amber-700 bg-amber-100 px-2.5 py-1 rounded-full">
+                <span className="text-xs font-bold uppercase tracking-wider text-blue-700 bg-blue-100 border border-blue-200/80 px-2.5 py-1 rounded-full">
                   AI Visualiseerija
                 </span>
                 <h2 className="text-xl font-bold text-gray-900 mt-2">
@@ -391,7 +391,7 @@ export default function ProjectDetailPage() {
                         </p>
                       </div>
                       <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
-                        <span className="text-amber-700 font-bold">Autentsuse hinne: 98%</span>
+                        <span className="text-blue-700 font-bold">Autentsuse hinne: 98%</span>
                         <a
                           href={imgUrl}
                           target="_blank"
@@ -436,7 +436,7 @@ export default function ProjectDetailPage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {quotes.map(quote => (
-                  <div key={quote.id} className="card p-6 border-2 border-amber-300/80 bg-white shadow-sm flex flex-col justify-between">
+                  <div key={quote.id} className="card p-6 border-2 border-blue-200 hover:border-blue-500 bg-white shadow-sm flex flex-col justify-between transition-all">
                     <div>
                       {/* Paigaldaja info */}
                       <div className="flex items-start justify-between gap-3 mb-4">
@@ -449,10 +449,10 @@ export default function ProjectDetailPage() {
                           <div>
                             <div className="font-extrabold text-gray-900 text-sm flex items-center gap-1.5">
                               {quote.tilerCompany}
-                              <span className="text-blue-500 text-xs">✓</span>
+                              <span className="text-blue-600 text-xs">✓</span>
                             </div>
                             <div className="text-xs text-gray-500">{quote.tilerName} · 📍 {quote.tilerCity}</div>
-                            <div className="flex items-center gap-1 text-xs text-amber-600 font-bold mt-0.5">
+                            <div className="flex items-center gap-1 text-xs text-blue-700 font-bold mt-0.5">
                               <span>★ {quote.tilerRating}</span>
                               <span className="text-gray-400 font-normal">({quote.warrantyYears}a garantii)</span>
                             </div>
@@ -481,7 +481,7 @@ export default function ProjectDetailPage() {
                       </div>
 
                       {/* Kommentaar */}
-                      <p className="text-xs text-gray-600 leading-relaxed mb-4 italic bg-amber-50/40 p-3 rounded-lg border border-amber-100">
+                      <p className="text-xs text-gray-600 leading-relaxed mb-4 italic bg-blue-50/40 p-3 rounded-lg border border-blue-100">
                         "{quote.comment}"
                       </p>
                     </div>

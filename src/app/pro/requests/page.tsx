@@ -123,10 +123,10 @@ export default function ProRequestsPage() {
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-8">
         
         {/* Töölaud Header koos Meistri Paketiga */}
-        <div className="bg-gray-900 text-white rounded-2xl p-6 sm:p-8 mb-8 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div className="bg-gray-950 text-white rounded-2xl p-6 sm:p-8 mb-8 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border border-gray-800">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider bg-amber-500 text-gray-950 px-2.5 py-0.5 rounded-md">
+              <span className="text-xs font-bold uppercase tracking-wider bg-blue-600 text-white px-2.5 py-0.5 rounded-md">
                 Plaatija Töölaud
               </span>
               <span className="text-xs text-gray-400">Päringute vaatamine ja hinnastamine</span>
@@ -138,7 +138,7 @@ export default function ProRequestsPage() {
           </div>
 
           {/* Aktiivse meistri paketi ja konto staatus */}
-          <div className="bg-gray-800/90 p-4 rounded-xl border border-gray-700 text-xs space-y-2 min-w-[260px]">
+          <div className="bg-gray-900 p-4 rounded-xl border border-gray-800 text-xs space-y-2 min-w-[260px]">
             <div className="flex items-center justify-between">
               <span className="text-gray-400">Valitud konto:</span>
               <select
@@ -152,13 +152,13 @@ export default function ProRequestsPage() {
               </select>
             </div>
 
-            <div className="pt-2 border-t border-gray-700 flex items-center justify-between">
+            <div className="pt-2 border-t border-gray-800 flex items-center justify-between">
               <span className="text-gray-400">Pakett:</span>
               <span className={`font-black uppercase text-[10px] px-2 py-0.5 rounded ${
                 currentTiler?.subscriptionTier === 'vip_b2b_2500'
                   ? 'bg-blue-600 text-white'
                   : currentTiler?.subscriptionTier === 'pro_1290'
-                  ? 'bg-amber-500 text-gray-950'
+                  ? 'bg-blue-600 text-white'
                   : 'bg-gray-700 text-gray-300'
               }`}>
                 {currentTiler?.subscriptionTier === 'vip_b2b_2500' ? 'B2B Äri PRO (25€)' : currentTiler?.subscriptionTier === 'pro_1290' ? 'Meister PRO (12.90€)' : 'Tasuta (3/kuu)'}
@@ -167,14 +167,14 @@ export default function ProRequestsPage() {
 
             <div className="flex items-center justify-between text-[11px]">
               <span className="text-gray-400">Pakkumisi tehtud sel kuul:</span>
-              <span className="font-bold text-amber-400">
+              <span className="font-bold text-blue-400">
                 {currentTiler?.quotesUsedThisMonth} {currentTiler?.subscriptionTier === 'free' ? '/ 3' : '(Piiramatu)'}
               </span>
             </div>
 
             <Link
               href="/pricing"
-              className="block text-center w-full py-1.5 bg-gray-700 hover:bg-gray-600 rounded text-amber-400 font-bold transition-colors text-[11px]"
+              className="block text-center w-full py-1.5 bg-gray-800 hover:bg-gray-700 rounded text-blue-400 hover:text-blue-300 font-bold transition-colors text-[11px]"
             >
               Muuda paketti →
             </Link>
@@ -201,7 +201,7 @@ export default function ProRequestsPage() {
                   onClick={() => handleSelectProject(p)}
                   className={`card p-4 border transition-all cursor-pointer relative ${
                     isSelected
-                      ? 'border-amber-500 bg-amber-50/40 shadow-xs ring-1 ring-amber-400'
+                      ? 'border-blue-600 bg-blue-50/40 shadow-xs ring-1 ring-blue-500'
                       : isB2B
                       ? 'border-blue-300 bg-blue-50/20 hover:border-blue-400'
                       : 'border-gray-200 hover:border-gray-300 bg-white'
@@ -216,7 +216,7 @@ export default function ProRequestsPage() {
                   )}
 
                   <div className="flex items-center justify-between text-[11px] mb-1">
-                    <span className="font-bold text-amber-800 uppercase">
+                    <span className="font-bold text-blue-800 uppercase">
                       {p.serviceType === 'mõlemad' ? 'Plaat + Mikrotsement' : p.serviceType}
                     </span>
                     <span className="text-gray-400">{new Date(p.createdAt).toLocaleDateString('et-EE')}</span>
@@ -258,7 +258,7 @@ export default function ProRequestsPage() {
                         💎 Peatöövõtja B2B Suurobjekt
                       </span>
                     ) : (
-                      <span className="text-xs font-bold uppercase tracking-wider text-amber-700 bg-amber-100 px-2 py-0.5 rounded inline-block mb-1">
+                      <span className="text-xs font-bold uppercase tracking-wider text-blue-800 bg-blue-100 px-2 py-0.5 rounded inline-block mb-1">
                         Eraisiku päring
                       </span>
                     )}
@@ -274,7 +274,7 @@ export default function ProRequestsPage() {
                   <Link
                     href={`/request/${currentProject.id}`}
                     target="_blank"
-                    className="text-xs font-bold text-amber-700 hover:underline flex items-center gap-1"
+                    className="text-xs font-bold text-blue-700 hover:underline flex items-center gap-1"
                   >
                     Ava kliendi vaade ↗
                   </Link>
@@ -292,7 +292,7 @@ export default function ProRequestsPage() {
                   </div>
                   <div className="p-3 bg-gray-50 rounded-xl">
                     <span className="text-gray-400 block text-[10px]">Eelistatud süsteem:</span>
-                    <span className="font-extrabold text-amber-800 text-xs">{currentProject.systemBrandLabel}</span>
+                    <span className="font-extrabold text-blue-900 text-xs">{currentProject.systemBrandLabel}</span>
                   </div>
                   <div className="p-3 bg-gray-50 rounded-xl">
                     <span className="text-gray-400 block text-[10px]">Hüdroisolatsioon:</span>
@@ -301,8 +301,8 @@ export default function ProRequestsPage() {
                 </div>
 
                 {/* Kirjeldus */}
-                <div className="text-xs text-gray-700 bg-amber-50/30 p-3.5 rounded-xl border border-amber-100 mb-4">
-                  <span className="font-bold text-amber-950 block mb-1">Objekti kirjeldus:</span>
+                <div className="text-xs text-gray-700 bg-blue-50/30 p-3.5 rounded-xl border border-blue-100 mb-4">
+                  <span className="font-bold text-blue-950 block mb-1">Objekti kirjeldus:</span>
                   <p className="leading-relaxed">{currentProject.description}</p>
                 </div>
 
@@ -322,7 +322,7 @@ export default function ProRequestsPage() {
               </div>
 
               {/* PAKKUMISE KOHANDAMINE & SAATMINE */}
-              <div className="card p-6 border-2 border-amber-400 bg-white shadow-md relative overflow-hidden">
+              <div className="card p-6 border-2 border-blue-500 bg-white shadow-md relative overflow-hidden">
                 
                 {/* LUKUSTUS 1: B2B Peatöövõtja päring, nõutav 25€ pakett */}
                 {isB2BLocked ? (
@@ -343,12 +343,12 @@ export default function ProRequestsPage() {
                   </div>
                 ) : isFreeLimitReached ? (
                   /* LUKUSTUS 2: Tasuta konto 3 pakkumist kuus on täis */
-                  <div className="p-8 text-center bg-amber-50/90 border-2 border-amber-400 rounded-2xl">
+                  <div className="p-8 text-center bg-blue-50/90 border-2 border-blue-400 rounded-2xl">
                     <span className="text-4xl">⚠️</span>
-                    <h3 className="text-lg font-black text-amber-950 mt-2">
+                    <h3 className="text-lg font-black text-blue-950 mt-2">
                       Tasuta konto 3 pakkumise limiit on täis!
                     </h3>
-                    <p className="text-xs text-amber-800 max-w-md mx-auto mt-1 mb-4 leading-relaxed">
+                    <p className="text-xs text-blue-800 max-w-md mx-auto mt-1 mb-4 leading-relaxed">
                       Oled sellel kuul kasutanud ära oma 3 tasuta pakkumist. Vali <strong>Aktiivne Meister PRO (12.90 €/kuu)</strong>, et vastata piiramatult kõigile erapäringutele.
                     </p>
                     <Link
@@ -417,7 +417,7 @@ export default function ProRequestsPage() {
                           id="matInc"
                           checked={materialsIncluded}
                           onChange={(e) => setMaterialsIncluded(e.target.checked)}
-                          className="w-4 h-4 text-amber-600 rounded"
+                          className="w-4 h-4 text-blue-600 rounded"
                         />
                         <label htmlFor="matInc" className="font-semibold text-gray-800 cursor-pointer">
                           Materjalid (hüdroisolatsioon, liimid, vuugid) sisalduvad minu esitatud pakkumise koguhinnas
@@ -480,9 +480,9 @@ export default function ProRequestsPage() {
                         />
                       </div>
 
-                      <div className="p-4 bg-amber-50/70 rounded-xl border border-amber-200 flex items-center justify-between">
+                      <div className="p-4 bg-blue-50/70 rounded-xl border border-blue-200 flex items-center justify-between">
                         <div>
-                          <span className="text-[11px] text-amber-900 block font-medium">Kliendile kuvatav kogusumma:</span>
+                          <span className="text-[11px] text-blue-900 block font-medium">Kliendile kuvatav kogusumma:</span>
                           <span className="text-2xl font-black text-gray-900">
                             {(Number(laborPrice) + (materialsIncluded ? Number(materialPrice) : 0)).toLocaleString('et-EE')} €
                           </span>

@@ -8,10 +8,10 @@ export default function HomePage() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-14 pb-18 px-4 sm:px-6 bg-gradient-to-br from-amber-50/80 via-white to-orange-50/60 border-b border-gray-100">
+      <section className="pt-14 pb-18 px-4 sm:px-6 bg-gradient-to-br from-blue-50/70 via-white to-slate-50/80 border-b border-gray-100">
         <div className="max-w-5xl mx-auto text-center">
           
-          <div className="inline-flex items-center gap-2 bg-amber-100/90 text-amber-900 text-xs font-bold px-3.5 py-1.5 rounded-full mb-6 uppercase tracking-wider shadow-2xs">
+          <div className="inline-flex items-center gap-2 bg-blue-100/90 text-blue-900 border border-blue-200/70 text-xs font-bold px-3.5 py-1.5 rounded-full mb-6 uppercase tracking-wider shadow-2xs">
             <span>🇪🇪</span> Kliendile 100% tasuta · AI Letihindade kalkulaator & Visualiseering
           </div>
 
@@ -19,7 +19,7 @@ export default function HomePage() {
             Leia usaldusväärne plaatija või mikrotsemendi meister kiirelt ja vaevata.
           </h1>
 
-          <p className="text-xl sm:text-2xl font-bold mb-6" style={{ color: 'var(--color-brand-500)' }}>
+          <p className="text-xl sm:text-2xl font-bold mb-6 text-blue-600">
             Nutikas hinnakalkulaator ja AI-põhine disainilahendus.
           </p>
 
@@ -43,10 +43,10 @@ export default function HomePage() {
           </div>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs font-semibold text-gray-500">
-            <span className="flex items-center gap-1.5">✓ Kliendile täiesti tasuta</span>
-            <span className="flex items-center gap-1.5">✓ Täpne letihindade mahutabel</span>
-            <span className="flex items-center gap-1.5">✓ AI fotorealistlikud pildid</span>
-            <span className="flex items-center gap-1.5">✓ Otsevestlus kiirsõnumites</span>
+            <span className="flex items-center gap-1.5"><span className="text-blue-600 font-bold">✓</span> Kliendile täiesti tasuta</span>
+            <span className="flex items-center gap-1.5"><span className="text-blue-600 font-bold">✓</span> Täpne letihindade mahutabel</span>
+            <span className="flex items-center gap-1.5"><span className="text-blue-600 font-bold">✓</span> AI fotorealistlikud pildid</span>
+            <span className="flex items-center gap-1.5"><span className="text-blue-600 font-bold">✓</span> Otsevestlus kiirsõnumites</span>
           </div>
 
         </div>
@@ -57,11 +57,11 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14 text-gray-400 font-extrabold text-sm uppercase tracking-widest">
             <span className="text-[11px] font-bold text-gray-400">Ametlikult toetatud süsteemid:</span>
-            <span className="text-gray-700 hover:text-amber-600 transition-colors">🇩🇰 MIRA</span>
-            <span className="text-gray-700 hover:text-blue-600 transition-colors">🇮🇹 MAPEI</span>
-            <span className="text-gray-700 hover:text-emerald-600 transition-colors">🇫🇷 WEBER</span>
-            <span className="text-gray-700 hover:text-blue-800 transition-colors">🇫🇮 KIILTO</span>
-            <span className="text-gray-700 hover:text-red-700 transition-colors">🇩🇪 CERESIT</span>
+            <span className="text-gray-700 hover:text-blue-600 transition-colors">🇩🇰 MIRA</span>
+            <span className="text-gray-700 hover:text-blue-700 transition-colors">🇮🇹 MAPEI</span>
+            <span className="text-gray-700 hover:text-blue-800 transition-colors">🇫🇷 WEBER</span>
+            <span className="text-gray-700 hover:text-blue-900 transition-colors">🇫🇮 KIILTO</span>
+            <span className="text-gray-700 hover:text-gray-950 transition-colors">🇩🇪 CERESIT</span>
           </div>
         </div>
       </section>
@@ -72,11 +72,11 @@ export default function HomePage() {
       </section>
 
       {/* Kuidas see töötab (4 sammu) */}
-      <section className="py-16 px-4 sm:px-6 bg-gray-50/50 border-y border-gray-100">
+      <section className="py-16 px-4 sm:px-6 bg-gray-50/60 border-y border-gray-100">
         <div className="max-w-6xl mx-auto">
           
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="text-xs uppercase font-extrabold tracking-wider text-amber-700 bg-amber-100 px-3 py-1 rounded-full">
+            <span className="text-xs uppercase font-extrabold tracking-wider text-blue-700 bg-blue-100 border border-blue-200/80 px-3.5 py-1 rounded-full">
               Kuidas teenus töötab?
             </span>
             <h2 className="text-3xl font-extrabold text-gray-900 mt-3">
@@ -116,12 +116,12 @@ export default function HomePage() {
             ].map(item => (
               <div
                 key={item.step}
-                className="card p-6 border border-gray-200 hover:border-amber-300 transition-all shadow-xs flex flex-col justify-between bg-white"
+                className="card p-6 border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all shadow-xs flex flex-col justify-between bg-white"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-3xl">{item.icon}</span>
-                    <span className="text-xs font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded">
+                    <span className="text-xs font-black text-blue-700 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded">
                       {item.step}
                     </span>
                   </div>
@@ -136,29 +136,29 @@ export default function HomePage() {
       </section>
 
       {/* Peatöövõtjad ja B2B hanke esiletõst */}
-      <section className="py-14 px-4 sm:px-6 bg-gradient-to-r from-blue-900 to-indigo-950 text-white">
+      <section className="py-14 px-4 sm:px-6 bg-gradient-to-r from-gray-950 via-slate-900 to-blue-950 text-white border-y border-gray-900">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
           <div>
-            <span className="text-[10px] font-black uppercase tracking-wider bg-blue-500 text-white px-2.5 py-0.5 rounded">
+            <span className="text-[10px] font-black uppercase tracking-wider bg-blue-600 text-white px-2.5 py-0.5 rounded">
               💎 Peatöövõtjate & Arendajate B2B Kanal
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold mt-2">
               Korterelamud, äripinnad ja suuremahulised hanked
             </h2>
-            <p className="text-xs sm:text-sm text-blue-200 mt-2 max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed">
               Kas juhid ehitusobjekti või arendust? Sisesta korterite mahutabelid ja dwg joonised. Sinu hankele pääsevad pakkumisi tegema ainult kontrollitud <strong>B2B Äripaketiga (25 €/kuu)</strong> liitunud meistrid.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 whitespace-nowrap">
             <Link
               href="/request"
-              className="px-6 py-3.5 bg-amber-400 hover:bg-amber-300 text-gray-950 font-bold rounded-xl text-xs shadow-md transition-colors text-center"
+              className="px-6 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs shadow-md transition-colors text-center"
             >
               Sisesta B2B päring →
             </Link>
             <Link
               href="/pricing"
-              className="px-6 py-3.5 bg-blue-800/80 hover:bg-blue-700 text-white font-bold rounded-xl text-xs border border-blue-600 transition-colors text-center"
+              className="px-6 py-3.5 bg-gray-900 hover:bg-gray-800 text-white font-bold rounded-xl text-xs border border-gray-700 transition-colors text-center"
             >
               Liitu 25€ B2B meistrina
             </Link>
@@ -170,7 +170,7 @@ export default function HomePage() {
       <section className="py-16 px-4 sm:px-6 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-xs uppercase font-extrabold tracking-wider text-amber-700 bg-amber-100 px-3 py-1 rounded-full">
+            <span className="text-xs uppercase font-extrabold tracking-wider text-blue-700 bg-blue-100 border border-blue-200/80 px-3.5 py-1 rounded-full">
               Plaatijate Paketid
             </span>
             <h2 className="text-3xl font-extrabold text-gray-900 mt-3">
@@ -193,12 +193,12 @@ export default function HomePage() {
               </Link>
             </div>
 
-            <div className="card p-6 border-2 border-amber-400 bg-amber-50/20 shadow-md flex flex-col justify-between relative">
-              <span className="absolute -top-3 right-6 bg-amber-500 text-white text-[10px] font-black uppercase px-2 py-0.5 rounded-full">
+            <div className="card p-6 border-2 border-blue-600 bg-blue-50/30 shadow-md flex flex-col justify-between relative">
+              <span className="absolute -top-3 right-6 bg-blue-600 text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full shadow-xs">
                 Populaarne
               </span>
               <div>
-                <span className="text-xs font-bold text-amber-700 uppercase">Aktiivne Meister PRO</span>
+                <span className="text-xs font-bold text-blue-700 uppercase">Aktiivne Meister PRO</span>
                 <div className="text-2xl font-black text-gray-900 mt-1">12.90 € <span className="text-xs font-normal text-gray-400">/ kuu</span></div>
                 <p className="text-xs text-gray-500 mt-1">Piiramatu arv pakkumisi kõigile erapäringutele. Esiletõstetud profiil.</p>
               </div>
@@ -207,13 +207,16 @@ export default function HomePage() {
               </Link>
             </div>
 
-            <div className="card p-6 border-2 border-blue-400 bg-blue-50/20 shadow-md flex flex-col justify-between">
+            <div className="card p-6 border-2 border-gray-950 bg-gray-950 text-white shadow-md flex flex-col justify-between">
               <div>
-                <span className="text-xs font-bold text-blue-800 uppercase">Peatöövõtjad & Äri PRO</span>
-                <div className="text-2xl font-black text-gray-900 mt-1">25.00 € <span className="text-xs font-normal text-gray-400">/ kuu</span></div>
-                <p className="text-xs text-gray-500 mt-1">Täielik ligipääs PEATÖÖVÕTJATE B2B hangetele ja arendustele.</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-blue-400 uppercase">Peatöövõtjad & Äri PRO</span>
+                  <span className="text-[10px] bg-blue-600/30 text-blue-300 border border-blue-500/40 px-2 py-0.5 rounded font-bold">B2B Eliit</span>
+                </div>
+                <div className="text-2xl font-black text-white mt-1">25.00 € <span className="text-xs font-normal text-gray-400">/ kuu</span></div>
+                <p className="text-xs text-gray-300 mt-1">Täielik ligipääs PEATÖÖVÕTJATE B2B hangetele ja arendustele.</p>
               </div>
-              <Link href="/pricing" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl text-center mt-6 transition-colors">
+              <Link href="/pricing" className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl text-center mt-6 transition-colors shadow-xs">
                 Liitu 25.00 € paketiga
               </Link>
             </div>
@@ -226,7 +229,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-gray-400">
           <div>
             <span className="text-lg font-black text-white">
-              Plaatija<span style={{ color: 'var(--color-brand-500)' }}>24</span> & Mikrotsement
+              Plaatija<span className="text-blue-500">24</span> & Mikrotsement
             </span>
             <p className="mt-1">Eesti juhtiv plaatimistööde ja mikrotsemendi turuplats · www.plaatija24.ee</p>
           </div>
@@ -235,7 +238,7 @@ export default function HomePage() {
             <Link href="/tilers" className="hover:text-white transition-colors">Paigaldajad</Link>
             <Link href="/pricing" className="hover:text-white transition-colors">Meistrite paketid (12.90€ / 25€)</Link>
             <Link href="/pro/requests" className="hover:text-white transition-colors">Töölaud</Link>
-            <Link href="/admin" className="text-amber-400 hover:text-amber-300 transition-colors">⚙️ Admin Paneel</Link>
+            <Link href="/admin" className="text-blue-400 hover:text-blue-300 transition-colors">⚙️ Admin Paneel</Link>
           </div>
         </div>
       </footer>

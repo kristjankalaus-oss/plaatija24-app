@@ -12,8 +12,8 @@ export default function AdGrid() {
       brand: 'MIRA',
       badge: 'Ametlik Süsteemipartner',
       flag: '🇩🇰',
-      accentColor: '#d97706',
-      bgGradient: 'from-amber-900/90 to-stone-900',
+      accentColor: '#0d5ed9',
+      bgGradient: 'from-blue-950/90 to-slate-900',
       title: 'mira 4400 multicoat veetõke',
       subtitle: 'Sertifitseeritud 2-kihiline elastne hüdroisolatsioon ja C2TE S1 elastne plaadiliim 10-aastase süsteemigarantiiga.',
       perk: '10a garantii sertifikaat',
@@ -69,7 +69,7 @@ export default function AdGrid() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
-          <span className="text-xs font-black uppercase tracking-wider text-amber-700 bg-amber-100 px-2.5 py-0.5 rounded">
+          <span className="text-xs font-black uppercase tracking-wider text-blue-800 bg-blue-100 border border-blue-200/80 px-2.5 py-0.5 rounded">
             Sponsorid & Partnerid
           </span>
           <h3 className="text-xl sm:text-2xl font-black text-gray-950 mt-1">
@@ -136,7 +136,7 @@ export default function AdGrid() {
                   href={b.targetUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs font-bold px-3.5 py-1.5 rounded-lg bg-white text-gray-900 hover:bg-amber-400 transition-colors shadow-xs"
+                  className="inline-flex items-center gap-1 text-xs font-bold px-3.5 py-1.5 rounded-lg bg-white text-gray-900 hover:bg-blue-600 hover:text-white transition-colors shadow-xs"
                 >
                   {b.ctaText}
                 </a>

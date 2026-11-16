@@ -31,7 +31,7 @@ export default function TilersPage() {
         
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-10">
-          <span className="text-xs uppercase font-extrabold tracking-wider px-3 py-1 bg-amber-100 text-amber-800 rounded-full">
+          <span className="text-xs uppercase font-extrabold tracking-wider px-3.5 py-1 bg-blue-100 text-blue-900 border border-blue-200/80 rounded-full">
             Eesti Parimad Meistrid
           </span>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mt-3">
@@ -59,7 +59,7 @@ export default function TilersPage() {
                 onClick={() => setSelectedService(f.id as typeof selectedService)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                   selectedService === f.id
-                    ? 'bg-amber-500 text-white shadow-xs'
+                    ? 'bg-blue-600 text-white shadow-xs'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
@@ -90,7 +90,7 @@ export default function TilersPage() {
           {filtered.map(tiler => (
             <div
               key={tiler.id}
-              className="card p-6 border border-gray-200 hover:border-amber-300 transition-all shadow-xs hover:shadow-md flex flex-col justify-between"
+              className="card p-6 border border-gray-200 hover:border-blue-400 transition-all shadow-xs hover:shadow-md flex flex-col justify-between"
             >
               <div>
                 {/* Päis: pilt + nimi + reiting */}
@@ -104,7 +104,7 @@ export default function TilersPage() {
                     <div className="flex items-center gap-2">
                       <h3 className="text-lg font-extrabold text-gray-900">{tiler.companyName}</h3>
                       {tiler.verified && (
-                        <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+                        <span className="text-[11px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full">
                           ✓ Kinnitatud
                         </span>
                       )}
@@ -114,7 +114,7 @@ export default function TilersPage() {
                     </div>
 
                     <div className="flex items-center gap-3 mt-2 text-xs">
-                      <span className="font-extrabold text-amber-600 flex items-center gap-1">
+                      <span className="font-extrabold text-blue-700 flex items-center gap-1">
                         ★ {tiler.rating}
                         <span className="text-gray-400 font-normal">({tiler.reviewsCount} arvustust)</span>
                       </span>

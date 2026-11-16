@@ -200,7 +200,7 @@ export default function RequestForm() {
 
         {/* Pealkiri */}
         <div className="text-center mb-8">
-          <span className="text-xs uppercase font-extrabold tracking-wider px-3 py-1 bg-amber-100 text-amber-800 rounded-full">
+          <span className="text-xs uppercase font-extrabold tracking-wider px-3.5 py-1 bg-blue-100 text-blue-900 border border-blue-200/80 rounded-full">
             Kliendile 100% Tasuta · Kohustusi pole
           </span>
           <h1 className="text-3xl sm:text-4xl font-black text-gray-950 mt-3">
@@ -260,7 +260,7 @@ export default function RequestForm() {
                         onClick={() => setClientType('private')}
                         className={`p-3 rounded-xl border text-left transition-all ${
                           clientType === 'private'
-                            ? 'border-amber-500 bg-amber-50/70 shadow-xs'
+                            ? 'border-blue-600 bg-blue-50/70 shadow-xs'
                             : 'border-gray-200 hover:border-gray-300 bg-white'
                         }`}
                       >
@@ -274,15 +274,15 @@ export default function RequestForm() {
                         onClick={() => setClientType('contractor_b2b')}
                         className={`p-3 rounded-xl border text-left transition-all ${
                           clientType === 'contractor_b2b'
-                            ? 'border-blue-600 bg-blue-50/70 shadow-xs'
+                            ? 'border-gray-950 bg-gray-950 text-white shadow-xs'
                             : 'border-gray-200 hover:border-gray-300 bg-white'
                         }`}
                       >
                         <div className="text-xl mb-1">🏢</div>
-                        <div className="text-xs font-bold text-gray-900 flex items-center gap-1">
-                          Peatöövõtja / Arendaja <span className="text-[10px] bg-blue-100 text-blue-700 px-1 rounded font-bold">B2B</span>
+                        <div className={`text-xs font-bold flex items-center gap-1 ${clientType === 'contractor_b2b' ? 'text-white' : 'text-gray-900'}`}>
+                          Peatöövõtja / Arendaja <span className="text-[10px] bg-blue-600 text-white px-1.5 py-0.2 rounded font-bold">B2B</span>
                         </div>
-                        <div className="text-[11px] text-gray-500 mt-0.5">Korterelamud, äripinnad, allhanked</div>
+                        <div className={`text-[11px] mt-0.5 ${clientType === 'contractor_b2b' ? 'text-gray-300' : 'text-gray-500'}`}>Korterelamud, äripinnad, allhanked</div>
                       </button>
                     </div>
 
@@ -315,7 +315,7 @@ export default function RequestForm() {
                           onClick={() => setServiceType(t.id as ServiceType)}
                           className={`p-3.5 rounded-xl border-2 text-left transition-all ${
                             serviceType === t.id
-                              ? 'border-amber-500 bg-amber-50/70 shadow-xs'
+                              ? 'border-blue-600 bg-blue-50/70 shadow-xs'
                               : 'border-gray-200 hover:border-gray-300 bg-white'
                           }`}
                         >
@@ -333,7 +333,7 @@ export default function RequestForm() {
                       <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">
                         📁 Laadi üles fotod, joonised ja mahutabelid
                       </label>
-                      <span className="text-[11px] text-amber-700 font-semibold">JPG, PNG, PDF, Excel</span>
+                      <span className="text-[11px] text-blue-700 font-semibold">JPG, PNG, PDF, Excel</span>
                     </div>
 
                     <div
@@ -353,7 +353,7 @@ export default function RequestForm() {
                         }
                       }}
                       className={`border-2 border-dashed rounded-2xl p-7 text-center cursor-pointer transition-all ${
-                        dragOver ? 'border-amber-500 bg-amber-50' : 'border-gray-300 hover:border-amber-400 bg-gray-50/60'
+                        dragOver ? 'border-blue-600 bg-blue-50' : 'border-gray-300 hover:border-blue-500 bg-gray-50/60'
                       }`}
                     >
                       <div className="text-3xl mb-2">📸 📄 📊</div>
@@ -498,14 +498,14 @@ export default function RequestForm() {
                           onClick={() => setSystemBrand(b.id)}
                           className={`p-3 rounded-xl border text-left transition-all ${
                             systemBrand === b.id
-                              ? 'border-amber-500 bg-amber-50/80 shadow-xs ring-1 ring-amber-400'
+                              ? 'border-blue-600 bg-blue-50/80 shadow-xs ring-1 ring-blue-500'
                               : 'border-gray-200 hover:border-gray-300 bg-white'
                           }`}
                         >
                           <div className="flex items-center justify-between mb-1">
                             <span className="text-lg">{b.flag}</span>
                             <span className={`text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded ${
-                              systemBrand === b.id ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-600'
+                              systemBrand === b.id ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'
                             }`}>
                               {b.label}
                             </span>
@@ -525,7 +525,7 @@ export default function RequestForm() {
                         type="checkbox"
                         checked={levelingRequired}
                         onChange={(e) => setLevelingRequired(e.target.checked)}
-                        className="w-4 h-4 text-amber-600 rounded"
+                        className="w-4 h-4 text-blue-600 rounded"
                       />
                       <div>
                         <div className="text-xs font-bold text-gray-900">Aluspinna tasandus & kruntimine</div>
@@ -538,7 +538,7 @@ export default function RequestForm() {
                         type="checkbox"
                         checked={demolitionRequired}
                         onChange={(e) => setDemolitionRequired(e.target.checked)}
-                        className="w-4 h-4 text-amber-600 rounded"
+                        className="w-4 h-4 text-blue-600 rounded"
                       />
                       <div>
                         <div className="text-xs font-bold text-gray-900">Vana katte lammutus / eemaldus</div>
@@ -557,7 +557,7 @@ export default function RequestForm() {
                       <div>
                         <div className="flex justify-between text-xs text-gray-700 mb-1">
                           <span className="font-semibold">Hüdroisolatsiooni maht:</span>
-                          <span className="font-bold text-amber-700">{waterproofingArea} m²</span>
+                          <span className="font-bold text-blue-700">{waterproofingArea} m²</span>
                         </div>
                         <input
                           type="range"
@@ -565,14 +565,14 @@ export default function RequestForm() {
                           max="60"
                           value={waterproofingArea}
                           onChange={(e) => setWaterproofingArea(parseInt(e.target.value) || 0)}
-                          className="w-full accent-amber-500"
+                          className="w-full accent-blue-600"
                         />
                       </div>
 
                       <div>
                         <div className="flex justify-between text-xs text-gray-700 mb-1">
                           <span className="font-semibold">45° välisnurgad (jiirid):</span>
-                          <span className="font-bold text-amber-700">{corners45degCount} jm</span>
+                          <span className="font-bold text-blue-700">{corners45degCount} jm</span>
                         </div>
                         <input
                           type="range"
@@ -580,14 +580,14 @@ export default function RequestForm() {
                           max="20"
                           value={corners45degCount}
                           onChange={(e) => setCorners45degCount(parseInt(e.target.value) || 0)}
-                          className="w-full accent-amber-500"
+                          className="w-full accent-blue-600"
                         />
                       </div>
 
                       <div>
                         <div className="flex justify-between text-xs text-gray-700 mb-1">
                           <span className="font-semibold">Seinanišid ja riiulid:</span>
-                          <span className="font-bold text-amber-700">{nichesCount} tk</span>
+                          <span className="font-bold text-blue-700">{nichesCount} tk</span>
                         </div>
                         <input
                           type="range"
@@ -595,14 +595,14 @@ export default function RequestForm() {
                           max="6"
                           value={nichesCount}
                           onChange={(e) => setNichesCount(parseInt(e.target.value) || 0)}
-                          className="w-full accent-amber-500"
+                          className="w-full accent-blue-600"
                         />
                       </div>
 
                       <div>
                         <div className="flex justify-between text-xs text-gray-700 mb-1">
                           <span className="font-semibold">Trapikraed ja rennid:</span>
-                          <span className="font-bold text-amber-700">{drainsCount} tk</span>
+                          <span className="font-bold text-blue-700">{drainsCount} tk</span>
                         </div>
                         <input
                           type="range"
@@ -610,7 +610,7 @@ export default function RequestForm() {
                           max="4"
                           value={drainsCount}
                           onChange={(e) => setDrainsCount(parseInt(e.target.value) || 0)}
-                          className="w-full accent-amber-500"
+                          className="w-full accent-blue-600"
                         />
                       </div>
                     </div>
@@ -692,8 +692,8 @@ export default function RequestForm() {
                   )}
 
                   {(serviceType === 'mikrotsement' || serviceType === 'mõlemad') && (
-                    <div className="space-y-4 p-4 rounded-xl bg-amber-50/50 border border-amber-200/60">
-                      <div className="text-xs font-bold text-amber-950 uppercase tracking-wider flex items-center gap-1.5">
+                    <div className="space-y-4 p-4 rounded-xl bg-blue-50/50 border border-blue-200/70">
+                      <div className="text-xs font-bold text-blue-950 uppercase tracking-wider flex items-center gap-1.5">
                         <span>🎨</span> Mikrotsemendi spetsifikatsioon
                       </div>
 
@@ -804,7 +804,7 @@ export default function RequestForm() {
                     <div className="font-bold text-gray-900 text-sm">📋 Objekti kokkuvõte:</div>
                     <div className="grid grid-cols-2 gap-2 text-gray-600">
                       <div>🏠 Tellija: <span className="font-semibold text-gray-800">{clientType === 'contractor_b2b' ? `Peatöövõtja (${companyName || 'B2B'})` : 'Eraisik'}</span></div>
-                      <div>🧱 Süsteem: <span className="font-bold text-amber-700">{SYSTEM_BRAND_INFO[systemBrand]?.name}</span></div>
+                      <div>🧱 Süsteem: <span className="font-bold text-blue-700">{SYSTEM_BRAND_INFO[systemBrand]?.name}</span></div>
                       <div>📏 Pindala: <span className="font-semibold text-gray-800">{Number(floorArea) + Number(wallArea)} m²</span></div>
                       <div>📎 Lisatud faile: <span className="font-semibold text-gray-800">{files.length} tk</span></div>
                     </div>
@@ -835,13 +835,13 @@ export default function RequestForm() {
 
           {/* Parempoolne külgriba */}
           <div className="space-y-4">
-            <div className="card border border-amber-200/80 bg-gradient-to-b from-amber-50/40 to-white p-5 sticky top-24">
+            <div className="card border border-blue-200/80 bg-gradient-to-b from-blue-50/40 via-white to-white p-5 sticky top-24">
               
-              <div className="flex items-center justify-between pb-3 border-b border-amber-100">
-                <span className="text-xs font-extrabold uppercase tracking-wider text-amber-800 flex items-center gap-1.5">
+              <div className="flex items-center justify-between pb-3 border-b border-blue-100">
+                <span className="text-xs font-extrabold uppercase tracking-wider text-blue-900 flex items-center gap-1.5">
                   <span>⚡</span> AI Letihindade prognoos
                 </span>
-                <span className="text-[10px] font-bold px-2 py-0.5 bg-amber-100 text-amber-800 rounded">
+                <span className="text-[10px] font-bold px-2 py-0.5 bg-blue-100 text-blue-800 rounded">
                   {SYSTEM_BRAND_INFO[systemBrand]?.name.split(' ')[0]}
                 </span>
               </div>
@@ -852,7 +852,7 @@ export default function RequestForm() {
                   ~{liveEstimate.grossTotal.toLocaleString('et-EE')} €
                   <span className="text-xs font-normal text-gray-400 ml-1">(KM-ga)</span>
                 </div>
-                <div className="text-[11px] font-medium text-amber-700 mt-1">
+                <div className="text-[11px] font-medium text-blue-700 mt-1">
                   Vahemik: {liveEstimate.priceRange.min.toLocaleString('et-EE')} – {liveEstimate.priceRange.max.toLocaleString('et-EE')} €
                 </div>
               </div>

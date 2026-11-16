@@ -178,7 +178,7 @@ export default function AdminPage() {
         <div className="bg-gray-950 text-white rounded-2xl p-6 sm:p-8 mb-8 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-xs font-black uppercase tracking-wider bg-amber-400 text-gray-950 px-2.5 py-0.5 rounded-md">
+              <span className="text-xs font-black uppercase tracking-wider bg-blue-600 text-white px-2.5 py-0.5 rounded-md">
                 Administraatori Juhtpaneel
               </span>
               <span className="text-xs text-gray-400">Plaatija24 & Mikrotsement Ärijuhtimine</span>
@@ -225,7 +225,7 @@ export default function AdminPage() {
               onClick={() => setActiveTab(tab.id as typeof activeTab)}
               className={`py-3 px-5 border-b-2 whitespace-nowrap transition-all ${
                 activeTab === tab.id
-                  ? 'border-amber-500 text-gray-900 font-bold bg-white rounded-t-lg'
+                  ? 'border-blue-600 text-gray-950 font-bold bg-white rounded-t-lg'
                   : 'border-transparent text-gray-500 hover:text-gray-900'
               }`}
             >
@@ -252,14 +252,14 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              <div className="card p-5 border border-amber-200 bg-amber-50/40">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-amber-800">
+              <div className="card p-5 border border-blue-200 bg-blue-50/40">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-blue-900">
                   Aktiivsed Päringud
                 </span>
                 <div className="text-3xl font-black text-gray-900 mt-2">
                   {projects.length} tk
                 </div>
-                <div className="text-[11px] text-amber-700 mt-1">
+                <div className="text-[11px] text-blue-700 mt-1">
                   Erapäringud ja B2B allhanked
                 </div>
               </div>
@@ -290,7 +290,7 @@ export default function AdminPage() {
             </div>
 
             {/* Tulude soovitused ja lisavõimalused */}
-            <div className="card p-6 border-2 border-amber-300 bg-gradient-to-r from-amber-50/60 to-orange-50/40">
+            <div className="card p-6 border-2 border-blue-200 bg-gradient-to-r from-blue-50/60 via-white to-slate-50/40">
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-2xl">💡</span>
                 <h3 className="text-lg font-black text-gray-900">
@@ -298,22 +298,22 @@ export default function AdminPage() {
                 </h3>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-gray-700 mt-4">
-                <div className="p-4 bg-white rounded-xl border border-amber-200 shadow-2xs space-y-1.5">
-                  <span className="font-extrabold text-amber-900 block text-sm">1. Materjalimüügi Partnerlus (Affiliate)</span>
+                <div className="p-4 bg-white rounded-xl border border-blue-200 shadow-2xs space-y-1.5">
+                  <span className="font-extrabold text-blue-950 block text-sm">1. Materjalimüügi Partnerlus (Affiliate)</span>
                   <p className="text-gray-600 leading-relaxed">
                     Kuna klient valib süsteemi (MIRA, Mapei, Weber) ja AI arvutab täpsed kogused kottides/liitrites, suuna tellija otse edasimüüja e-poodi (nt Espak, EhituseABC, Decora) ja teeni <strong>3-7% vahendustasu</strong> igalt ostukorvilt.
                   </p>
                 </div>
 
-                <div className="p-4 bg-white rounded-xl border border-amber-200 shadow-2xs space-y-1.5">
-                  <span className="font-extrabold text-amber-900 block text-sm">2. Sponsoreeritud Meistrite Esiletõst</span>
+                <div className="p-4 bg-white rounded-xl border border-blue-200 shadow-2xs space-y-1.5">
+                  <span className="font-extrabold text-blue-950 block text-sm">2. Sponsoreeritud Meistrite Esiletõst</span>
                   <p className="text-gray-600 leading-relaxed">
                     Paku meistritele võimalust osta <strong>"Kuu Parim Meister"</strong> bännerit avalehel ja kataloogi tipus (nt <strong>49 €/kuu</strong> lisatasu eest), mis tagab neile esimese kontakti kõigi linna uute päringutega.
                   </p>
                 </div>
 
-                <div className="p-4 bg-white rounded-xl border border-amber-200 shadow-2xs space-y-1.5">
-                  <span className="font-extrabold text-amber-900 block text-sm">3. Peatöövõtjate B2B Kuumaks</span>
+                <div className="p-4 bg-white rounded-xl border border-blue-200 shadow-2xs space-y-1.5">
+                  <span className="font-extrabold text-blue-950 block text-sm">3. Peatöövõtjate B2B Kuumaks</span>
                   <p className="text-gray-600 leading-relaxed">
                     Peatöövõtjatele ja arendajatele (Merko, YIT) paku <strong>B2B Projektijuhi paketti</strong> (nt 99 €/kuu), millega nad saavad hallata mitut arendust korraga, alla laadida koondtabelid ja leida allhankijad 24h jooksul.
                   </p>
@@ -354,7 +354,7 @@ export default function AdminPage() {
                         <tr key={prod.id} className="hover:bg-gray-50">
                           <td className="py-3 pr-2">
                             <div className="font-bold text-gray-900">{prod.name}</div>
-                            <div className="text-[10px] text-amber-700 font-semibold uppercase">{prod.brand}</div>
+                            <div className="text-[10px] text-blue-700 font-semibold uppercase">{prod.brand}</div>
                           </td>
                           <td className="py-3 text-gray-600">
                             {prod.category} ({prod.unit})
@@ -381,7 +381,7 @@ export default function AdminPage() {
 
             {/* Parem 5 veergu: Uue toote lisamine */}
             <div className="lg:col-span-5 space-y-4">
-              <div className="card p-6 border-2 border-amber-300 bg-white shadow-xs">
+              <div className="card p-6 border-2 border-blue-200 bg-white shadow-xs">
                 <h3 className="text-base font-bold text-gray-900 mb-1 flex items-center gap-2">
                   <span>➕</span> Lisa uus toode / materjal
                 </h3>
@@ -590,7 +590,7 @@ export default function AdminPage() {
 
             {/* Parem: Lisa uus klient / peatöövõtja */}
             <div className="lg:col-span-5 space-y-4">
-              <div className="card p-6 border-2 border-amber-300 bg-white shadow-xs">
+              <div className="card p-6 border-2 border-blue-200 bg-white shadow-xs">
                 <h3 className="text-base font-bold text-gray-900 mb-1 flex items-center gap-2">
                   <span>🏢</span> Lisa uus klient / Peatöövõtja
                 </h3>
@@ -726,7 +726,7 @@ export default function AdminPage() {
                         <div>
                           <div className="font-extrabold text-gray-900 text-xs">{ad.title}</div>
                           <div className="text-[11px] text-gray-500">{ad.subtitle}</div>
-                          <a href={ad.targetUrl} target="_blank" rel="noreferrer" className="text-[10px] text-amber-600 underline">
+                          <a href={ad.targetUrl} target="_blank" rel="noreferrer" className="text-[10px] text-blue-600 underline">
                             {ad.targetUrl}
                           </a>
                         </div>
@@ -750,7 +750,7 @@ export default function AdminPage() {
 
             {/* Parem: Lisa uus bänner */}
             <div className="lg:col-span-5 space-y-4">
-              <div className="card p-6 border-2 border-amber-300 bg-white shadow-xs">
+              <div className="card p-6 border-2 border-blue-200 bg-white shadow-xs">
                 <h3 className="text-base font-bold text-gray-900 mb-1 flex items-center gap-2">
                   <span>📢</span> Lisa uus reklaamibänner
                 </h3>

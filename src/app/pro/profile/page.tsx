@@ -76,7 +76,7 @@ export default function ProProfilePage() {
         {/* Header & Meistri valik */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
-            <span className="text-xs font-bold uppercase tracking-wider text-amber-700 bg-amber-100 px-2.5 py-0.5 rounded">
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-800 bg-blue-100 border border-blue-200/80 px-2.5 py-0.5 rounded">
               Plaatija konto
             </span>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mt-1">
@@ -219,7 +219,7 @@ export default function ProProfilePage() {
 
           {/* Parem 5 veergu: Uue pildi lisamine galeriisse */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="card p-6 border-2 border-amber-300 bg-white shadow-xs">
+            <div className="card p-6 border-2 border-blue-200 bg-white shadow-xs">
               <h2 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
                 <span>📸</span> Lisa uus foto galeriisse
               </h2>
@@ -298,14 +298,14 @@ export default function ProProfilePage() {
                     <button
                       type="button"
                       onClick={() => setImgUrl('https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1000&q=80')}
-                      className="text-[10px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200"
+                      className="text-[10px] text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200"
                     >
                       Näidis 1 (Marmor)
                     </button>
                     <button
                       type="button"
                       onClick={() => setImgUrl('https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1000&q=80')}
-                      className="text-[10px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200"
+                      className="text-[10px] text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200"
                     >
                       Näidis 2 (Mikrotsement)
                     </button>
