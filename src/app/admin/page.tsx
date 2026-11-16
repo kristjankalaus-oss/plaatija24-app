@@ -27,8 +27,14 @@ import {
   WorkPricingRule
 } from '@/types'
 import { calculateAIEstimate } from '@/lib/pricing-calculator'
+import { useAuth } from '@/lib/useAuth'
 
 export default function AdminPage() {
+  const { role, loading: authLoading } = useAuth()
+  const [adminUnlocked, setAdminUnlocked] = useState(false)
+  const [adminPass, setAdminPass] = useState('')
+  const [adminAuthError, setAdminAuthError] = useState('')
+
   const [activeTab, setActiveTab] = useState<'overview' | 'pricing' | 'products' | 'clients' | 'plans' | 'ads'>('overview')
 
   // Andmed
@@ -250,6 +256,78 @@ export default function AdminPage() {
   const freeTilersCount = tilers.filter(t => t.subscriptionTier === 'free').length
   const monthlySubscriptionRevenue = (proTilersCount * 12.90) + (b2bTilersCount * 25.00)
   const totalVolumeEstimate = projects.reduce((sum, p) => sum + (p.aiEstimate?.grossTotal || 0), 0)
+
+  const handleAdminUnlock = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setAdminAuthError('')
+    try {
+      const res = await fetch('/api/auth-gate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: adminPass }),
+      })
+      if (res.ok) {
+        setAdminUnlocked(true)
+      } else {
+        setAdminAuthError('Vale administraatori parool.')
+      }
+    } catch {
+      setAdminAuthError('Ühenduse viga.')
+    }
+  }
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center p-8 text-sm text-gray-500 font-semibold">
+          ⏳ Kontrollin administraatori ligipääsu...
+        </div>
+      </div>
+    )
+  }
+
+  if (role !== 'admin' && !adminUnlocked) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <Navbar />
+        <main className="flex-1 flex items-center justify-center p-6">
+          <div className="card p-8 max-w-md w-full border border-gray-200 shadow-lg bg-white space-y-5">
+            <div className="text-center">
+              <span className="text-4xl block mb-2">🛡️</span>
+              <h1 className="text-xl font-black text-gray-950">Administraatori ligipääs</h1>
+              <p className="text-xs text-gray-500 mt-1">
+                See leht on kaitstud. Logi sisse administraatori kontoga või sisesta haldusparool.
+              </p>
+            </div>
+
+            {adminAuthError && (
+              <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs font-semibold rounded-xl">
+                ⚠️ {adminAuthError}
+              </div>
+            )}
+
+            <form onSubmit={handleAdminUnlock} className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1">Administraatori parool</label>
+                <input
+                  type="password"
+                  required
+                  value={adminPass}
+                  onChange={(e) => setAdminPass(e.target.value)}
+                  placeholder="Sisesta parool"
+                  className="input text-xs"
+                />
+              </div>
+              <button type="submit" className="btn-primary w-full py-2.5 text-xs font-bold justify-center">
+                Ava Admin Paneel →
+              </button>
+            </form>
+          </div>
+        </main>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">

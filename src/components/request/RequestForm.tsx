@@ -14,7 +14,7 @@ import {
 } from '@/types'
 import { calculateAIEstimate, SYSTEM_BRAND_INFO } from '@/lib/pricing-calculator'
 import { getAIVisualizations } from '@/lib/ai-visualizer'
-import { saveProject } from '@/lib/data-store'
+import { saveProject, ESTONIAN_REGIONS } from '@/lib/data-store'
 import AdBanner from '@/components/ads/AdBanner'
 
 const TILE_SIZES = [
@@ -184,7 +184,7 @@ export default function RequestForm() {
   const [clientName, setClientName] = useState('')
   const [clientEmail, setClientEmail] = useState('')
   const [clientPhone, setClientPhone] = useState('')
-  const [city, setCity] = useState('Tallinn')
+  const [city, setCity] = useState('Tallinn ja Harjumaa')
   const [address, setAddress] = useState('')
 
   // Reaalajas koostatav Scope
@@ -287,6 +287,21 @@ export default function RequestForm() {
     }
 
     saveProject(newProject)
+
+    // Saadame taustal e-posti teavituse
+    fetch('/api/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'new_inquiry',
+        projectId: newProject.id,
+        projectTitle: newProject.roomTypeLabel,
+        city: newProject.city,
+        clientName: newProject.clientName,
+        clientEmail: newProject.clientEmail,
+        estimatedTotal: newProject.aiEstimate.grossTotal,
+      }),
+    }).catch(() => {})
 
     await new Promise(r => setTimeout(r, 1000))
     setLoading(false)
@@ -1022,14 +1037,16 @@ export default function RequestForm() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-gray-700 mb-1">Linn / Piirkond *</label>
-                      <input
-                        type="text"
+                      <label className="block text-xs font-semibold text-gray-700 mb-1">Piirkond / Maakond *</label>
+                      <select
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
-                        placeholder="Tallinn"
-                        className="input text-xs"
-                      />
+                        className="input text-xs font-semibold bg-white"
+                      >
+                        {ESTONIAN_REGIONS.map(r => (
+                          <option key={r} value={r}>{r}</option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 

@@ -1,11 +1,14 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
 import { getTilers, updateTilerProfile, addGalleryItem } from '@/lib/data-store'
 import { TilerProfile, GalleryItem, ServiceType } from '@/types'
+import { useAuth } from '@/lib/useAuth'
 
 export default function ProProfilePage() {
+  const { user, role, loading: authLoading } = useAuth()
   const [tilers, setTilers] = useState<TilerProfile[]>([])
   const [activeTilerId, setActiveTilerId] = useState<string>('tiler-1')
   const [tiler, setTiler] = useState<TilerProfile | null>(null)
@@ -89,6 +92,39 @@ export default function ProProfilePage() {
     setImgDesc('')
     setGalSuccess('✅ Uus foto on lisatud teie galeriisse ja klientidele nähtav!')
     setTimeout(() => setGalSuccess(''), 3500)
+  }
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center p-8 text-sm text-gray-500 font-semibold">
+          ⏳ Kontrollin ligipääsu...
+        </div>
+      </div>
+    )
+  }
+
+  if (!user || (role !== 'tiler' && role !== 'admin')) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <Navbar />
+        <main className="flex-1 flex items-center justify-center p-6">
+          <div className="card p-8 max-w-md w-full text-center border border-gray-200 space-y-4">
+            <span className="text-5xl block">🔒</span>
+            <h1 className="text-xl font-extrabold text-gray-950">Meistri profiili haldus</h1>
+            <p className="text-sm text-gray-600">
+              Profiili loomiseks ja tehtud tööde galerii haldamiseks logi sisse meistri kontoga.
+            </p>
+            <div className="pt-2 flex justify-center">
+              <Link href="/login?redirect=/pro/profile" className="btn-primary py-2.5 px-6 text-xs font-bold">
+                Logi sisse / Registreeru meistrina →
+              </Link>
+            </div>
+          </div>
+        </main>
+      </div>
+    )
   }
 
   if (!tiler) return null

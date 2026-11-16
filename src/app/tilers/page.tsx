@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
-import { getTilers } from '@/lib/data-store'
+import { getTilers, ESTONIAN_REGIONS } from '@/lib/data-store'
 import { ServiceType } from '@/types'
 
 export default function TilersPage() {
@@ -74,12 +74,12 @@ export default function TilersPage() {
             <select
               value={selectedRegion}
               onChange={(e) => setSelectedRegion(e.target.value)}
-              className="input text-xs py-1.5 px-3 bg-white w-44 font-semibold"
+              className="input text-xs py-1.5 px-3 bg-white w-56 font-semibold"
             >
               <option value="all">Kõik piirkonnad</option>
-              <option value="Tallinn">Tallinn & Harjumaa</option>
-              <option value="Tartu">Tartu & Lõuna-Eesti</option>
-              <option value="Pärnu">Pärnu & Saaremaa</option>
+              {ESTONIAN_REGIONS.map(reg => (
+                <option key={reg} value={reg}>{reg}</option>
+              ))}
             </select>
           </div>
 

@@ -18,6 +18,17 @@ import {
 } from '@/types'
 import { supabase } from '@/lib/supabase'
 
+// EESTI TURU PIIRKONNAD (maakonnad ja tõmbekeskused)
+export const ESTONIAN_REGIONS = [
+  'Tallinn ja Harjumaa',
+  'Tartu ja Tartumaa',
+  'Pärnumaa',
+  'Ida-Virumaa',
+  'Lääne-Virumaa',
+  'Viljandimaa',
+  'Kogu Eesti / Objekt väljaspool suuremaid linnu'
+] as const
+
 // HINNAKIRJA PAKETID PLAATIJATELE
 export const PRICING_PLANS: PricingPlan[] = [
   {

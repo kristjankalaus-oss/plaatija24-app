@@ -5,8 +5,10 @@ import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
 import { getProjects, getTilers, addQuote, getQuotesForProject, fetchProjectsFromSupabase } from '@/lib/data-store'
 import { ProjectInquiry, ContractorQuote, TilerProfile } from '@/types'
+import { useAuth } from '@/lib/useAuth'
 
 export default function ProRequestsPage() {
+  const { user, role, loading: authLoading } = useAuth()
   const [projects, setProjects] = useState<ProjectInquiry[]>([])
   const [tilers, setTilers] = useState<TilerProfile[]>([])
   const [selectedProjectId, setSelectedProjectId] = useState<string>('')
@@ -120,10 +122,61 @@ export default function ProRequestsPage() {
 
     refreshData()
 
+    // Saadame taustal e-posti teavituse
+    fetch('/api/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'new_quote',
+        projectId: currentProject.id,
+        projectTitle: currentProject.roomTypeLabel,
+        clientEmail: currentProject.clientEmail,
+        tilerName: currentTiler.name,
+        tilerCompany: currentTiler.companyName,
+        quoteTotal: newQuote.totalPrice,
+      }),
+    }).catch(() => {})
+
     setTimeout(() => {
       setSubmitting(false)
       setSuccessMsg('✅ Teie pakkumine on edukalt kliendile saadetud!')
     }, 600)
+  }
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center p-8 text-sm text-gray-500 font-semibold">
+          ⏳ Kontrollin ligipääsu...
+        </div>
+      </div>
+    )
+  }
+
+  if (!user || (role !== 'tiler' && role !== 'admin')) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <Navbar />
+        <main className="flex-1 flex items-center justify-center p-6">
+          <div className="card p-8 max-w-md w-full text-center border border-gray-200 space-y-4">
+            <span className="text-5xl block">🔒</span>
+            <h1 className="text-xl font-extrabold text-gray-950">Meistrite töölaua ligipääs</h1>
+            <p className="text-sm text-gray-600">
+              Avatud päringute vaatamine ja pakkumiste esitamine on mõeldud ainult registreeritud meistritele ja paigaldusettevõtetele.
+            </p>
+            <div className="pt-2 flex flex-col sm:flex-row gap-3 justify-center">
+              <Link href="/login?redirect=/pro/requests" className="btn-primary py-2.5 px-6 text-xs font-bold">
+                Logi sisse / Registreeru meistrina →
+              </Link>
+              <Link href="/request" className="btn-secondary py-2.5 px-6 text-xs font-bold">
+                Olen klient (esitan päringu)
+              </Link>
+            </div>
+          </div>
+        </main>
+      </div>
+    )
   }
 
   return (

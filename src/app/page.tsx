@@ -224,18 +224,22 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="mt-auto bg-gray-950 text-white py-12 px-4 sm:px-6 border-t border-gray-800">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-gray-400">
-          <div>
-            <span className="text-lg font-black text-white">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6 text-xs text-gray-400">
+          <div className="space-y-1.5">
+            <span className="text-lg font-black text-white block">
               Plaatija<span className="text-blue-500">24</span> & Mikrotsement
             </span>
-            <p className="mt-1">Eesti juhtiv plaatimistööde ja mikrotsemendi turuplats · www.plaatija24.ee</p>
+            <p>Eesti juhtiv plaatimistööde ja mikrotsemendi turuplats · www.plaatija24.ee</p>
+            <p className="text-gray-500">
+              Haldaja: <strong className="text-gray-300">Tegulaator OÜ</strong> · E-post: <a href="mailto:info@plaatija24.ee" className="text-blue-400 hover:underline">info@plaatija24.ee</a>
+            </p>
           </div>
           <div className="flex flex-wrap gap-5 font-semibold">
             <Link href="/request" className="hover:text-white transition-colors">Küsi pakkumist</Link>
             <Link href="/tilers" className="hover:text-white transition-colors">Paigaldajad</Link>
             <Link href="/pricing" className="hover:text-white transition-colors">Meistrite paketid (12.90€ / 25€)</Link>
             <Link href="/pro/requests" className="hover:text-white transition-colors">Töölaud</Link>
+            <Link href="/login" className="hover:text-white transition-colors">Logi sisse</Link>
             <Link href="/admin" className="text-blue-400 hover:text-blue-300 transition-colors">⚙️ Admin Paneel</Link>
           </div>
         </div>

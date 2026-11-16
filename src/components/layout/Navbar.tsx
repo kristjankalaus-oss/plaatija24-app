@@ -3,9 +3,11 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import AdBanner from '@/components/ads/AdBanner'
+import { useAuth } from '@/lib/useAuth'
 
 export default function Navbar() {
   const pathname = usePathname()
+  const { user, role, fullName, signOut } = useAuth()
 
   const links = [
     { href: '/', label: 'Avaleht' },
@@ -13,7 +15,7 @@ export default function Navbar() {
     { href: '/tilers', label: 'Paigaldajad' },
     { href: '/pricing', label: 'Meistrite paketid' },
     { href: '/pro/requests', label: '🔨 Töölaud' },
-    { href: '/admin', label: '⚙️ Admin' },
+    ...(role === 'admin' ? [{ href: '/admin', label: '⚙️ Admin' }] : []),
   ]
 
   return (
@@ -81,12 +83,30 @@ export default function Navbar() {
             >
               + Esita päring
             </Link>
-            <Link
-              href="/pro/profile"
-              className="hidden sm:inline-flex text-xs font-bold px-3 py-1.5 rounded-lg bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"
-            >
-              Meistri profiil
-            </Link>
+            {user ? (
+              <div className="hidden sm:flex items-center gap-2">
+                <Link
+                  href={role === 'tiler' ? '/pro/profile' : role === 'admin' ? '/admin' : '/request'}
+                  className="text-xs font-bold px-3 py-1.5 rounded-lg bg-gray-100 text-gray-900 hover:bg-gray-200 transition-colors"
+                >
+                  {role === 'tiler' ? '🧱' : role === 'admin' ? '⚙️' : '🏠'} {fullName}
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => signOut()}
+                  className="text-xs font-semibold px-2.5 py-1.5 rounded-lg text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+                >
+                  Logi välja
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="hidden sm:inline-flex text-xs font-bold px-3 py-1.5 rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition-colors"
+              >
+                Logi sisse
+              </Link>
+            )}
           </div>
 
         </div>
