@@ -11,7 +11,10 @@ import {
   savePricingPlans,
   getTilers,
   updateTilerProfile,
-  getProjects
+  getProjects,
+  getPricingRules,
+  savePricingRules,
+  resetPricingRules
 } from '@/lib/data-store'
 import {
   AdminProduct,
@@ -20,11 +23,13 @@ import {
   TilerProfile,
   ProjectInquiry,
   SystemBrand,
-  SubscriptionTier
+  SubscriptionTier,
+  WorkPricingRule
 } from '@/types'
+import { calculateAIEstimate } from '@/lib/pricing-calculator'
 
 export default function AdminPage() {
-  const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'clients' | 'plans' | 'ads'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'pricing' | 'products' | 'clients' | 'plans' | 'ads'>('overview')
 
   // Andmed
   const [products, setProducts] = useState<AdminProduct[]>([])
@@ -32,7 +37,19 @@ export default function AdminPage() {
   const [plans, setPlans] = useState<PricingPlan[]>([])
   const [tilers, setTilers] = useState<TilerProfile[]>([])
   const [projects, setProjects] = useState<ProjectInquiry[]>([])
+  const [pricingRules, setPricingRules] = useState<WorkPricingRule[]>([])
   const [notice, setNotice] = useState<string>('')
+
+  // Simulaatori state
+  const [simService, setSimService] = useState<'plaat' | 'mikrotsement' | 'mõlemad'>('plaat')
+  const [simTileSize, setSimTileSize] = useState<'standard_60x60' | 'large_60x120' | 'mosaic' | 'herringbone' | 'slab_large'>('standard_60x60')
+  const [simFloorArea, setSimFloorArea] = useState<number>(5)
+  const [simWallArea, setSimWallArea] = useState<number>(18)
+  const [simHydro, setSimHydro] = useState<boolean>(true)
+  const [simDemo, setSimDemo] = useState<boolean>(true)
+  const [simCorners, setSimCorners] = useState<number>(4)
+  const [simNiches, setSimNiches] = useState<number>(1)
+  const [simDrains, setSimDrains] = useState<number>(1)
 
   // Uue toote vorm
   const [newProdBrand, setNewProdBrand] = useState<SystemBrand>('mira')
@@ -63,6 +80,7 @@ export default function AdminPage() {
     setPlans(getPricingPlans())
     setTilers(getTilers())
     setProjects(getProjects())
+    setPricingRules(getPricingRules())
   }
 
   useEffect(() => {
@@ -73,6 +91,71 @@ export default function AdminPage() {
     setNotice(msg)
     setTimeout(() => setNotice(''), 3500)
   }
+
+  // Turu hinnakirja reeglite haldus
+  const handleUpdateRuleLabor = (id: string, val: number) => {
+    const updated = pricingRules.map(r => r.id === id ? { ...r, laborPrice: val } : r)
+    setPricingRules(updated)
+  }
+
+  const handleUpdateRuleMaterial = (id: string, val: number) => {
+    const updated = pricingRules.map(r => r.id === id ? { ...r, materialPrice: val } : r)
+    setPricingRules(updated)
+  }
+
+  const handleUpdateRuleMinFee = (id: string, val: number) => {
+    const updated = pricingRules.map(r => r.id === id ? { ...r, minProjectFee: val } : r)
+    setPricingRules(updated)
+  }
+
+  const handleSaveAllPricingRules = () => {
+    savePricingRules(pricingRules)
+    flashNotice('✅ 2026 turu hinnakirja reeglid salvestatud ja sünkroonitud!')
+  }
+
+  const handleResetPricingRules = () => {
+    if (confirm('Kas soovid kindlasti taastada ametlikud 2026. aasta turuhinnad (Topciment Tallinn, Remondisemu, Remonditurg)?')) {
+      const reset = resetPricingRules()
+      setPricingRules([...reset])
+      flashNotice('↺ 2026. aasta turu baashinnad taastatud!')
+    }
+  }
+
+  // Simulaatori reaalajas arvutus
+  const simEstimate = calculateAIEstimate(
+    simService,
+    {
+      floorArea: Number(simFloorArea) || 0,
+      wallArea: Number(simWallArea) || 0,
+      wallHeight: 2.5,
+      perimeter: 9,
+      levelingRequired: true,
+      waterproofingArea: simHydro ? ((Number(simFloorArea) || 0) + (Number(simWallArea) || 0)) : 0,
+      corners45degCount: Number(simCorners) || 0,
+      nichesCount: Number(simNiches) || 0,
+      drainsCount: Number(simDrains) || 0,
+      siliconeLength: 12,
+      demolitionRequired: simDemo,
+      extras: []
+    },
+    {
+      size: simTileSize,
+      sizeLabel: 'Standard 60x60',
+      material: 'keraamiline',
+      finish: 'matt',
+      colorStyle: 'Helesinine marmor',
+      jointType: 'cement'
+    },
+    {
+      system: 'shower_waterproof',
+      systemLabel: 'Topciment duširuumi süsteem',
+      finish: 'matt',
+      colorTone: 'Helehall betoon',
+      texture: 'peenike_sile'
+    },
+    'none',
+    pricingRules
+  )
 
   // Toote hinna muutmine
   const handleUpdateProductPrice = (id: string, newPrice: number) => {
@@ -215,6 +298,7 @@ export default function AdminPage() {
         <div className="flex border-b border-gray-200 mb-8 overflow-x-auto text-sm font-semibold">
           {[
             { id: 'overview', label: '📊 Ülevaade & Tulud' },
+            { id: 'pricing', label: `🎯 Turu Hinnakiri & AI (${pricingRules.length})` },
             { id: 'products', label: `📦 Tooted & Letihinnad (${products.length})` },
             { id: 'plans', label: '💰 Paketid & Hinnastus (12.90€ / 25€)' },
             { id: 'clients', label: `👥 Meistrid & Peatöövõtjad (${tilers.length})` },
@@ -324,7 +408,488 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* TAB 2: TOOTED & LETIHINNAD */}
+        {/* TAB: TURU HINNAKIRI & AI REEGLID */}
+        {activeTab === 'pricing' && (
+          <div className="space-y-8">
+            {/* Päisekaart tegevustega */}
+            <div className="card p-6 border border-blue-200 bg-gradient-to-r from-blue-50/60 via-white to-gray-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-600 text-white tracking-wide uppercase">
+                    Ametlik 2026 Hinnamaatriks
+                  </span>
+                  <span className="text-xs text-gray-500 font-medium">
+                    Topciment (Ehitus Art Design) · Remondisemu · Remonditurg
+                  </span>
+                </div>
+                <h2 className="text-xl font-black text-gray-950">Turu Hinnakirja & AI Reeglite Haldus</h2>
+                <p className="text-xs text-gray-600 mt-1 max-w-2xl">
+                  Kõik siin seatud hinnad võetakse reaalajas aluseks klientide ja meistrite AI kalkulatsioonides. Muudatused salvestuvad koheselt.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={handleResetPricingRules}
+                  className="px-4 py-2.5 border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 rounded-xl text-xs font-bold transition-all shadow-2xs"
+                >
+                  ↺ Taasta 2026 turuhinnad
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveAllPricingRules}
+                  className="btn-primary py-2.5 px-6 text-xs font-bold shadow-md flex items-center gap-2"
+                >
+                  <span>💾</span>
+                  <span>Salvesta hinnakiri</span>
+                </button>
+              </div>
+            </div>
+
+            {/* REAALAJAS KALKULAATORI SIMULAATOR */}
+            <div className="card p-6 border border-gray-200 bg-white shadow-xs">
+              <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <h3 className="font-extrabold text-gray-950 text-base">⚡ Reaalajas kalkulaatori simulaator</h3>
+                </div>
+                <span className="text-xs text-gray-500">Testi otse, kuidas sinu seadistatud hinnad töötavad</span>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                {/* Simulaatori sisendid */}
+                <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+                  <div>
+                    <label className="block text-gray-600 font-semibold mb-1">Teenuse liik</label>
+                    <select
+                      value={simService}
+                      onChange={(e) => setSimService(e.target.value as typeof simService)}
+                      className="w-full p-2 border border-gray-300 rounded-lg font-bold bg-white text-gray-900"
+                    >
+                      <option value="plaat">Plaatimistööd</option>
+                      <option value="mikrotsement">Mikrotsement (Topciment)</option>
+                      <option value="mõlemad">Mõlemad kombineeritult</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-600 font-semibold mb-1">Plaadi suurus / tüüp</label>
+                    <select
+                      value={simTileSize}
+                      onChange={(e) => setSimTileSize(e.target.value as typeof simTileSize)}
+                      className="w-full p-2 border border-gray-300 rounded-lg font-bold bg-white text-gray-900"
+                      disabled={simService === 'mikrotsement'}
+                    >
+                      <option value="standard_60x60">Standard (kuni 60x60)</option>
+                      <option value="large_60x120">Suurformaat (60x120)</option>
+                      <option value="slab_large">XXL tahvlid (120x240)</option>
+                      <option value="herringbone">Kalasaba (herringbone)</option>
+                      <option value="mosaic">Mosaiikplaadid</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-600 font-semibold mb-1">Põranda pind (m²)</label>
+                    <input
+                      type="number"
+                      value={simFloorArea}
+                      onChange={(e) => setSimFloorArea(Number(e.target.value) || 0)}
+                      className="w-full p-2 border border-gray-300 rounded-lg font-bold text-gray-900 text-right"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-600 font-semibold mb-1">Seinte pind (m²)</label>
+                    <input
+                      type="number"
+                      value={simWallArea}
+                      onChange={(e) => setSimWallArea(Number(e.target.value) || 0)}
+                      className="w-full p-2 border border-gray-300 rounded-lg font-bold text-gray-900 text-right"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-600 font-semibold mb-1">45° Jiirid (jm)</label>
+                    <input
+                      type="number"
+                      value={simCorners}
+                      onChange={(e) => setSimCorners(Number(e.target.value) || 0)}
+                      className="w-full p-2 border border-gray-300 rounded-lg font-bold text-gray-900 text-right"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-600 font-semibold mb-1">Nišid (tk) / Trapid (tk)</label>
+                    <div className="flex gap-1.5">
+                      <input
+                        type="number"
+                        placeholder="Nišid"
+                        value={simNiches}
+                        onChange={(e) => setSimNiches(Number(e.target.value) || 0)}
+                        className="w-1/2 p-2 border border-gray-300 rounded-lg font-bold text-gray-900 text-right"
+                      />
+                      <input
+                        type="number"
+                        placeholder="Trapid"
+                        value={simDrains}
+                        onChange={(e) => setSimDrains(Number(e.target.value) || 0)}
+                        className="w-1/2 p-2 border border-gray-300 rounded-lg font-bold text-gray-900 text-right"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-span-2 sm:col-span-3 flex items-center gap-6 pt-2">
+                    <label className="flex items-center gap-2 cursor-pointer font-medium text-gray-800">
+                      <input
+                        type="checkbox"
+                        checked={simHydro}
+                        onChange={(e) => setSimHydro(e.target.checked)}
+                        className="rounded text-blue-600 focus:ring-blue-500"
+                      />
+                      <span>Märgruumi hüdroisolatsioon (2 kihti)</span>
+                    </label>
+
+                    <label className="flex items-center gap-2 cursor-pointer font-medium text-gray-800">
+                      <input
+                        type="checkbox"
+                        checked={simDemo}
+                        onChange={(e) => setSimDemo(e.target.checked)}
+                        className="rounded text-blue-600 focus:ring-blue-500"
+                      />
+                      <span>Vana plaadi lammutus ja utiliseerimine</span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Simulaatori arvutustulemus */}
+                <div className="lg:col-span-5 bg-gradient-to-br from-gray-900 to-blue-950 text-white p-5 rounded-2xl flex flex-col justify-between shadow-md">
+                  <div>
+                    <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-3">
+                      <span className="text-xs uppercase tracking-wider text-blue-300 font-bold">Kalkulaatori eelarve</span>
+                      <span className="text-xs bg-blue-500/20 text-blue-200 border border-blue-400/30 px-2 py-0.5 rounded-full font-mono">
+                        u {simEstimate.estimatedDays} tööpäeva
+                      </span>
+                    </div>
+
+                    <div className="space-y-1.5 text-xs text-gray-300">
+                      <div className="flex justify-between">
+                        <span>Tööde maksumus (KM-ta):</span>
+                        <span className="font-mono font-bold text-white">{simEstimate.laborSubtotal.toLocaleString('et-EE')} €</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Materjalide kulu (KM-ta):</span>
+                        <span className="font-mono font-bold text-white">{simEstimate.materialSubtotal.toLocaleString('et-EE')} €</span>
+                      </div>
+                      <div className="flex justify-between border-t border-white/10 pt-1.5">
+                        <span>Neto kokku:</span>
+                        <span className="font-mono font-bold text-white">{simEstimate.netTotal.toLocaleString('et-EE')} €</span>
+                      </div>
+                      <div className="flex justify-between text-gray-400">
+                        <span>Käibemaks (22%):</span>
+                        <span className="font-mono">{simEstimate.vat.toLocaleString('et-EE')} €</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-white/15">
+                    <span className="text-[11px] text-blue-200 block uppercase font-bold tracking-wider">Kliendi lõpphind (KM-ga):</span>
+                    <div className="text-2xl font-black text-white font-mono mt-0.5">
+                      {simEstimate.grossTotal.toLocaleString('et-EE')} €
+                    </div>
+                    <div className="text-xs text-blue-300 mt-1">
+                      Turusoovituslik vahemik: <strong>{simEstimate.priceRange.min.toLocaleString('et-EE')} – {simEstimate.priceRange.max.toLocaleString('et-EE')} €</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 1. KATEGOORIA: MIKROTSEMENT (Topciment süsteem) */}
+            <div className="card p-6 border border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="font-extrabold text-gray-950 text-base flex items-center gap-2">
+                    <span>🏛️</span>
+                    <span>1. Mikrotsemenditööd (Topciment ametlik süsteem)</span>
+                  </h3>
+                  <p className="text-xs text-gray-500">Tallinna turuhinnad: seinad alates 75€+KM, põrandad 85€+KM, miinimumtasu alla 10m² pinnale</p>
+                </div>
+                <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg">Topciment partnerlus</span>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-gray-200 text-gray-400 font-bold uppercase tracking-wider">
+                      <th className="pb-3 w-1/3">Töö nimetus ja kirjeldus</th>
+                      <th className="pb-3 text-center">Ühik</th>
+                      <th className="pb-3 text-right">Töö hind (€)</th>
+                      <th className="pb-3 text-right">Materjalikulu (€)</th>
+                      <th className="pb-3 text-right">Minimaaltasu (€)</th>
+                      <th className="pb-3 text-center">Olek</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {pricingRules.filter(r => r.category === 'mikrotsement').map(rule => (
+                      <tr key={rule.id} className="hover:bg-gray-50/60 transition-colors">
+                        <td className="py-3 pr-4">
+                          <span className="font-bold text-gray-900 block text-sm">{rule.title}</span>
+                          <span className="text-gray-500 text-[11px] block mt-0.5">{rule.description}</span>
+                        </td>
+                        <td className="py-3 text-center font-mono font-semibold text-gray-600">{rule.unit}</td>
+                        <td className="py-3 text-right">
+                          <input
+                            type="number"
+                            step="0.5"
+                            value={rule.laborPrice}
+                            onChange={(e) => handleUpdateRuleLabor(rule.id, parseFloat(e.target.value) || 0)}
+                            className="w-24 px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm text-right font-bold text-gray-900 focus:ring-2 focus:ring-blue-500"
+                          />
+                        </td>
+                        <td className="py-3 text-right">
+                          <input
+                            type="number"
+                            step="0.5"
+                            value={rule.materialPrice}
+                            onChange={(e) => handleUpdateRuleMaterial(rule.id, parseFloat(e.target.value) || 0)}
+                            className="w-24 px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm text-right font-bold text-gray-900 focus:ring-2 focus:ring-blue-500"
+                          />
+                        </td>
+                        <td className="py-3 text-right">
+                          {rule.minProjectFee !== undefined ? (
+                            <input
+                              type="number"
+                              step="25"
+                              value={rule.minProjectFee}
+                              onChange={(e) => handleUpdateRuleMinFee(rule.id, parseFloat(e.target.value) || 0)}
+                              className="w-24 px-2.5 py-1.5 border border-blue-300 bg-blue-50/50 rounded-lg text-sm text-right font-bold text-blue-900 focus:ring-2 focus:ring-blue-500"
+                            />
+                          ) : (
+                            <span className="text-gray-400 font-mono">-</span>
+                          )}
+                        </td>
+                        <td className="py-3 text-center">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                            Aktiivne
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* 2. KATEGOORIA: PLAATIMISTÖÖD */}
+            <div className="card p-6 border border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="font-extrabold text-gray-950 text-base flex items-center gap-2">
+                    <span>🧱</span>
+                    <span>2. Plaatimistööd (Põrandad, seinad, suurformaadid, mustrid)</span>
+                  </h3>
+                  <p className="text-xs text-gray-500">Remondisemu 2026 turuhinnad: põrand 32–45€, sein 35–50€, suurformaat 50–80€, mosaiik 60–100€</p>
+                </div>
+                <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg">Remondisemu 2026</span>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-gray-200 text-gray-400 font-bold uppercase tracking-wider">
+                      <th className="pb-3 w-1/3">Töö nimetus ja kirjeldus</th>
+                      <th className="pb-3 text-center">Ühik</th>
+                      <th className="pb-3 text-right">Töö hind (€)</th>
+                      <th className="pb-3 text-right">Liimikulu / m² (€)</th>
+                      <th className="pb-3 text-center">Olek</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {pricingRules.filter(r => r.category === 'plaat').map(rule => (
+                      <tr key={rule.id} className="hover:bg-gray-50/60 transition-colors">
+                        <td className="py-3 pr-4">
+                          <span className="font-bold text-gray-900 block text-sm">{rule.title}</span>
+                          <span className="text-gray-500 text-[11px] block mt-0.5">{rule.description}</span>
+                        </td>
+                        <td className="py-3 text-center font-mono font-semibold text-gray-600">{rule.unit}</td>
+                        <td className="py-3 text-right">
+                          <input
+                            type="number"
+                            step="0.5"
+                            value={rule.laborPrice}
+                            onChange={(e) => handleUpdateRuleLabor(rule.id, parseFloat(e.target.value) || 0)}
+                            className="w-24 px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm text-right font-bold text-gray-900 focus:ring-2 focus:ring-blue-500"
+                          />
+                        </td>
+                        <td className="py-3 text-right">
+                          <input
+                            type="number"
+                            step="0.5"
+                            value={rule.materialPrice}
+                            onChange={(e) => handleUpdateRuleMaterial(rule.id, parseFloat(e.target.value) || 0)}
+                            className="w-24 px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm text-right font-bold text-gray-900 focus:ring-2 focus:ring-blue-500"
+                          />
+                        </td>
+                        <td className="py-3 text-center">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                            Aktiivne
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* 3. KATEGOORIA: MÄRGRUUMI HÜDROISOLATSIOON & ETTEVALMISTUS */}
+            <div className="card p-6 border border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="font-extrabold text-gray-950 text-base flex items-center gap-2">
+                    <span>🛡️</span>
+                    <span>3. Märgruumi hüdroisolatsioon & aluspinna ettevalmistus</span>
+                  </h3>
+                  <p className="text-xs text-gray-500">Märgruumis kohustuslik standard: 2 kihti mastiksit + tugevduslindid ja trapikraed</p>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-gray-200 text-gray-400 font-bold uppercase tracking-wider">
+                      <th className="pb-3 w-1/3">Töö nimetus ja kirjeldus</th>
+                      <th className="pb-3 text-center">Ühik</th>
+                      <th className="pb-3 text-right">Töö hind (€)</th>
+                      <th className="pb-3 text-right">Materjalikulu (€)</th>
+                      <th className="pb-3 text-center">Olek</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {pricingRules.filter(r => r.category === 'ettevalmistus').map(rule => (
+                      <tr key={rule.id} className="hover:bg-gray-50/60 transition-colors">
+                        <td className="py-3 pr-4">
+                          <span className="font-bold text-gray-900 block text-sm">{rule.title}</span>
+                          <span className="text-gray-500 text-[11px] block mt-0.5">{rule.description}</span>
+                        </td>
+                        <td className="py-3 text-center font-mono font-semibold text-gray-600">{rule.unit}</td>
+                        <td className="py-3 text-right">
+                          <input
+                            type="number"
+                            step="0.5"
+                            value={rule.laborPrice}
+                            onChange={(e) => handleUpdateRuleLabor(rule.id, parseFloat(e.target.value) || 0)}
+                            className="w-24 px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm text-right font-bold text-gray-900 focus:ring-2 focus:ring-blue-500"
+                          />
+                        </td>
+                        <td className="py-3 text-right">
+                          <input
+                            type="number"
+                            step="0.5"
+                            value={rule.materialPrice}
+                            onChange={(e) => handleUpdateRuleMaterial(rule.id, parseFloat(e.target.value) || 0)}
+                            className="w-24 px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm text-right font-bold text-gray-900 focus:ring-2 focus:ring-blue-500"
+                          />
+                        </td>
+                        <td className="py-3 text-center">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                            Aktiivne
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* 4. KATEGOORIA: ERITÖÖD JA DETAILID */}
+            <div className="card p-6 border border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="font-extrabold text-gray-950 text-base flex items-center gap-2">
+                    <span>✨</span>
+                    <span>4. Viimistlus, eritööd ja detailid (Jiirid, epoksiid, trapid, nišid)</span>
+                  </h3>
+                  <p className="text-xs text-gray-500">45° välisnurkade faasimine kivilõikega, renntrapid, veekindlad vuugid ja silikoonid</p>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-gray-200 text-gray-400 font-bold uppercase tracking-wider">
+                      <th className="pb-3 w-1/3">Töö nimetus ja kirjeldus</th>
+                      <th className="pb-3 text-center">Ühik</th>
+                      <th className="pb-3 text-right">Töö hind (€)</th>
+                      <th className="pb-3 text-right">Materjalikulu (€)</th>
+                      <th className="pb-3 text-center">Olek</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {pricingRules.filter(r => r.category === 'viimistlus' || r.category === 'eritoo').map(rule => (
+                      <tr key={rule.id} className="hover:bg-gray-50/60 transition-colors">
+                        <td className="py-3 pr-4">
+                          <span className="font-bold text-gray-900 block text-sm">{rule.title}</span>
+                          <span className="text-gray-500 text-[11px] block mt-0.5">{rule.description}</span>
+                        </td>
+                        <td className="py-3 text-center font-mono font-semibold text-gray-600">{rule.unit}</td>
+                        <td className="py-3 text-right">
+                          <input
+                            type="number"
+                            step="0.5"
+                            value={rule.laborPrice}
+                            onChange={(e) => handleUpdateRuleLabor(rule.id, parseFloat(e.target.value) || 0)}
+                            className="w-24 px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm text-right font-bold text-gray-900 focus:ring-2 focus:ring-blue-500"
+                          />
+                        </td>
+                        <td className="py-3 text-right">
+                          <input
+                            type="number"
+                            step="0.5"
+                            value={rule.materialPrice}
+                            onChange={(e) => handleUpdateRuleMaterial(rule.id, parseFloat(e.target.value) || 0)}
+                            className="w-24 px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm text-right font-bold text-gray-900 focus:ring-2 focus:ring-blue-500"
+                          />
+                        </td>
+                        <td className="py-3 text-center">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                            Aktiivne
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Alumine salvestusriba */}
+            <div className="flex items-center justify-between p-4 bg-gray-900 text-white rounded-2xl shadow-lg">
+              <div className="text-xs text-gray-300">
+                Oled teinud hinnakirjas muudatusi? Vajuta salvesta, et need jõustuksid koheselt veebilehel.
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={handleResetPricingRules}
+                  className="px-4 py-2 border border-gray-700 bg-gray-800 hover:bg-gray-700 text-gray-200 rounded-xl text-xs font-bold transition-all"
+                >
+                  ↺ Lähtesta
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveAllPricingRules}
+                  className="btn-primary py-2 px-6 text-xs font-bold flex items-center gap-2"
+                >
+                  <span>💾</span>
+                  <span>Salvesta kõik hinnad</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         {activeTab === 'products' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             

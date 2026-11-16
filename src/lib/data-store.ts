@@ -13,7 +13,8 @@ import {
   AdminProduct,
   PricingPlan,
   SubscriptionTier,
-  SystemBrand
+  SystemBrand,
+  WorkPricingRule
 } from '@/types'
 import { supabase } from '@/lib/supabase'
 
@@ -65,6 +66,199 @@ export const PRICING_PLANS: PricingPlan[] = [
       'Isiklik kliendihaldur'
     ],
     ctaText: 'Vali B2B Äripakett (25.00 € / kuu)'
+  }
+]
+
+// TURU HINNAKIRJA REEGLID (Ehitus Art Design Topciment 2026 + Remondisemu + Remonditurg)
+export const DEFAULT_PRICING_RULES: WorkPricingRule[] = [
+  // 1. MIKROTSEMENT (Topciment süsteem)
+  {
+    id: 'microcement_wall',
+    category: 'mikrotsement',
+    title: 'Mikrotsement seintele (Topciment süsteem)',
+    description: 'Nakkekrunt, 2x aluskiht (Base), 2x viimistlus (Fino), vahelihvimised ja 2-komponentne PU kaitsekiht',
+    unit: 'm²',
+    laborPrice: 75.0,
+    materialPrice: 48.0,
+    enabled: true
+  },
+  {
+    id: 'microcement_floor',
+    category: 'mikrotsement',
+    title: 'Mikrotsement põrandale (tugevdatud kulumiskiht)',
+    description: 'Kõrgendatud koormustaluvusega mikrotsement, mehaaniline ettevalmistus ja kriimustuskindel 2K PU siidlakk',
+    unit: 'm²',
+    laborPrice: 85.0,
+    materialPrice: 52.0,
+    enabled: true
+  },
+  {
+    id: 'microcement_min_project',
+    category: 'mikrotsement',
+    title: 'Mikrotsemendi väikeobjekti baastasu (< 10 m²)',
+    description: 'Miinimumtasu väikestele pindadele, mis tagab meistri 4–5 päeva visiitide ja kuivamisaegade katmise',
+    unit: 'projekt',
+    laborPrice: 950.0,
+    materialPrice: 0.0,
+    minArea: 10,
+    minProjectFee: 950.0,
+    enabled: true
+  },
+  {
+    id: 'microcement_over_tile_prep',
+    category: 'mikrotsement',
+    title: 'Vanade plaatide katmine mikrotsemendiga (armeerimine)',
+    description: 'Plaatide karestus, vuukide tasandamine, leelisekindel klaaskiudvõrk ja epoksünakkekrunt',
+    unit: 'm²',
+    laborPrice: 18.0,
+    materialPrice: 14.0,
+    enabled: true
+  },
+
+  // 2. PLAATIMISTÖÖD (Remondisemu 2026 turg)
+  {
+    id: 'tile_floor_standard',
+    category: 'plaat',
+    title: 'Põrandaplaatimine (standard 30x30 kuni 60x60)',
+    description: 'Põrandaplaatide rihtimine, liimimine kammlabidaga, tasandussüsteem ja pesu',
+    unit: 'm²',
+    laborPrice: 36.0,
+    materialPrice: 8.5,
+    enabled: true
+  },
+  {
+    id: 'tile_wall_standard',
+    category: 'plaat',
+    title: 'Seinaplaatimine (standard kuni 60x60)',
+    description: 'Seinte laseri järgi rihtimine, vertikaalpaigaldus, täppislõiked servades',
+    unit: 'm²',
+    laborPrice: 38.0,
+    materialPrice: 8.5,
+    enabled: true
+  },
+  {
+    id: 'tile_large_60x120',
+    category: 'plaat',
+    title: 'Suurformaatplaadid (60x120cm+)',
+    description: 'Kahe mehe tõstmine, spetsiaalne iminapasüsteem, elastne C2TE S1 deformeeruv liim',
+    unit: 'm²',
+    laborPrice: 58.0,
+    materialPrice: 11.5,
+    enabled: true
+  },
+  {
+    id: 'tile_slab_xxl',
+    category: 'plaat',
+    title: 'XXL keraamilised tahvlid / slabid (120x240cm+)',
+    description: 'Tippklassi gigantplaatide paigaldus raamiga, täppislõikusmärgis ja S2 klassi liimisäng',
+    unit: 'm²',
+    laborPrice: 75.0,
+    materialPrice: 16.0,
+    enabled: true
+  },
+  {
+    id: 'tile_herringbone',
+    category: 'plaat',
+    title: 'Kalasaba (herringbone) paigaldusmuster',
+    description: 'V-kujuline muster, 45° nurkades tihe lõikamistöö ja joondamine',
+    unit: 'm²',
+    laborPrice: 50.0,
+    materialPrice: 9.5,
+    enabled: true
+  },
+  {
+    id: 'tile_mosaic',
+    category: 'plaat',
+    title: 'Mosaiikplaadid (võrgul või paberil)',
+    description: 'Ülitäpne sile aluspind, peenhambaga kammlabidas ja detailne vuugipuhastus',
+    unit: 'm²',
+    laborPrice: 75.0,
+    materialPrice: 12.0,
+    enabled: true
+  },
+
+  // 3. MÄRGRUUMI HÜDROISOLATSIOON & ETTEVALMISTUS
+  {
+    id: 'waterproofing',
+    category: 'ettevalmistus',
+    title: 'Märgruumi hüdroisolatsioon (2 kihti + tugevdused)',
+    description: 'Nurgatugevduslindid, toruläbiviigud, trapikrae ning 2x ristikihti elastset hüdroisolatsioonimastiksit',
+    unit: 'm²',
+    laborPrice: 22.0,
+    materialPrice: 14.0,
+    enabled: true
+  },
+  {
+    id: 'demolition',
+    category: 'ettevalmistus',
+    title: 'Vana plaadi / katte eemaldamine ja utiliseerimine',
+    description: 'Plaatide ja liimijääkide mehaaniline eemaldamine, ehitusprahi kottidesse kogumine',
+    unit: 'm²',
+    laborPrice: 14.0,
+    materialPrice: 0.0,
+    enabled: true
+  },
+  {
+    id: 'leveling',
+    category: 'ettevalmistus',
+    title: 'Aluspinna tasandamine ja kruntimine',
+    description: 'Süvanakkekrunt ja kiirkõvenev tasandusvalu või seinakrohvimine',
+    unit: 'm²',
+    laborPrice: 16.0,
+    materialPrice: 11.0,
+    enabled: true
+  },
+
+  // 4. ERITÖÖD JA DETAILID
+  {
+    id: 'corners_45deg_jiir',
+    category: 'viimistlus',
+    title: 'Plaatide 45° välisnurkade lihvimine (jiirid)',
+    description: 'Kivilõige 45 kraadi alla ilma plast- või metall-liistuta, puhas esteetiline välisnurk',
+    unit: 'jm',
+    laborPrice: 28.0,
+    materialPrice: 0.0,
+    enabled: true
+  },
+  {
+    id: 'tile_epoxy_grout',
+    category: 'viimistlus',
+    title: 'Epoksiidvuukimine ja eripesu emulsiooniga',
+    description: '2-komponentne 100% vee- ja kemikaalikindel ning hallitusevaba vuugisüsteem',
+    unit: 'm²',
+    laborPrice: 15.0,
+    materialPrice: 15.0,
+    enabled: true
+  },
+  {
+    id: 'silicone',
+    category: 'viimistlus',
+    title: 'Sanitaarsilikoon perimeetrile ja sisenurkadesse',
+    description: 'Hallitusvastane elastomeerne sanitaarsilikoon vuugitooniga sobivas värvis',
+    unit: 'jm',
+    laborPrice: 4.5,
+    materialPrice: 1.0,
+    enabled: true
+  },
+  {
+    id: 'niche',
+    category: 'eritoo',
+    title: 'Seinaniššide ja riiulite plaatimine / vormistus',
+    description: 'Kalded, täppislõiked, veetiheduse ja sisenurkade detailne vormistus',
+    unit: 'tk',
+    laborPrice: 65.0,
+    materialPrice: 15.0,
+    enabled: true
+  },
+  {
+    id: 'drain',
+    category: 'eritoo',
+    title: 'Trapikraede ja kallete vormistamine',
+    description: 'Ümarlõiked või renntrapi kallete ühildamine põrandapinna ja plaadimustriga',
+    unit: 'tk',
+    laborPrice: 55.0,
+    materialPrice: 15.0,
+    enabled: true
   }
 ]
 
@@ -613,7 +807,67 @@ const STORAGE_KEYS = {
   MESSAGES: 'plaatija24_messages_v2',
   ADS: 'plaatija24_ads_v2',
   PRODUCTS: 'plaatija24_products_v2',
-  PRICING: 'plaatija24_pricing_v2'
+  PRICING: 'plaatija24_pricing_v2',
+  PRICING_RULES: 'plaatija24_pricing_rules_v2'
+}
+
+// HINNAKIRJA REEGLITE HALDUS (2026 turg: Topciment & Remondisemu)
+export function getPricingRules(): WorkPricingRule[] {
+  if (typeof window === 'undefined') return DEFAULT_PRICING_RULES
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.PRICING_RULES)
+    if (!raw) {
+      localStorage.setItem(STORAGE_KEYS.PRICING_RULES, JSON.stringify(DEFAULT_PRICING_RULES))
+      return DEFAULT_PRICING_RULES
+    }
+    const parsed = JSON.parse(raw)
+    // Kui salvestatud reeglites on puudu mõni uus reegel, lisame puuduvad vaikereeglid
+    if (Array.isArray(parsed)) {
+      const existingIds = new Set(parsed.map(r => r.id))
+      const missing = DEFAULT_PRICING_RULES.filter(r => !existingIds.has(r.id))
+      if (missing.length > 0) {
+        const merged = [...parsed, ...missing]
+        localStorage.setItem(STORAGE_KEYS.PRICING_RULES, JSON.stringify(merged))
+        return merged
+      }
+      return parsed
+    }
+    return DEFAULT_PRICING_RULES
+  } catch {
+    return DEFAULT_PRICING_RULES
+  }
+}
+
+export function savePricingRules(rules: WorkPricingRule[]): void {
+  if (typeof window === 'undefined') return
+  localStorage.setItem(STORAGE_KEYS.PRICING_RULES, JSON.stringify(rules))
+
+  // Taustasünkroonimine Supabase'i
+  try {
+    const rows = rules.map(r => ({
+      id: r.id,
+      category: r.category,
+      title: r.title,
+      description: r.description,
+      unit: r.unit,
+      labor_price: r.laborPrice,
+      material_price: r.materialPrice,
+      min_area: r.minArea || null,
+      min_project_fee: r.minProjectFee || null,
+      enabled: r.enabled,
+      updated_at: new Date().toISOString()
+    }))
+    supabase.from('pricing_rules').upsert(rows).then(() => {})
+  } catch (err) {
+    console.debug('Supabase pricing_rules sync skipped:', err)
+  }
+}
+
+export function resetPricingRules(): WorkPricingRule[] {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(STORAGE_KEYS.PRICING_RULES, JSON.stringify(DEFAULT_PRICING_RULES))
+  }
+  return DEFAULT_PRICING_RULES
 }
 
 // HELPERS

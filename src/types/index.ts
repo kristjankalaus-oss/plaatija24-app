@@ -44,6 +44,7 @@ export interface ScopeOfWork {
   drainsCount: number // trapid ja trapikraed (tk)
   siliconeLength: number // sanitaarsilikoon (jm)
   demolitionRequired: boolean // vana plaadi eemaldus
+  overTilePrep?: boolean // vana plaadi katmine mikrotsemendiga (epokrunt + klaaskiudvõrk)
   extras: string[]
 }
 
@@ -248,4 +249,18 @@ export interface PricingPlan {
   features: string[]
   popular?: boolean
   ctaText: string
+}
+
+// Turu hinnakirja reeglid (admini hallatav)
+export interface WorkPricingRule {
+  id: string
+  category: 'plaat' | 'mikrotsement' | 'ettevalmistus' | 'viimistlus' | 'eritoo'
+  title: string
+  description: string
+  unit: 'm²' | 'jm' | 'tk' | 'kmpl' | 'projekt'
+  laborPrice: number      // töö hind KM-ta (€)
+  materialPrice: number   // materjalikulu KM-ta (€)
+  minArea?: number        // nt alla 10 m²
+  minProjectFee?: number  // minimaalne tasu väikeobjektil
+  enabled: boolean
 }

@@ -1,5 +1,6 @@
 // ============================================
 // Plaatija24 & Mikrotsement – Letihindade AI kalkulaator
+// 2026 Turu Hinnakiri: Ehitus Art Design (Topciment) + Remondisemu + Remonditurg
 // ============================================
 
 import {
@@ -9,8 +10,10 @@ import {
   TileSpecs,
   MicrocementSpecs,
   SystemBrand,
-  ServiceType
+  ServiceType,
+  WorkPricingRule
 } from '@/types'
+import { getPricingRules, DEFAULT_PRICING_RULES } from '@/lib/data-store'
 
 export const SYSTEM_BRAND_INFO: Record<SystemBrand, { name: string; hydro: string; glue: string; grout: string; premiumFactor: number }> = {
   mira: {
@@ -62,7 +65,8 @@ export function calculateAIEstimate(
   scope: ScopeOfWork,
   tileSpecs?: TileSpecs,
   microcementSpecs?: MicrocementSpecs,
-  systemBrand: SystemBrand = 'none'
+  systemBrand: SystemBrand = 'none',
+  customRules?: WorkPricingRule[]
 ): AIEstimate {
   const laborItems: EstimateLineItem[] = []
   const materialItems: EstimateLineItem[] = []
@@ -76,22 +80,41 @@ export function calculateAIEstimate(
   const floorArea = Number(scope.floorArea || 0)
   const wallArea = Number(scope.wallArea || 0)
 
+  // Kasutame kas etteantud reegleid, andmepoe reegleid või 2026 vaikereegleid
+  const rulesList = (customRules && customRules.length > 0) ? customRules : (typeof window !== 'undefined' ? getPricingRules() : DEFAULT_PRICING_RULES)
+  const rulesMap = new Map<string, WorkPricingRule>()
+  for (const r of rulesList) {
+    rulesMap.set(r.id, r)
+  }
+
+  const getR = (id: string, defaultLabor: number, defaultMat: number) => {
+    const r = rulesMap.get(id)
+    return {
+      labor: r && r.enabled ? r.laborPrice : defaultLabor,
+      material: r && r.enabled ? r.materialPrice : defaultMat,
+      minFee: r?.minProjectFee
+    }
+  }
+
   // 1. PINNA ETTEVALMISTUS JA LAMMUTUS
   if (scope.demolitionRequired && totalArea > 0) {
+    const rDemo = getR('demolition', 14, 0)
     laborItems.push({
       id: 'demo-1',
       category: 'ettevalmistus',
       title: 'Vana plaadi/katte eemaldus ja utiliseerimine',
-      description: 'Olemasoleva pinnakatte lahtivõtmine, prahi kogumine kottidesse',
+      description: 'Olemasoleva pinnakatte lahtivõtmine, liimijääkide eemaldus, prahi kogumine kottidesse',
       quantity: totalArea,
       unit: 'm²',
-      unitPrice: 15,
-      total: totalArea * 15
+      unitPrice: rDemo.labor,
+      total: totalArea * rDemo.labor
     })
     technicalNotes.push('Vana katte eemaldamisel kontrollida aluspinna kandevõimet enne uute kihtide pealekandmist.')
   }
 
   if (scope.levelingRequired && totalArea > 0) {
+    const rLev = getR('leveling', 16, 11)
+    const matPrice = Math.round(rLev.material * brandFactor * 10) / 10
     laborItems.push({
       id: 'prep-1',
       category: 'ettevalmistus',
@@ -99,8 +122,8 @@ export function calculateAIEstimate(
       description: `Kruntimine süvanakkega, aluspinna tasanduskihi paigaldus (${brandInfo.name})`,
       quantity: totalArea,
       unit: 'm²',
-      unitPrice: 14,
-      total: totalArea * 14
+      unitPrice: rLev.labor,
+      total: totalArea * rLev.labor
     })
     materialItems.push({
       id: 'mat-prep-1',
@@ -109,24 +132,53 @@ export function calculateAIEstimate(
       description: 'Sertifitseeritud nakkedispersioon ja kiirkõvenev tasandussegu',
       quantity: totalArea,
       unit: 'm²',
-      unitPrice: Math.round(11 * brandFactor * 10) / 10,
-      total: Math.round(totalArea * 11 * brandFactor)
+      unitPrice: matPrice,
+      total: Math.round(totalArea * matPrice)
     })
     recommendedMaterials.push(`${brandInfo.name} aluspinnatooted ja tasandussegud`)
+  }
+
+  // Vanade plaatide katmine mikrotsemendiga (kui lammutust ei soovita)
+  const isOverTile = Boolean(scope.overTilePrep || (scope.extras && scope.extras.some(e => e.includes('katta') || e.includes('vana_plaat'))))
+  if (isOverTile && (serviceType === 'mikrotsement' || serviceType === 'mõlemad') && totalArea > 0 && !scope.demolitionRequired) {
+    const rOverTile = getR('microcement_over_tile_prep', 18, 14)
+    laborItems.push({
+      id: 'over-tile-prep',
+      category: 'ettevalmistus',
+      title: 'Vanade plaatide armeerimine mikrotsemendi alla',
+      description: 'Vuukide eeltäitmine, aluspinna karestus, leelisekindel klaaskiudvõrk ja epoksünakkekrunt',
+      quantity: totalArea,
+      unit: 'm²',
+      unitPrice: rOverTile.labor,
+      total: totalArea * rOverTile.labor
+    })
+    materialItems.push({
+      id: 'mat-over-tile',
+      category: 'materjalid',
+      title: 'Epoksünakkekrunt ja klaaskiudvõrk',
+      description: 'Tugevdatud armeerimisvõrk ja 2-komponentne epokrunt',
+      quantity: totalArea,
+      unit: 'm²',
+      unitPrice: rOverTile.material,
+      total: totalArea * rOverTile.material
+    })
+    technicalNotes.push('Vanade plaatide peale paigaldamisel tagab epokrunt ja klaaskiudvõrk, et vanad vuugijooned läbi ei kurna ega pragune.')
   }
 
   // 2. HÜDROISOLATSIOON
   const hydroArea = Number(scope.waterproofingArea || 0)
   if (hydroArea > 0) {
+    const rHydro = getR('waterproofing', 22, 14)
+    const matPrice = Math.round(rHydro.material * brandFactor * 10) / 10
     laborItems.push({
       id: 'hydro-labor',
       category: 'hüdroisolatsioon',
       title: 'Hüdroisolatsiooni paigaldus (2 kihti)',
-      description: 'Kanga/nurgatugevduste paigaldus, trapikrae tihendamine, 2x hüdroisolatsioonimastiks',
+      description: 'Kanga/nurgatugevduste paigaldus, trapikrae tihendamine, 2x elastne hüdroisolatsioonimastiks',
       quantity: hydroArea,
       unit: 'm²',
-      unitPrice: 16,
-      total: hydroArea * 16
+      unitPrice: rHydro.labor,
+      total: hydroArea * rHydro.labor
     })
     materialItems.push({
       id: 'mat-hydro',
@@ -135,89 +187,202 @@ export function calculateAIEstimate(
       description: 'Elastne hüdroisolatsioonimastiks, nurgalindid, toruläbiviigud ja trapikrae',
       quantity: hydroArea,
       unit: 'm²',
-      unitPrice: Math.round(14 * brandFactor * 10) / 10,
-      total: Math.round(hydroArea * 14 * brandFactor)
+      unitPrice: matPrice,
+      total: Math.round(hydroArea * matPrice)
     })
     recommendedMaterials.push(brandInfo.hydro)
-    technicalNotes.push(`Valitud süsteem: ${brandInfo.name}. Tagab ehitusjärelevalve nõuetele vastava veetiheduse ja süsteemigarantii.`)
+    technicalNotes.push(`Valitud hüdroisolatsioonisüsteem: ${brandInfo.name}. Märgruumides kohustuslik – tagab ehitusjärelevalve nõuetele vastava veetiheduse.`)
   }
 
   // 3. PLAATIMISTÖÖD (kui teenus on 'plaat' või 'mõlemad')
   if (serviceType === 'plaat' || serviceType === 'mõlemad') {
-    const tileArea = serviceType === 'mõlemad' ? Math.round(totalArea * 0.6) : totalArea
+    let tFloor = serviceType === 'mõlemad' ? Math.round(floorArea * 0.5) : floorArea
+    let tWall = serviceType === 'mõlemad' ? Math.round(wallArea * 0.5) : wallArea
+    if (tFloor === 0 && tWall === 0 && totalArea > 0) {
+      tFloor = Math.round(totalArea * 0.25)
+      tWall = totalArea - tFloor
+    }
 
-    let tileUnitPrice = 32
-    let tileUnitDesc = 'Standardformaat (nt 30x60 / 60x60)'
-    let adhesivePrice = 8.5 * brandFactor
+    const isMosaic = tileSpecs?.size === 'mosaic'
+    const isHerringbone = tileSpecs?.size === 'herringbone'
+    const isLarge60x120 = tileSpecs?.size === 'large_60x120'
+    const isSlabXXL = tileSpecs?.size === 'slab_large'
 
-    if (tileSpecs) {
-      if (tileSpecs.size === 'mosaic') {
-        tileUnitPrice = 58
-        tileUnitDesc = 'Mosaiikplaadid (nõuab ülitäpset aluspinda ja siledat liimisängi)'
-        adhesivePrice = 11 * brandFactor
-      } else if (tileSpecs.size === 'herringbone') {
-        tileUnitPrice = 48
-        tileUnitDesc = 'Kalasaba paigaldusmuster (suurem lõikamis- ja rihtimistöö)'
-        adhesivePrice = 9.5 * brandFactor
-      } else if (tileSpecs.size === 'large_60x120') {
-        tileUnitPrice = 42
-        tileUnitDesc = 'Suurformaat 60x120cm (nõuab spetsiaalseid plaadikandureid ja kiilsüsteemi)'
-        adhesivePrice = 10 * brandFactor
-      } else if (tileSpecs.size === 'slab_large') {
-        tileUnitPrice = 72
-        tileUnitDesc = 'XL keraamiline plaat / slab (120x240cm+ kahemehe paigaldus)'
-        adhesivePrice = 16 * brandFactor
+    if (isMosaic) {
+      const r = getR('tile_mosaic', 75, 12)
+      const q = tFloor + tWall
+      if (q > 0) {
+        laborItems.push({
+          id: 'tile-mosaic-labor',
+          category: 'paigaldus',
+          title: 'Mosaiikplaatide paigaldus (võrgul või paberil)',
+          description: 'Ülitäpne aluspind, peenhambaga kammlabidas ja detailne vuugipuhastus',
+          quantity: q,
+          unit: 'm²',
+          unitPrice: r.labor,
+          total: q * r.labor
+        })
+        materialItems.push({
+          id: 'mat-tile-glue',
+          category: 'materjalid',
+          title: `Valge elastne plaadiliim: ${brandInfo.glue}`,
+          description: 'Kõrgtugev deformeeruv C2TE S1 valge liim mosaiigile',
+          quantity: q,
+          unit: 'm²',
+          unitPrice: Math.round(r.material * brandFactor * 10) / 10,
+          total: Math.round(q * r.material * brandFactor)
+        })
+      }
+    } else if (isHerringbone) {
+      const r = getR('tile_herringbone', 50, 9.5)
+      const q = tFloor + tWall
+      if (q > 0) {
+        laborItems.push({
+          id: 'tile-herringbone-labor',
+          category: 'paigaldus',
+          title: 'Kalasaba (herringbone) mustriga plaatimine',
+          description: 'V-kujuline muster, 45° nurkades tihe lõikamistöö ja laserjoondamine',
+          quantity: q,
+          unit: 'm²',
+          unitPrice: r.labor,
+          total: q * r.labor
+        })
+        materialItems.push({
+          id: 'mat-tile-glue',
+          category: 'materjalid',
+          title: `Plaadiliim: ${brandInfo.glue}`,
+          description: 'Elastne C2TE S1 plaadiliim ja kiilsüsteem',
+          quantity: q,
+          unit: 'm²',
+          unitPrice: Math.round(r.material * brandFactor * 10) / 10,
+          total: Math.round(q * r.material * brandFactor)
+        })
+      }
+    } else if (isLarge60x120) {
+      const r = getR('tile_large_60x120', 58, 11.5)
+      const q = tFloor + tWall
+      if (q > 0) {
+        laborItems.push({
+          id: 'tile-60x120-labor',
+          category: 'paigaldus',
+          title: 'Suurformaatplaatide paigaldus (60x120cm+)',
+          description: 'Kahe mehe tõstmine, vaakum-iminapasüsteem ja C2TE S1 deformeeruv liim',
+          quantity: q,
+          unit: 'm²',
+          unitPrice: r.labor,
+          total: q * r.labor
+        })
+        materialItems.push({
+          id: 'mat-tile-glue',
+          category: 'materjalid',
+          title: `Plaadiliim suurformaadile: ${brandInfo.glue}`,
+          description: 'Kõrgtugev deformeeruv plaadiliim, kiilsüsteemi klambrid ja kiilud',
+          quantity: q,
+          unit: 'm²',
+          unitPrice: Math.round(r.material * brandFactor * 10) / 10,
+          total: Math.round(q * r.material * brandFactor)
+        })
+      }
+    } else if (isSlabXXL) {
+      const r = getR('tile_slab_xxl', 75, 16)
+      const q = tFloor + tWall
+      if (q > 0) {
+        laborItems.push({
+          id: 'tile-xxl-labor',
+          category: 'paigaldus',
+          title: 'XXL keraamiliste tahvlite / slabide paigaldus (120x240cm+)',
+          description: 'Tippklassi gigantplaatide paigaldus kanderaamiga ja S2 elastne liimisäng',
+          quantity: q,
+          unit: 'm²',
+          unitPrice: r.labor,
+          total: q * r.labor
+        })
+        materialItems.push({
+          id: 'mat-tile-glue',
+          category: 'materjalid',
+          title: `S2 klassi deformeeruv liim: ${brandInfo.glue}`,
+          description: 'Tugevdatud polümeerliim ja XL tasandussüsteem',
+          quantity: q,
+          unit: 'm²',
+          unitPrice: Math.round(r.material * brandFactor * 10) / 10,
+          total: Math.round(q * r.material * brandFactor)
+        })
+      }
+    } else {
+      // Standard: eraldi põrand ja sein
+      if (tFloor > 0) {
+        const rF = getR('tile_floor_standard', 36, 8.5)
+        laborItems.push({
+          id: 'tile-floor-labor',
+          category: 'paigaldus',
+          title: 'Põrandaplaatimine (standard 30x30 kuni 60x60)',
+          description: 'Põrandaplaatide rihtimine, liimimine kammlabidaga, tasandussüsteem ja pesu',
+          quantity: tFloor,
+          unit: 'm²',
+          unitPrice: rF.labor,
+          total: tFloor * rF.labor
+        })
+        materialItems.push({
+          id: 'mat-tile-glue-floor',
+          category: 'materjalid',
+          title: `Põranda plaadiliim: ${brandInfo.glue}`,
+          description: 'Deformeeruv C2TE S1 liim ja tasanduskiilud',
+          quantity: tFloor,
+          unit: 'm²',
+          unitPrice: Math.round(rF.material * brandFactor * 10) / 10,
+          total: Math.round(tFloor * rF.material * brandFactor)
+        })
+      }
+      if (tWall > 0) {
+        const rW = getR('tile_wall_standard', 38, 8.5)
+        laborItems.push({
+          id: 'tile-wall-labor',
+          category: 'paigaldus',
+          title: 'Seinaplaatimine (standard kuni 60x60)',
+          description: 'Seinte laseri järgi rihtimine, vertikaalpaigaldus, täppislõiked servades',
+          quantity: tWall,
+          unit: 'm²',
+          unitPrice: rW.labor,
+          total: tWall * rW.labor
+        })
+        materialItems.push({
+          id: 'mat-tile-glue-wall',
+          category: 'materjalid',
+          title: `Seina plaadiliim: ${brandInfo.glue}`,
+          description: 'Valgumiskindel C2TE S1 plaadiliim',
+          quantity: tWall,
+          unit: 'm²',
+          unitPrice: Math.round(rW.material * brandFactor * 10) / 10,
+          total: Math.round(tWall * rW.material * brandFactor)
+        })
       }
     }
 
-    if (tileArea > 0) {
-      laborItems.push({
-        id: 'tile-labor',
-        category: 'paigaldus',
-        title: `Plaatimistööd (${tileUnitDesc})`,
-        description: 'Plaatide lõikamine, rihtimine, liimimine kiilsüsteemiga ja puhastamine',
-        quantity: tileArea,
-        unit: 'm²',
-        unitPrice: tileUnitPrice,
-        total: tileArea * tileUnitPrice
-      })
-
-      materialItems.push({
-        id: 'mat-tile-glue',
-        category: 'materjalid',
-        title: `Plaadiliim: ${brandInfo.glue}`,
-        description: 'Kõrgtugev deformeeruv plaadiliim, kiilsüsteemi klambrid ja kiilud',
-        quantity: tileArea,
-        unit: 'm²',
-        unitPrice: Math.round(adhesivePrice * 10) / 10,
-        total: Math.round(tileArea * adhesivePrice)
-      })
-      recommendedMaterials.push(brandInfo.glue)
-    }
-
     // Epoksiidvuuk vs tsemendivuuk
+    const totalTileArea = tFloor + tWall
     const isEpoxy = tileSpecs?.jointType === 'epoxy'
-    if (tileArea > 0) {
+    if (totalTileArea > 0) {
       if (isEpoxy) {
+        const rEpoxy = getR('tile_epoxy_grout', 15, 15)
         laborItems.push({
           id: 'tile-epoxy',
           category: 'viimistlus',
-          title: 'Epoksiidvuukimine ja eripesu',
+          title: 'Epoksiidvuukimine ja eripesu emulsiooniga',
           description: '2-komponentse epoksiidvuugimassi pealekandmine ja eripesu emulsiooniga',
-          quantity: tileArea,
+          quantity: totalTileArea,
           unit: 'm²',
-          unitPrice: 14,
-          total: tileArea * 14
+          unitPrice: rEpoxy.labor,
+          total: totalTileArea * rEpoxy.labor
         })
         materialItems.push({
           id: 'mat-epoxy',
           category: 'materjalid',
           title: 'Epoksiidvuugimass ja puhastuskemikaalid',
           description: '100% vee- ja kemikaalikindel antibakteriaalne vuuk',
-          quantity: tileArea,
+          quantity: totalTileArea,
           unit: 'm²',
-          unitPrice: 15,
-          total: tileArea * 15
+          unitPrice: rEpoxy.material,
+          total: totalTileArea * rEpoxy.material
         })
         technicalNotes.push('Epoksiidvuuk tagab täieliku veetiheduse ja määrdumiskindluse, eriti dušinurkades ja köökides.')
       } else {
@@ -226,50 +391,110 @@ export function calculateAIEstimate(
           category: 'materjalid',
           title: `Vuugisegu: ${brandInfo.grout}`,
           description: 'Elastne peenteraga vuugisegu (vuukimine sisaldub paigalduse baashinnas)',
-          quantity: tileArea,
+          quantity: totalTileArea,
           unit: 'm²',
           unitPrice: Math.round(3.5 * brandFactor * 10) / 10,
-          total: Math.round(tileArea * 3.5 * brandFactor)
+          total: Math.round(totalTileArea * 3.5 * brandFactor)
         })
         recommendedMaterials.push(brandInfo.grout)
       }
     }
   }
 
-  // 4. MIKROTSEMENT (kui teenus on 'mikrotsement' või 'mõlemad')
+  // 4. MIKROTSEMENT (Topciment süsteem)
   if (serviceType === 'mikrotsement' || serviceType === 'mõlemad') {
-    const microArea = serviceType === 'mõlemad' ? Math.round(totalArea * 0.4) : totalArea
+    let mFloor = serviceType === 'mõlemad' ? Math.round(floorArea * 0.5) : floorArea
+    let mWall = serviceType === 'mõlemad' ? Math.round(wallArea * 0.5) : wallArea
+    if (mFloor === 0 && mWall === 0 && totalArea > 0) {
+      mFloor = Math.round(totalArea * 0.25)
+      mWall = totalArea - mFloor
+    }
+    const totalMicro = mFloor + mWall
 
-    if (microArea > 0) {
-      laborItems.push({
-        id: 'micro-labor',
-        category: 'paigaldus',
-        title: 'Mikrotsemendi paigaldus (mitmekihiline süsteem)',
-        description: 'Epokrunt + klaaskiudvõrk, aluskihid (Base), 2 viimistluskihti (Medium/Fino), lihvimine ja 2x PU kaitsekiht',
-        quantity: microArea,
-        unit: 'm²',
-        unitPrice: 68,
-        total: microArea * 68
-      })
+    if (totalMicro > 0) {
+      const rWall = getR('microcement_wall', 75, 48)
+      const rFloor = getR('microcement_floor', 85, 52)
+      const rMin = getR('microcement_min_project', 950, 0)
 
-      materialItems.push({
-        id: 'mat-micro-system',
-        category: 'materjalid',
-        title: 'Professionaalne mikrotsemendi süsteemikomplekt',
-        description: 'Polümeervaigud, mikrotsemendi kuivsegud, pigmendid, poorisulgur ja 2-komponentne PU matt/siidlakk',
-        quantity: microArea,
-        unit: 'm²',
-        unitPrice: 38,
-        total: microArea * 38
-      })
-      recommendedMaterials.push('Topciment / Forcrete / Bautech mikrobetoonsüsteem koos 2K PU lakiga')
-      technicalNotes.push('Mikrotsement vajab pärast lakkimist min 7 päeva täielikku kivinemist enne intensiivset veekoormust.')
+      let microLaborSum = 0
+
+      if (mWall > 0) {
+        const totalWallLabor = mWall * rWall.labor
+        microLaborSum += totalWallLabor
+        laborItems.push({
+          id: 'micro-wall-labor',
+          category: 'paigaldus',
+          title: 'Mikrotsemendi paigaldus seintele (Topciment süsteem)',
+          description: 'Nakkekrunt, 2x aluskiht (Base), 2x viimistlus (Fino), vahelihvimised ja 2-komponentne PU kaitsekiht',
+          quantity: mWall,
+          unit: 'm²',
+          unitPrice: rWall.labor,
+          total: totalWallLabor
+        })
+        materialItems.push({
+          id: 'mat-micro-wall',
+          category: 'materjalid',
+          title: 'Topciment seina mikrotsemendi süsteemikomplekt',
+          description: 'Nakkedispersioon, Base alussegud, Fino viimistluskiht, pigmendid ja 2K PU lakk',
+          quantity: mWall,
+          unit: 'm²',
+          unitPrice: rWall.material,
+          total: mWall * rWall.material
+        })
+      }
+
+      if (mFloor > 0) {
+        const totalFloorLabor = mFloor * rFloor.labor
+        microLaborSum += totalFloorLabor
+        laborItems.push({
+          id: 'micro-floor-labor',
+          category: 'paigaldus',
+          title: 'Mikrotsemendi paigaldus põrandale (tugevdatud kulumiskiht)',
+          description: 'Mehaaniline ettevalmistus, kiudtugevdatud aluskihid, kriimustuskindel 2K PU siidlakk',
+          quantity: mFloor,
+          unit: 'm²',
+          unitPrice: rFloor.labor,
+          total: totalFloorLabor
+        })
+        materialItems.push({
+          id: 'mat-micro-floor',
+          category: 'materjalid',
+          title: 'Topciment põranda mikrotsemendi süsteemikomplekt',
+          description: 'Tugevdatud mikrotsemendisegud, eponakkekrunt, kulumiskindel 2-komponentne PU siidlakk',
+          quantity: mFloor,
+          unit: 'm²',
+          unitPrice: rFloor.material,
+          total: mFloor * rFloor.material
+        })
+      }
+
+      // VÄIKEOBJEKTI MIINIMUMTASU (< 10 m²)
+      const minFee = rMin.minFee || 950
+      if (totalMicro < 10 && microLaborSum < minFee) {
+        const diff = minFee - microLaborSum
+        laborItems.push({
+          id: 'micro-min-project-diff',
+          category: 'paigaldus',
+          title: 'Mikrotsemendi väikeobjekti baastasu kompensatsioon (< 10 m²)',
+          description: 'Tagab meistri 4–5 päeva külastuste (krunt, aluskihid, lihvimised, viimistlus, 2x PU lakk) tasuvuse',
+          quantity: 1,
+          unit: 'kmpl',
+          unitPrice: diff,
+          total: diff
+        })
+        technicalNotes.push('Väikese pinna miinimumtasu tagab sertifitseeritud meistri 4–5 päeva visiitide ja kuivamisaegade katmise.')
+      }
+
+      recommendedMaterials.push('Topciment sertifitseeritud mikrotsemendisüsteem (Ehitus Art Design partnerlus)')
+      technicalNotes.push('Mikrotsement vajab pärast lakkimist 7 päeva täielikku kivinemist enne intensiivset veekoormust.')
+      technicalNotes.push('Igapäevaseks hoolduseks kasutada neutraalseid pH-vahendeid, vältida tugevaid happelisi katlakivieemaldisi.')
     }
   }
 
   // 5. ERITÖÖD JA DETAILID (Jiirid, nišid, trapid, silikoon)
   const jiirLength = Number(scope.corners45degCount || 0)
   if (jiirLength > 0) {
+    const rJiir = getR('corners_45deg_jiir', 28, 0)
     laborItems.push({
       id: 'jiir-labor',
       category: 'viimistlus',
@@ -277,28 +502,39 @@ export function calculateAIEstimate(
       description: 'Välisnurkade faasimine 45 kraadi alla ilma plastik/metall-liistuta, esteetiline kivilõige',
       quantity: jiirLength,
       unit: 'jm',
-      unitPrice: 28,
-      total: jiirLength * 28
+      unitPrice: rJiir.labor,
+      total: jiirLength * rJiir.labor
     })
     technicalNotes.push('45° jiirid annavad esmaklassilise esteetika ilma plastliistudeta.')
   }
 
   const niches = Number(scope.nichesCount || 0)
   if (niches > 0) {
+    const rNiche = getR('niche', 65, 15)
     laborItems.push({
       id: 'niche-labor',
       category: 'paigaldus',
       title: 'Seinaniššide ja riiulite plaatimine / vormistus',
-      description: 'Kalded, täppislõiked, hüdroisolatsiooni ja nurkade detailne vormistus',
+      description: 'Kalded, täppislõiked, veetiheduse ja nurkade detailne vormistus',
       quantity: niches,
       unit: 'tk',
-      unitPrice: 65,
-      total: niches * 65
+      unitPrice: rNiche.labor,
+      total: niches * rNiche.labor
+    })
+    materialItems.push({
+      id: 'mat-niche',
+      category: 'materjalid',
+      title: 'Niššide tugevdusmaterjalid ja tihendid',
+      quantity: niches,
+      unit: 'tk',
+      unitPrice: rNiche.material,
+      total: niches * rNiche.material
     })
   }
 
   const drains = Number(scope.drainsCount || 0)
   if (drains > 0) {
+    const rDrain = getR('drain', 55, 15)
     laborItems.push({
       id: 'drain-labor',
       category: 'paigaldus',
@@ -306,13 +542,23 @@ export function calculateAIEstimate(
       description: 'Ümarlõiked või renntrapi kallete ühildamine plaadimustriga',
       quantity: drains,
       unit: 'tk',
-      unitPrice: 55,
-      total: drains * 55
+      unitPrice: rDrain.labor,
+      total: drains * rDrain.labor
+    })
+    materialItems.push({
+      id: 'mat-drain',
+      category: 'materjalid',
+      title: 'Trapikrae tihenduskomplekt ja elastne mansett',
+      quantity: drains,
+      unit: 'tk',
+      unitPrice: rDrain.material,
+      total: drains * rDrain.material
     })
   }
 
   const siliconeLen = Number(scope.siliconeLength || 0) || Math.round(Number(scope.perimeter || 0) * 1.5)
   if (siliconeLen > 0) {
+    const rSil = getR('silicone', 4.5, 1.0)
     laborItems.push({
       id: 'silicone-labor',
       category: 'viimistlus',
@@ -320,8 +566,8 @@ export function calculateAIEstimate(
       description: 'Hallituskindel elastne hermetiseerimine vuugitooniga sobiva silikooniga',
       quantity: siliconeLen,
       unit: 'jm',
-      unitPrice: 3.5,
-      total: siliconeLen * 3.5
+      unitPrice: rSil.labor,
+      total: Math.round(siliconeLen * rSil.labor * 10) / 10
     })
     materialItems.push({
       id: 'mat-silicone',

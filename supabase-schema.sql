@@ -138,6 +138,21 @@ create table if not exists public.admin_products (
   created_at          timestamptz default now()
 );
 
+-- 7. TURU HINNAKIRJA REEGLID (2026 turg: Topciment, Remondisemu, Remonditurg)
+create table if not exists public.pricing_rules (
+  id              text primary key,
+  category        text not null, -- 'plaat', 'mikrotsement', 'ettevalmistus', 'viimistlus', 'eritoo'
+  title           text not null,
+  description     text,
+  unit            text not null default 'm²',
+  labor_price     numeric(10,2) not null default 0,
+  material_price  numeric(10,2) not null default 0,
+  min_area        numeric(10,2),
+  min_project_fee numeric(10,2),
+  enabled         boolean default true,
+  updated_at      timestamptz default now()
+);
+
 -- 8. INDEKSID JÕUDLUSEKS
 create index if not exists idx_tiler_profiles_city on public.tiler_profiles(city);
 create index if not exists idx_gallery_items_tiler_id on public.gallery_items(tiler_id);
@@ -152,6 +167,7 @@ alter table public.project_inquiries enable row level security;
 alter table public.contractor_quotes enable row level security;
 alter table public.project_messages  enable row level security;
 alter table public.admin_products    enable row level security;
+alter table public.pricing_rules     enable row level security;
 
 -- Avalik lugemine
 create policy "public_read_tiler_profiles"    on public.tiler_profiles    for select using (true);
@@ -160,6 +176,7 @@ create policy "public_read_project_inquiries" on public.project_inquiries for se
 create policy "public_read_contractor_quotes" on public.contractor_quotes for select using (true);
 create policy "public_read_project_messages"  on public.project_messages  for select using (true);
 create policy "public_read_admin_products"    on public.admin_products    for select using (true);
+create policy "public_read_pricing_rules"     on public.pricing_rules     for select using (true);
 
 -- Avalik kirjutamine / muutmine
 create policy "public_insert_project_inquiries" on public.project_inquiries for insert with check (true);
@@ -171,6 +188,8 @@ create policy "public_insert_tiler_profiles"    on public.tiler_profiles    for 
 create policy "public_update_tiler_profiles"    on public.tiler_profiles    for update using (true);
 create policy "public_insert_admin_products"    on public.admin_products    for insert with check (true);
 create policy "public_update_admin_products"    on public.admin_products    for update using (true);
+create policy "public_insert_pricing_rules"     on public.pricing_rules     for insert with check (true);
+create policy "public_update_pricing_rules"     on public.pricing_rules     for update using (true);
 
 -- 10. ESIMESED NÄIDISANDMED (Algandmed meistritele)
 insert into public.tiler_profiles (id, name, company_name, registry_code, avatar_url, city, service_regions, services, experience_years, phone, email, rating, reviews_count, completed_jobs_count, bio, badges, verified, subscription_tier, quotes_used_this_month, quotes_limit)
