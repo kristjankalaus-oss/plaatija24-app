@@ -21,7 +21,11 @@ export default function JobsPage() {
           </div>
 
           <div className="space-y-3">
-            {jobs.map((j) => (
+            {jobs.length === 0 ? (
+              <div className="py-12 text-center text-gray-400 text-sm">
+                Hetkel planeeritud paigaldustööd puuduvad.
+              </div>
+            ) : jobs.map((j) => (
               <div key={j.id} className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors group">
                 <div className="min-w-[64px] text-center bg-white rounded-xl p-2 shadow-sm">
                   <span className="block text-xs text-gray-400">{j.date.split('.')[1] === '11' ? 'nov' : 'dets'}</span>

@@ -33,7 +33,13 @@ export default function OrdersPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {orders.map((o) => (
+              {orders.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="py-12 text-center text-gray-400 text-sm">
+                    Hetkel aktiivsed tellimused puuduvad.
+                  </td>
+                </tr>
+              ) : orders.map((o) => (
                 <tr key={o.id} className="hover:bg-gray-50 transition-colors group">
                   <td className="py-3 font-mono text-gray-500 font-medium">{o.id}</td>
                   <td className="py-3 font-semibold text-gray-800">{o.client}</td>

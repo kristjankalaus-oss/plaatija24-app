@@ -192,6 +192,18 @@ export default function ProRequestsPage() {
         </div>
 
         {/* Päringute nimekiri ja detailid */}
+        {projects.length === 0 ? (
+          <div className="card p-12 text-center border border-gray-200 max-w-xl mx-auto my-8">
+            <span className="text-5xl block mb-3">📋</span>
+            <h2 className="text-xl font-extrabold text-gray-900">Hetkel aktiivsed päringud puuduvad</h2>
+            <p className="text-sm text-gray-500 mt-1 mb-6">
+              Niipea kui klient esitab uue plaatimis- või mikrotsemendipäringu, ilmub see siia koos täpse mahutabeli ja AI hinnanguga.
+            </p>
+            <Link href="/request" className="btn-primary py-2.5 px-6 text-xs font-bold">
+              + Esita päring kliendina
+            </Link>
+          </div>
+        ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
           {/* Vasak veerg: Päringute nimekiri (4 veergu) */}
@@ -523,6 +535,7 @@ export default function ProRequestsPage() {
           )}
 
         </div>
+        )}
 
       </main>
     </div>

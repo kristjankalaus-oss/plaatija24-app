@@ -76,10 +76,10 @@ export default function Navbar() {
           {/* Parempoolsed kiirviited */}
           <div className="flex items-center gap-2.5">
             <Link
-              href="/request/demo-preview"
-              className="text-xs font-bold px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
+              href="/request"
+              className="text-xs font-bold px-3 py-1.5 rounded-lg border border-blue-200 bg-blue-50/70 text-blue-900 hover:bg-blue-100 transition-colors"
             >
-              📋 Näidisprojekt
+              + Esita päring
             </Link>
             <Link
               href="/pro/profile"

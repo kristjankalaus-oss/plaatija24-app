@@ -29,7 +29,13 @@ export default function ClientsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {clients.map((c) => (
+              {clients.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-12 text-center text-gray-400 text-sm">
+                    Hetkel aktiivsed kliendid puuduvad.
+                  </td>
+                </tr>
+              ) : clients.map((c) => (
                 <tr key={c.id} className="hover:bg-gray-50 transition-colors group">
                   <td className="py-3 font-semibold text-gray-800">{c.name}</td>
                   <td className="py-3 text-gray-500">{c.email}</td>

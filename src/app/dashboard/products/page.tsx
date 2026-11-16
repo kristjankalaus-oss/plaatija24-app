@@ -36,7 +36,13 @@ export default function ProductsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {products.map((p) => (
+              {products.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-12 text-center text-gray-400 text-sm">
+                    Hetkel laos tooted puuduvad.
+                  </td>
+                </tr>
+              ) : products.map((p) => (
                 <tr key={p.id} className="hover:bg-gray-50 transition-colors group">
                   <td className="py-3 font-semibold text-gray-800">{p.name}</td>
                   <td className="py-3">

@@ -47,23 +47,25 @@ export default function PricingPage() {
             Tellijale on platvorm täiesti tasuta. Vali oma töömahule sobiv pakett ja saa pidevalt uusi tulusaid objekte.
           </p>
 
-          {/* Aktiivse meistri valik demoks */}
-          <div className="mt-6 inline-flex items-center gap-2 p-2 bg-white rounded-xl border border-gray-200 shadow-2xs text-xs">
-            <span className="text-gray-500 font-semibold pl-2">Testi meistri profiiliga:</span>
-            <select
-              value={selectedTilerId}
-              onChange={(e) => {
-                setSelectedTilerId(e.target.value)
-                const current = tilers.find(t => t.id === e.target.value)
-                if (current) setActiveTier(current.subscriptionTier)
-              }}
-              className="bg-gray-50 border border-gray-200 text-gray-900 font-bold rounded-lg px-3 py-1.5 outline-none"
-            >
-              {tilers.map(t => (
-                <option key={t.id} value={t.id}>{t.companyName} ({t.subscriptionTier})</option>
-              ))}
-            </select>
-          </div>
+          {/* Aktiivse meistri valik */}
+          {tilers.length > 0 && (
+            <div className="mt-6 inline-flex items-center gap-2 p-2 bg-white rounded-xl border border-gray-200 shadow-2xs text-xs">
+              <span className="text-gray-500 font-semibold pl-2">Vali meistri konto:</span>
+              <select
+                value={selectedTilerId}
+                onChange={(e) => {
+                  setSelectedTilerId(e.target.value)
+                  const current = tilers.find(t => t.id === e.target.value)
+                  if (current) setActiveTier(current.subscriptionTier)
+                }}
+                className="bg-gray-50 border border-gray-200 text-gray-900 font-bold rounded-lg px-3 py-1.5 outline-none"
+              >
+                {tilers.map(t => (
+                  <option key={t.id} value={t.id}>{t.companyName} ({t.subscriptionTier})</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {successMsg && (
             <div className="mt-4 p-3 bg-emerald-100 border border-emerald-300 text-emerald-900 text-xs font-bold rounded-xl max-w-md mx-auto">
