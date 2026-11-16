@@ -1,14 +1,7 @@
 import Topbar from '@/components/layout/Topbar'
 import StatusBadge from '@/components/ui/StatusBadge'
 
-const orders = [
-  { id: 'T-001', client: 'Mati Mägi',  status: 'töös',       total: '1 240 €', date: '14.11.2026', items: 4 },
-  { id: 'T-002', client: 'Kati Kask',  status: 'uus',        total: '580 €',   date: '14.11.2026', items: 2 },
-  { id: 'T-003', client: 'OÜ Renova',  status: 'kinnitatud', total: '3 100 €', date: '13.11.2026', items: 7 },
-  { id: 'T-004', client: 'Jüri Tamm',  status: 'valmis',     total: '920 €',   date: '12.11.2026', items: 3 },
-  { id: 'T-005', client: 'Liis Lepp',  status: 'tarnitud',   total: '2 050 €', date: '10.11.2026', items: 5 },
-  { id: 'T-006', client: 'Toomas Oja', status: 'tühistatud', total: '340 €',   date: '08.11.2026', items: 1 },
-]
+const orders: { id: string; client: string; status: string; total: string; date: string; items: number }[] = []
 
 export default function OrdersPage() {
   return (

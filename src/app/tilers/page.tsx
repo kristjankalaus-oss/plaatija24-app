@@ -86,6 +86,27 @@ export default function TilersPage() {
         </div>
 
         {/* Paigaldajate nimekiri */}
+        {filtered.length === 0 ? (
+          <div className="card p-12 text-center border border-gray-200 max-w-xl mx-auto">
+            <span className="text-5xl block mb-3">👷</span>
+            <h2 className="text-lg font-extrabold text-gray-900">
+              {tilers.length === 0 ? 'Meistreid pole veel registreeritud' : 'Otsingule vastavaid meistreid ei leitud'}
+            </h2>
+            <p className="text-sm text-gray-500 mt-1 mb-6">
+              {tilers.length === 0
+                ? 'Ole esimene meister või paigaldusettevõte, kes loob oma profiili ja hakkab saama klientide hinnapäringuid!'
+                : 'Proovi muuta eriala või piirkonna filtrit.'}
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <Link href="/pro/profile" className="btn-primary py-2.5 px-6 text-xs font-bold">
+                + Loo meistri profiil
+              </Link>
+              <Link href="/request" className="btn-secondary py-2.5 px-6 text-xs font-bold">
+                Esita kliendipäring
+              </Link>
+            </div>
+          </div>
+        ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {filtered.map(tiler => (
             <div
@@ -192,6 +213,7 @@ export default function TilersPage() {
             </div>
           ))}
         </div>
+        )}
 
       </main>
     </div>

@@ -4,16 +4,41 @@ import { useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
-import { getTilerById, SEED_TILERS } from '@/lib/data-store'
+import { getTilerById } from '@/lib/data-store'
 import { GalleryItem } from '@/types'
 
 export default function TilerProfilePage() {
   const params = useParams()
-  const tilerId = (params?.id as string) || 'tiler-1'
-  const tiler = getTilerById(tilerId) || SEED_TILERS[0]
+  const tilerId = (params?.id as string) || ''
+  const tiler = getTilerById(tilerId)
 
   const [activeFilter, setActiveFilter] = useState<'all' | 'plaat' | 'mikrotsement'>('all')
   const [selectedPhoto, setSelectedPhoto] = useState<GalleryItem | null>(null)
+
+  if (!tiler) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <Navbar />
+        <main className="flex-1 flex items-center justify-center p-8">
+          <div className="card p-8 max-w-md w-full text-center border border-gray-200 space-y-4">
+            <span className="text-5xl block">👷</span>
+            <h1 className="text-xl font-extrabold text-gray-900">Meistrit ei leitud</h1>
+            <p className="text-sm text-gray-500">
+              See profiil on eemaldatud või puudub andmebaasist.
+            </p>
+            <div className="pt-2 flex flex-col sm:flex-row gap-3 justify-center">
+              <Link href="/tilers" className="btn-primary py-2.5 px-6 text-xs font-bold">
+                Vaata kõiki paigaldajaid
+              </Link>
+              <Link href="/pro/profile" className="btn-secondary py-2.5 px-6 text-xs font-bold">
+                Loo meistri profiil
+              </Link>
+            </div>
+          </div>
+        </main>
+      </div>
+    )
+  }
 
   const filteredGallery = tiler.gallery.filter(item => {
     if (activeFilter === 'all') return true

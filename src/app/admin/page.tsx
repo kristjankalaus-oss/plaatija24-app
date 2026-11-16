@@ -68,7 +68,7 @@ export default function AdminPage() {
   const [newClientType, setNewClientType] = useState<'private' | 'contractor_b2b'>('contractor_b2b')
 
   // Uue reklaami vorm
-  const [newAdBrand, setNewAdBrand] = useState('MIRA')
+  const [newAdBrand, setNewAdBrand] = useState('')
   const [newAdTitle, setNewAdTitle] = useState('')
   const [newAdSubtitle, setNewAdSubtitle] = useState('')
   const [newAdUrl, setNewAdUrl] = useState('')

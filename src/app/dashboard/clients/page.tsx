@@ -1,12 +1,6 @@
 import Topbar from '@/components/layout/Topbar'
 
-const clients = [
-  { id: 1, name: 'Mati Mägi',  email: 'mati@example.com', phone: '+372 5123 4567', address: 'Tartu mnt 12, Tallinn', orders: 3 },
-  { id: 2, name: 'Kati Kask',  email: 'kati@example.com', phone: '+372 5234 5678', address: 'Pärnu mnt 88, Tallinn', orders: 1 },
-  { id: 3, name: 'OÜ Renova',  email: 'info@renova.ee',   phone: '+372 6123 456',  address: 'Viru 5, Tallinn',       orders: 7 },
-  { id: 4, name: 'Jüri Tamm',  email: 'jyri@example.com', phone: '+372 5345 6789', address: 'Narva mnt 3, Tallinn',  orders: 2 },
-  { id: 5, name: 'Liis Lepp',  email: 'liis@example.com', phone: '+372 5456 7890', address: 'Mustamäe tee 50, Tallinn', orders: 4 },
-]
+const clients: { id: number; name: string; email: string; phone: string; address: string; orders: number }[] = []
 
 export default function ClientsPage() {
   return (

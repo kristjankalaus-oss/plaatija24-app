@@ -52,24 +52,22 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Ametlikult toetatud brändide riba */}
+      {/* Sertifitseeritud standardite riba */}
       <section className="py-5 bg-gray-50 border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14 text-gray-400 font-extrabold text-sm uppercase tracking-widest">
-            <span className="text-[11px] font-bold text-gray-400">Ametlikult toetatud süsteemid:</span>
-            <span className="text-gray-700 hover:text-blue-600 transition-colors">🇩🇰 MIRA</span>
-            <span className="text-gray-700 hover:text-blue-700 transition-colors">🇮🇹 MAPEI</span>
-            <span className="text-gray-700 hover:text-blue-800 transition-colors">🇫🇷 WEBER</span>
-            <span className="text-gray-700 hover:text-blue-900 transition-colors">🇫🇮 KIILTO</span>
-            <span className="text-gray-700 hover:text-gray-950 transition-colors">🇩🇪 CERESIT</span>
+          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-12 text-gray-500 font-bold text-xs uppercase tracking-wider">
+            <span className="text-gray-700 flex items-center gap-1.5"><span className="text-blue-600">🛡️</span> Sertifitseeritud hüdroisolatsioon</span>
+            <span className="text-gray-700 flex items-center gap-1.5"><span className="text-blue-600">📐</span> Täpne 2026 mahuarvestus</span>
+            <span className="text-gray-700 flex items-center gap-1.5"><span className="text-blue-600">🧱</span> Keraamika & Suurformaat</span>
+            <span className="text-gray-700 flex items-center gap-1.5"><span className="text-blue-600">🎨</span> Vuugivaba Mikrotsement</span>
           </div>
         </div>
       </section>
 
-      {/* Reklaamibännerite ruudustik (Sponsorid & Partnerid) */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+      {/* Reklaamibännerite ruudustik (ainult siis, kui on aktiivseid partnereid) */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <AdGrid />
-      </section>
+      </div>
 
       {/* Kuidas see töötab (4 sammu) */}
       <section className="py-16 px-4 sm:px-6 bg-gray-50/60 border-y border-gray-100">

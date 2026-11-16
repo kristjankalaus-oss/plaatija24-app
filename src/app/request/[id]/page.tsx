@@ -6,44 +6,46 @@ import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
 import ProjectChat from '@/components/chat/ProjectChat'
 import { ProjectInquiry, ContractorQuote } from '@/types'
-import { getProjectById, getQuotesForProject, fetchProjectFromSupabase, SEED_PROJECTS } from '@/lib/data-store'
+import { getProjectById, getQuotesForProject, fetchProjectFromSupabase } from '@/lib/data-store'
 
 export default function ProjectDetailPage() {
   const params = useParams()
-  const projectId = (params?.id as string) || 'demo-preview'
+  const projectId = (params?.id as string) || ''
 
   const [project, setProject] = useState<ProjectInquiry | null>(null)
+  const [loading, setLoading] = useState(true)
   const [quotes, setQuotes] = useState<ContractorQuote[]>([])
   const [selectedQuoteTiler, setSelectedQuoteTiler] = useState<{ id: string; name: string; company: string } | undefined>(undefined)
   const [activeTab, setActiveTab] = useState<'ai_quote' | 'visuals' | 'contractors' | 'chat'>('ai_quote')
 
   useEffect(() => {
-    let p = getProjectById(projectId)
-    if (!p) {
-      // Fallback kui otsiti ID-d, mida pole
-      p = SEED_PROJECTS[0]
-    }
-    setProject(p)
-
-    const qList = getQuotesForProject(p.id)
-    setQuotes(qList)
-    if (qList.length > 0) {
-      setSelectedQuoteTiler({
-        id: qList[0].tilerId,
-        name: qList[0].tilerName,
-        company: qList[0].tilerCompany
-      })
+    const p = getProjectById(projectId)
+    if (p) {
+      setProject(p)
+      const qList = getQuotesForProject(p.id)
+      setQuotes(qList)
+      if (qList.length > 0) {
+        setSelectedQuoteTiler({
+          id: qList[0].tilerId,
+          name: qList[0].tilerName,
+          company: qList[0].tilerCompany
+        })
+      }
+      setLoading(false)
     }
 
     // Pärime reaalajas ka Supabase pilvebaasist
     fetchProjectFromSupabase(projectId).then(remoteP => {
       if (remoteP) {
         setProject(remoteP)
+        const qList = getQuotesForProject(remoteP.id)
+        setQuotes(qList)
       }
+      setLoading(false)
     })
   }, [projectId])
 
-  if (!project) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
         <Navbar />
@@ -51,6 +53,31 @@ export default function ProjectDetailPage() {
           <div className="text-center">
             <span className="text-4xl">⏳</span>
             <p className="mt-3 text-gray-600 font-semibold">Laadin projekti andmeid...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (!project) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center p-8">
+          <div className="card p-8 max-w-md w-full text-center border border-gray-200 space-y-4">
+            <span className="text-5xl block">📋</span>
+            <h1 className="text-xl font-extrabold text-gray-900">Projekti ei leitud</h1>
+            <p className="text-sm text-gray-500">
+              See päring on eemaldatud või puudub andmebaasist. Esita uus hinnapäring, et saada AI kalkulatsioon ja meistrite pakkumised.
+            </p>
+            <div className="pt-2 flex flex-col sm:flex-row gap-3 justify-center">
+              <Link href="/request" className="btn-primary py-2.5 px-6 text-xs font-bold">
+                + Esita uus päring
+              </Link>
+              <Link href="/" className="btn-secondary py-2.5 px-6 text-xs font-bold">
+                Tagasi avalehele
+              </Link>
+            </div>
           </div>
         </div>
       </div>

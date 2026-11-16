@@ -23,8 +23,34 @@ export default function ProProfilePage() {
   useEffect(() => {
     const list = getTilers()
     setTilers(list)
-    const current = list.find(t => t.id === activeTilerId) || list[0]
-    setTiler(current)
+    if (list.length === 0) {
+      setTiler({
+        id: 'tiler-' + Date.now(),
+        name: '',
+        companyName: '',
+        registryCode: '',
+        avatarUrl: 'https://images.unsplash.com/photo-1540569014015-19a7be504e3a?auto=format&fit=crop&w=400&q=80',
+        city: 'Tallinn',
+        serviceRegions: ['Tallinn', 'Harjumaa'],
+        services: ['plaat'],
+        experienceYears: 5,
+        phone: '',
+        email: '',
+        rating: 5.0,
+        reviewsCount: 0,
+        completedJobsCount: 0,
+        bio: '',
+        badges: [],
+        verified: true,
+        subscriptionTier: 'free',
+        quotesUsedThisMonth: 0,
+        quotesLimit: 3,
+        gallery: []
+      })
+    } else {
+      const current = list.find(t => t.id === activeTilerId) || list[0]
+      setTiler(current)
+    }
   }, [activeTilerId])
 
   const handleProfileSave = (e: React.FormEvent) => {

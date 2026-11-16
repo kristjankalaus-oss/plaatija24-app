@@ -1,13 +1,7 @@
 import Topbar from '@/components/layout/Topbar'
 import StatusBadge from '@/components/ui/StatusBadge'
 
-const jobs = [
-  { id: 1, title: 'Vannitoa plaatimine',     address: 'Tartu mnt 12, Tallinn',      date: '16.11.2026', client: 'Mati Mägi',  status: 'planeeritud', order: 'T-001' },
-  { id: 2, title: 'Mikrotsement köögis',     address: 'Pärnu mnt 88, Tallinn',      date: '17.11.2026', client: 'Kati Kask',  status: 'planeeritud', order: 'T-002' },
-  { id: 3, title: 'Põrandaplaat büroos',     address: 'Viru 5, Tallinn',            date: '18.11.2026', client: 'OÜ Renova',  status: 'planeeritud', order: 'T-003' },
-  { id: 4, title: 'Dushi plaatimine',        address: 'Mustamäe tee 50, Tallinn',   date: '14.11.2026', client: 'Liis Lepp',  status: 'käimas',      order: 'T-005' },
-  { id: 5, title: 'Trepikoja plaatimine',    address: 'Narva mnt 3, Tallinn',       date: '12.11.2026', client: 'Jüri Tamm',  status: 'valmis',      order: 'T-004' },
-]
+const jobs: { id: number; title: string; address: string; date: string; client: string; status: string; order: string }[] = []
 
 export default function JobsPage() {
   return (

@@ -157,7 +157,7 @@ export default function RequestForm() {
   }
 
   // 4. Süsteemi valik & Töölõigud (2. samm)
-  const [systemBrand, setSystemBrand] = useState<SystemBrand>('mira')
+  const [systemBrand, setSystemBrand] = useState<SystemBrand>('none')
   const [levelingRequired, setLevelingRequired] = useState(true)
   const [demolitionRequired, setDemolitionRequired] = useState(false)
   const [waterproofingArea, setWaterproofingArea] = useState<number>(24)

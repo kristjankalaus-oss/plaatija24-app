@@ -1,14 +1,6 @@
 import Topbar from '@/components/layout/Topbar'
 
-const products = [
-  { id: 1, name: 'Rektangelplaat 60x60 Valge',    category: 'plaat',       unit: 'm2',  price: 18.50, stock: 120, lowStock: false },
-  { id: 2, name: 'Mikrotsement Efect Grigio',      category: 'mikrotsement', unit: 'kg', price: 24.00, stock: 45,  lowStock: false },
-  { id: 3, name: 'Flexliim C2 Mapei',              category: 'liim',        unit: 'pakk', price: 12.90, stock: 8, lowStock: true  },
-  { id: 4, name: 'Vuugimass Kerakoll Grigio',      category: 'vuugimass',   unit: 'kg',  price: 8.50,  stock: 30,  lowStock: false },
-  { id: 5, name: 'Tugiplaat 30x60 Antratsiit',     category: 'plaat',       unit: 'm2',  price: 32.00, stock: 56,  lowStock: false },
-  { id: 6, name: 'Mikrotsement Primer Base',       category: 'mikrotsement', unit: 'l',  price: 15.00, stock: 3,   lowStock: true  },
-  { id: 7, name: 'Plaatimistrowel 20cm',           category: 'tööriist',    unit: 'tk',  price: 22.00, stock: 12,  lowStock: false },
-]
+const products: { id: number; name: string; category: string; unit: string; price: number; stock: number; lowStock: boolean }[] = []
 
 const categoryColors: Record<string, string> = {
   plaat:        'bg-blue-100 text-blue-700',

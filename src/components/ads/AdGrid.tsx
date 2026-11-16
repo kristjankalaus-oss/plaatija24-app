@@ -1,69 +1,13 @@
 'use client'
 
-import { useState } from 'react'
 import { getAds } from '@/lib/data-store'
 
 export default function AdGrid() {
   const ads = getAds().filter(a => a.active)
 
-  const partnerBanners = [
-    {
-      id: 'mira-showcase',
-      brand: 'MIRA',
-      badge: 'Ametlik Süsteemipartner',
-      flag: '🇩🇰',
-      accentColor: '#0d5ed9',
-      bgGradient: 'from-blue-950/90 to-slate-900',
-      title: 'mira 4400 multicoat veetõke',
-      subtitle: 'Sertifitseeritud 2-kihiline elastne hüdroisolatsioon ja C2TE S1 elastne plaadiliim 10-aastase süsteemigarantiiga.',
-      perk: '10a garantii sertifikaat',
-      targetUrl: 'https://mirabyggeprodukter.ee',
-      ctaText: 'Vaata tehnilist kaarti →',
-      imageUrl: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80'
-    },
-    {
-      id: 'mapei-showcase',
-      brand: 'MAPEI',
-      badge: 'Itaalia Tippdisain',
-      flag: '🇮🇹',
-      accentColor: '#2563eb',
-      bgGradient: 'from-blue-950/90 to-slate-900',
-      title: 'Ultracolor Plus & Mapelastic',
-      subtitle: 'Kiirkõvenev vee- ja mustushülgav vuugisegu BioBlock® tehnoloogiaga. Üle 40 tooniplaatidega sobiva värvi.',
-      perk: 'Hallitusevaba BioBlock®',
-      targetUrl: 'https://www.mapei.com/ee',
-      ctaText: 'Tutvu värvikaardiga →',
-      imageUrl: 'https://images.unsplash.com/photo-1620626011761-996317b8d101?auto=format&fit=crop&w=800&q=80'
-    },
-    {
-      id: 'weber-showcase',
-      brand: 'WEBER',
-      badge: 'Saint-Gobain Ehituskeemia',
-      flag: '🇫🇷',
-      accentColor: '#059669',
-      bgGradient: 'from-emerald-950/90 to-stone-900',
-      title: 'weber vetonit põrandalahendused',
-      subtitle: 'Isevalguvad kiirkõvenevad tasandussegud ja veekindlad plaadiliimid professionaalsele ehitajale.',
-      perk: 'Kiire kuivamine & tugevus',
-      targetUrl: 'https://www.ee.weber',
-      ctaText: 'Loe tootejuhendit →',
-      imageUrl: 'https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?auto=format&fit=crop&w=800&q=80'
-    },
-    {
-      id: 'store-showcase',
-      brand: 'ESPAK & EHITUSEABC',
-      badge: 'Eksklusiivne Sooduskood',
-      flag: '🏷️',
-      accentColor: '#e11d48',
-      bgGradient: 'from-rose-950/90 to-gray-900',
-      title: 'Materjalide hulgisoodustus -15%',
-      subtitle: 'Telli plaadiliimid, vuugisegud ja hüdroisolatsioon Plaatija24 sooduskoodiga otse edasimüüjatelt.',
-      perk: 'Kood: PLAATIJA24',
-      targetUrl: 'https://www.espak.ee',
-      ctaText: 'Kasuta sooduskoodi →',
-      imageUrl: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80'
-    }
-  ]
+  if (ads.length === 0) {
+    return null
+  }
 
   return (
     <div className="space-y-6">
@@ -75,74 +19,50 @@ export default function AdGrid() {
           <h3 className="text-xl sm:text-2xl font-black text-gray-950 mt-1">
             Ehitusmaterjalide ja süsteemide eripakkumised
           </h3>
-          <p className="text-xs text-gray-500">
-            Ametlikult tunnustatud plaatimis- ja veetõkkesüsteemid otse tootjatelt
-          </p>
-        </div>
-        <div className="text-[11px] font-semibold text-gray-400">
-          Sponsoreeritud bännerid
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {partnerBanners.map(b => (
-          <div
-            key={b.id}
-            className="group relative rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between min-h-[220px]"
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        {ads.map((item) => (
+          <a
+            key={item.id}
+            href={item.targetUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative rounded-2xl overflow-hidden border border-gray-200 bg-gray-900 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between min-h-[260px]"
           >
-            {/* Taustapilt tumeduse ja gradiendiga */}
-            <div className="absolute inset-0 z-0">
-              <img
-                src={b.imageUrl}
-                alt={b.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-30"
+            {item.imageUrl && (
+              <div
+                className="absolute inset-0 bg-cover bg-center opacity-40 group-hover:opacity-50 group-hover:scale-105 transition-all duration-500"
+                style={{ backgroundImage: `url(${item.imageUrl})` }}
               />
-              <div className={`absolute inset-0 bg-gradient-to-r ${b.bgGradient} opacity-90`} />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/65 to-transparent" />
+
+            <div className="relative z-10 p-5 flex items-center justify-between">
+              <span className="px-2.5 py-1 rounded-lg bg-white/15 backdrop-blur-md text-white text-xs font-black tracking-wider border border-white/20">
+                {item.brand}
+              </span>
             </div>
 
-            {/* Sisu */}
-            <div className="relative z-10 p-6 flex flex-col justify-between h-full text-white">
-              <div>
-                <div className="flex items-center justify-between gap-2 mb-3">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="px-2.5 py-0.5 rounded text-[11px] font-black tracking-wider uppercase text-black"
-                      style={{ backgroundColor: b.accentColor }}
-                    >
-                      {b.flag} {b.brand}
-                    </span>
-                    <span className="text-[10px] font-semibold text-gray-300">
-                      {b.badge}
-                    </span>
-                  </div>
-                  <span className="text-[10px] bg-white/20 backdrop-blur-xs px-2 py-0.5 rounded-full font-bold">
-                    {b.perk}
-                  </span>
-                </div>
+            <div className="relative z-10 p-5 pt-10 space-y-2">
+              <h4 className="font-extrabold text-white text-base leading-snug group-hover:text-blue-300 transition-colors">
+                {item.title}
+              </h4>
+              <p className="text-xs text-gray-300 leading-relaxed line-clamp-2">
+                {item.subtitle}
+              </p>
 
-                <h4 className="text-lg font-black text-white leading-tight mb-1.5">
-                  {b.title}
-                </h4>
-                <p className="text-xs text-gray-300 leading-relaxed max-w-md">
-                  {b.subtitle}
-                </p>
-              </div>
-
-              <div className="pt-4 mt-2 border-t border-white/10 flex items-center justify-between">
-                <span className="text-[11px] text-gray-400 font-medium">
-                  Ametlik tootesari
+              <div className="pt-2 flex items-center justify-between">
+                <span className="text-[11px] font-bold text-blue-300">
+                  {item.tagline}
                 </span>
-                <a
-                  href={b.targetUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs font-bold px-3.5 py-1.5 rounded-lg bg-white text-gray-900 hover:bg-blue-600 hover:text-white transition-colors shadow-xs"
-                >
-                  {b.ctaText}
-                </a>
+                <span className="text-xs font-bold text-white group-hover:translate-x-1 transition-transform">
+                  {item.ctaText}
+                </span>
               </div>
             </div>
-          </div>
+          </a>
         ))}
       </div>
     </div>
