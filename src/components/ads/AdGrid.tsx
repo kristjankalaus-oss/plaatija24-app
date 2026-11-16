@@ -1,16 +1,27 @@
 'use client'
 
-import { getAds } from '@/lib/data-store'
+import { useState, useEffect } from 'react'
+import { getAds, fetchAdsFromSupabase } from '@/lib/data-store'
+import { AdBanner as AdBannerType } from '@/types'
 
 export default function AdGrid() {
-  const ads = getAds().filter(a => a.active)
+  const [ads, setAds] = useState<AdBannerType[]>([])
+
+  useEffect(() => {
+    setAds(getAds().filter(a => a.active))
+    fetchAdsFromSupabase().then(remote => {
+      if (remote) {
+        setAds(remote.filter(a => a.active))
+      }
+    })
+  }, [])
 
   if (ads.length === 0) {
     return null
   }
 
   return (
-    <div className="space-y-6">
+    <div className="py-12 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
           <span className="text-xs font-black uppercase tracking-wider text-blue-800 bg-blue-100 border border-blue-200/80 px-2.5 py-0.5 rounded">
@@ -33,14 +44,17 @@ export default function AdGrid() {
           >
             {item.imageUrl && (
               <div
-                className="absolute inset-0 bg-cover bg-center opacity-40 group-hover:opacity-50 group-hover:scale-105 transition-all duration-500"
+                className="absolute inset-0 bg-cover bg-center opacity-45 group-hover:opacity-55 group-hover:scale-105 transition-all duration-500"
                 style={{ backgroundImage: `url(${item.imageUrl})` }}
               />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/65 to-transparent" />
 
             <div className="relative z-10 p-5 flex items-center justify-between">
-              <span className="px-2.5 py-1 rounded-lg bg-white/15 backdrop-blur-md text-white text-xs font-black tracking-wider border border-white/20">
+              <span
+                className="px-2.5 py-1 rounded-lg text-white text-xs font-black tracking-wider border border-white/20 shadow-xs"
+                style={{ backgroundColor: item.accentColor || '#0d5ed9' }}
+              >
                 {item.brand}
               </span>
             </div>

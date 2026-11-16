@@ -1,7 +1,8 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { AdBanner as AdBannerType } from '@/types'
-import { getAds } from '@/lib/data-store'
+import { getAds, fetchAdsFromSupabase } from '@/lib/data-store'
 
 interface AdBannerProps {
   position?: 'top_header' | 'sidebar' | 'inline'
@@ -9,7 +10,15 @@ interface AdBannerProps {
 }
 
 export default function AdBanner({ position = 'inline', specificBrand }: AdBannerProps) {
-  const ads = getAds()
+  const [ads, setAds] = useState<AdBannerType[]>([])
+
+  useEffect(() => {
+    setAds(getAds())
+    fetchAdsFromSupabase().then(remote => {
+      if (remote) setAds(remote)
+    })
+  }, [])
+
   const activeAds = ads.filter(a => a.active)
 
   if (activeAds.length === 0) return null

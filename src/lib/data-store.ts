@@ -381,9 +381,104 @@ export function getAds(): AdBanner[] {
   }
 }
 
+// BÄNNERITE HINNAKIRI VASTAVALT SUURUSELE JA ASUKOHALE
+export const AD_BANNER_PACKAGES = [
+  {
+    id: 'top_header',
+    name: 'Ülariba Tippbänner',
+    sizeLabel: '100% laius (kõikidel lehtedel)',
+    priceMonthly: 290,
+    badge: 'Maksimaalne nähtavus',
+    description: 'Kõige ülemine riba igal lehel (avaleht, kalkulaator, töölaud). Korraga kuvatakse 1 eksklusiivne peasponsor.',
+  },
+  {
+    id: 'sidebar',
+    name: 'Kalkulaatori & Projekti Bänner',
+    sizeLabel: '360 × 200 px (kõrvalpaan)',
+    priceMonthly: 240,
+    badge: 'Kõrgeim ostuvalmidus',
+    description: 'Ilmub päringuvormis ja AI hinnaprognoosi kõrval hetkel, mil klient arvutab materjalide ja töö eelarvet.',
+  },
+  {
+    id: 'inline',
+    name: 'Avalehe Partnerikaart',
+    sizeLabel: '320 × 260 px (4-veeruline ruudustik)',
+    priceMonthly: 190,
+    badge: 'Parim hinna ja tulemuse suhe',
+    description: 'Suur visuaalne kaart tootefoto, sooduskoodi ja otselingiga avalehe partnerite sektsioonis.',
+  },
+] as const
+
 export function saveAds(ads: AdBanner[]): void {
   if (typeof window === 'undefined') return
   localStorage.setItem(STORAGE_KEYS.ADS, JSON.stringify(ads))
+
+  // Taustasünkroonimine Supabase'i
+  try {
+    const rows = ads.map(a => ({
+      id: a.id,
+      brand: a.brand,
+      title: a.title,
+      subtitle: a.subtitle,
+      tagline: a.tagline,
+      cta_text: a.ctaText,
+      target_url: a.targetUrl,
+      image_url: a.imageUrl || null,
+      position: a.position,
+      active: a.active,
+      accent_color: a.accentColor
+    }))
+    if (rows.length > 0) {
+      supabase.from('ad_banners').upsert(rows).then(() => {})
+    }
+  } catch (err) {
+    console.debug('Supabase ad_banners sync skipped:', err)
+  }
+}
+
+export function deleteAd(id: string): AdBanner[] {
+  const updated = getAds().filter(a => a.id !== id)
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(STORAGE_KEYS.ADS, JSON.stringify(updated))
+  }
+  try {
+    supabase.from('ad_banners').delete().eq('id', id).then(() => {})
+  } catch (err) {
+    console.debug('Supabase ad_banners delete skipped:', err)
+  }
+  return updated
+}
+
+export async function fetchAdsFromSupabase(): Promise<AdBanner[]> {
+  try {
+    const { data, error } = await supabase
+      .from('ad_banners')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (error || !data) return getAds()
+
+    const mapped: AdBanner[] = data.map(row => ({
+      id: row.id,
+      brand: row.brand,
+      title: row.title,
+      subtitle: row.subtitle || '',
+      tagline: row.tagline || '',
+      ctaText: row.cta_text || 'Vaata lähemalt →',
+      targetUrl: row.target_url,
+      imageUrl: row.image_url || '',
+      position: row.position || 'inline',
+      active: Boolean(row.active),
+      accentColor: row.accent_color || '#0d5ed9'
+    }))
+
+    if (typeof window !== 'undefined' && mapped.length > 0) {
+      localStorage.setItem(STORAGE_KEYS.ADS, JSON.stringify(mapped))
+    }
+    return mapped
+  } catch {
+    return getAds()
+  }
 }
 
 export function getAdminProducts(): AdminProduct[] {

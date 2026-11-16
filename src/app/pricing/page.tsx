@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
-import { getPricingPlans, getTilers, updateTilerProfile } from '@/lib/data-store'
+import { getPricingPlans, getTilers, updateTilerProfile, AD_BANNER_PACKAGES } from '@/lib/data-store'
 import { SubscriptionTier, TilerProfile } from '@/types'
 
 export default function PricingPage() {
@@ -182,6 +182,50 @@ export default function PricingPage() {
             >
               Vaata avatud päringuid töölaual →
             </Link>
+          </div>
+        </div>
+
+        {/* Reklaamipindade hinnakiri tootjatele ja poodidele */}
+        <div className="mt-16 pt-12 border-t border-gray-200">
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <span className="text-xs uppercase font-extrabold tracking-wider px-3.5 py-1 bg-blue-100 text-blue-900 border border-blue-200/80 rounded-full">
+              Partneritele & Ehituspoodidele
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-black text-gray-950 mt-3">
+              Reklaamipindade & bännerite hinnakiri
+            </h2>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">
+              Jõua otse klientide ja professionaalsete plaatijateni hetkel, mil nad planeerivad materjalide ostu. Platvorm kujundab bännerikaardi sinu teksti ja pildi põhjal automaatselt.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {AD_BANNER_PACKAGES.map((pkg) => (
+              <div key={pkg.id} className="card p-6 border border-gray-200 bg-white flex flex-col justify-between hover:border-blue-400 hover:shadow-lg transition-all">
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-800 border border-blue-200">
+                      {pkg.badge}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-extrabold text-gray-950">{pkg.name}</h3>
+                  <div className="text-[11px] font-mono text-gray-400 mt-0.5">{pkg.sizeLabel}</div>
+                  <div className="mt-3 text-3xl font-black text-gray-950">
+                    {pkg.priceMonthly} € <span className="text-xs font-normal text-gray-400">/ kuu</span>
+                  </div>
+                  <p className="text-xs text-gray-600 mt-3 leading-relaxed">
+                    {pkg.description}
+                  </p>
+                </div>
+
+                <a
+                  href={`mailto:info@plaatija24.ee?subject=${encodeURIComponent(`Reklaamipinna tellimine: ${pkg.name} (${pkg.priceMonthly} €/k)`)}`}
+                  className="btn-secondary w-full justify-center py-2.5 text-xs font-bold mt-6"
+                >
+                  Broneeri pind (info@plaatija24.ee) →
+                </a>
+              </div>
+            ))}
           </div>
         </div>
 

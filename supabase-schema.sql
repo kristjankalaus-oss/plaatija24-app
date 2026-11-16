@@ -169,6 +169,27 @@ alter table public.project_messages  enable row level security;
 alter table public.admin_products    enable row level security;
 alter table public.pricing_rules     enable row level security;
 
+-- 7B. REKLAAMIBÄNNERID (Sponsorid & Partnerid)
+create table if not exists public.ad_banners (
+  id           text primary key,
+  brand        text not null,
+  title        text not null,
+  subtitle     text,
+  tagline      text,
+  cta_text     text default 'Vaata lähemalt →',
+  target_url   text not null,
+  image_url    text,
+  position     text check (position in ('top_header', 'sidebar', 'inline')) default 'inline',
+  active       boolean default true,
+  accent_color text default '#0d5ed9',
+  created_at   timestamptz default now()
+);
+alter table public.ad_banners enable row level security;
+create policy "public_read_ad_banners"   on public.ad_banners for select using (true);
+create policy "public_insert_ad_banners" on public.ad_banners for insert with check (true);
+create policy "public_update_ad_banners" on public.ad_banners for update using (true);
+create policy "public_delete_ad_banners" on public.ad_banners for delete using (true);
+
 -- Avalik lugemine
 create policy "public_read_tiler_profiles"    on public.tiler_profiles    for select using (true);
 create policy "public_read_gallery_items"     on public.gallery_items     for select using (true);

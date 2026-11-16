@@ -16,7 +16,10 @@ import {
   savePricingRules,
   resetPricingRules,
   getFeedbacks,
-  resolveFeedback
+  resolveFeedback,
+  deleteAd,
+  fetchAdsFromSupabase,
+  AD_BANNER_PACKAGES
 } from '@/lib/data-store'
 import {
   AdminProduct,
@@ -82,7 +85,10 @@ export default function AdminPage() {
   const [newAdTitle, setNewAdTitle] = useState('')
   const [newAdSubtitle, setNewAdSubtitle] = useState('')
   const [newAdUrl, setNewAdUrl] = useState('')
-  const [newAdColor, setNewAdColor] = useState('#d97706')
+  const [newAdColor, setNewAdColor] = useState('#0d5ed9')
+  const [newAdPosition, setNewAdPosition] = useState<'top_header' | 'sidebar' | 'inline'>('inline')
+  const [newAdImageUrl, setNewAdImageUrl] = useState('')
+  const [newAdCtaText, setNewAdCtaText] = useState('Vaata lähemalt →')
 
   const refreshAll = () => {
     setProducts(getAdminProducts())
@@ -92,6 +98,9 @@ export default function AdminPage() {
     setProjects(getProjects())
     setPricingRules(getPricingRules())
     setFeedbacks(getFeedbacks())
+    fetchAdsFromSupabase().then(remoteAds => {
+      if (remoteAds && remoteAds.length > 0) setAds(remoteAds)
+    })
   }
 
   useEffect(() => {
@@ -228,6 +237,26 @@ export default function AdminPage() {
     flashNotice('✅ Reklaamibänneri staatus muudetud!')
   }
 
+  // Reklaami kustutamine
+  const handleDeleteAd = (id: string) => {
+    const updated = deleteAd(id)
+    setAds(updated)
+    flashNotice('🗑️ Reklaamibänner eemaldatud!')
+  }
+
+  // Pildifaili lugemine DataURL-iks
+  const handleAdImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        setNewAdImageUrl(reader.result)
+      }
+    }
+    reader.readAsDataURL(file)
+  }
+
   // Uue reklaami lisamine
   const handleAddAd = (e: React.FormEvent) => {
     e.preventDefault()
@@ -239,10 +268,10 @@ export default function AdminPage() {
       title: newAdTitle,
       subtitle: newAdSubtitle || 'Ametlik süsteemipartner',
       tagline: 'Sertifitseeritud lahendused',
-      ctaText: 'Vaata lähemalt →',
-      targetUrl: newAdUrl || 'https://ehitusmaterjalid.ee',
-      imageUrl: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80',
-      position: 'inline',
+      ctaText: newAdCtaText || 'Vaata lähemalt →',
+      targetUrl: newAdUrl || 'https://www.plaatija24.ee',
+      imageUrl: newAdImageUrl || '',
+      position: newAdPosition,
       active: true,
       accentColor: newAdColor
     }
@@ -250,9 +279,12 @@ export default function AdminPage() {
     const updated = [newAd, ...ads]
     setAds(updated)
     saveAds(updated)
+    setNewAdBrand('')
     setNewAdTitle('')
     setNewAdSubtitle('')
-    flashNotice(`✅ Reklaamipartneri "${newAd.brand}" bänner lisatud!`)
+    setNewAdUrl('')
+    setNewAdImageUrl('')
+    flashNotice(`✅ Reklaamipartneri "${newAd.brand}" bänner lisatud ja salvestatud!`)
   }
 
   // Statistika
@@ -1352,50 +1384,92 @@ export default function AdminPage() {
 
         {/* TAB 5: REKLAAMIBÄNNERITE HALDUS */}
         {activeTab === 'ads' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            {/* Vasak: Bännerite nimekiri */}
-            <div className="lg:col-span-7 space-y-4">
-              <div className="card p-6 border border-gray-200">
-                <h3 className="font-bold text-gray-900 text-base mb-1">Portaali reklaamibännerid (Sponsorid)</h3>
-                <p className="text-xs text-gray-500 mb-4">
-                  Need bännerid ilmuvad päringuvormis, avalehel ja projekti detaillehel
-                </p>
-
-                <div className="space-y-3">
-                  {ads.map(ad => (
-                    <div key={ad.id} className="p-4 rounded-xl border border-gray-200 bg-white flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="w-10 h-10 rounded-lg text-white font-black text-xs flex items-center justify-center uppercase shadow-2xs"
-                          style={{ backgroundColor: ad.accentColor || '#d97706' }}
-                        >
-                          {ad.brand}
-                        </div>
-                        <div>
-                          <div className="font-extrabold text-gray-900 text-xs">{ad.title}</div>
-                          <div className="text-[11px] text-gray-500">{ad.subtitle}</div>
-                          <a href={ad.targetUrl} target="_blank" rel="noreferrer" className="text-[10px] text-blue-600 underline">
-                            {ad.targetUrl}
-                          </a>
-                        </div>
-                      </div>
-
-                      <button
-                        onClick={() => handleToggleAd(ad.id)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                          ad.active
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : 'bg-gray-100 text-gray-400'
-                        }`}
-                      >
-                        {ad.active ? '✓ Aktiivne' : 'Peatatud'}
-                      </button>
+          <div className="space-y-8">
+            {/* Bännerite soovituslik hinnakiri suuruse ja asukoha järgi */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {AD_BANNER_PACKAGES.map(pkg => (
+                <div key={pkg.id} className="card p-5 border border-blue-200 bg-blue-50/30 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-blue-100 text-blue-900">
+                        {pkg.badge}
+                      </span>
+                      <span className="text-lg font-black text-blue-700">{pkg.priceMonthly} € / kuu</span>
                     </div>
-                  ))}
+                    <h4 className="font-extrabold text-gray-950 text-sm mt-1">{pkg.name}</h4>
+                    <div className="text-[11px] font-mono text-gray-500 mt-0.5">{pkg.sizeLabel}</div>
+                    <p className="text-xs text-gray-600 mt-2 leading-relaxed">{pkg.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              {/* Vasak: Bännerite nimekiri */}
+              <div className="lg:col-span-7 space-y-4">
+                <div className="card p-6 border border-gray-200">
+                  <h3 className="font-bold text-gray-900 text-base mb-1">Portaali reklaamibännerid (Sponsorid)</h3>
+                  <p className="text-xs text-gray-500 mb-4">
+                    Bännerid sünkroonitakse automaatselt Supabase pilve ja ilmuvad kõigile külastajatele
+                  </p>
+
+                  {ads.length === 0 ? (
+                    <div className="py-10 text-center text-gray-400 text-sm">
+                      <span className="text-3xl block mb-2">📢</span>
+                      Hetkel pole ühtegi reklaamibännerit lisatud.
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {ads.map(ad => (
+                        <div key={ad.id} className="p-4 rounded-xl border border-gray-200 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className="w-10 h-10 rounded-lg text-white font-black text-[10px] flex items-center justify-center uppercase shadow-2xs shrink-0"
+                              style={{ backgroundColor: ad.accentColor || '#0d5ed9' }}
+                            >
+                              {ad.brand.slice(0, 5)}
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-extrabold text-gray-900 text-xs">{ad.title}</span>
+                                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-gray-100 text-gray-600">
+                                  {ad.position === 'top_header' ? 'Ülariba (290€)' : ad.position === 'sidebar' ? 'Kõrvalpaan (240€)' : 'Avaleht (190€)'}
+                                </span>
+                              </div>
+                              <div className="text-[11px] text-gray-500">{ad.subtitle}</div>
+                              <a href={ad.targetUrl} target="_blank" rel="noreferrer" className="text-[10px] text-blue-600 underline">
+                                {ad.targetUrl}
+                              </a>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 self-end sm:self-center">
+                            <button
+                              type="button"
+                              onClick={() => handleToggleAd(ad.id)}
+                              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                                ad.active
+                                  ? 'bg-emerald-100 text-emerald-800'
+                                  : 'bg-gray-100 text-gray-400'
+                              }`}
+                            >
+                              {ad.active ? '✓ Aktiivne' : 'Peatatud'}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteAd(ad.id)}
+                              className="px-2.5 py-1.5 rounded-lg text-xs font-bold text-red-600 hover:bg-red-50 transition-colors"
+                              title="Kustuta bänner"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
 
             {/* Parem: Lisa uus bänner */}
             <div className="lg:col-span-5 space-y-4">
@@ -1451,6 +1525,21 @@ export default function AdminPage() {
 
                   <div>
                     <label className="block font-bold text-gray-700 uppercase tracking-wider mb-1">
+                      Bänneri asukoht ja suurus *
+                    </label>
+                    <select
+                      value={newAdPosition}
+                      onChange={(e) => setNewAdPosition(e.target.value as typeof newAdPosition)}
+                      className="input text-xs font-semibold bg-white"
+                    >
+                      <option value="inline">Avalehe Partnerikaart (320×260px · 190 €/k)</option>
+                      <option value="sidebar">Kalkulaatori Kõrvalpaan (360×200px · 240 €/k)</option>
+                      <option value="top_header">Ülariba Tippbänner (100% laius · 290 €/k)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-gray-700 uppercase tracking-wider mb-1">
                       Sihtkoha URL (veebilink)
                     </label>
                     <input
@@ -1464,16 +1553,51 @@ export default function AdminPage() {
 
                   <div>
                     <label className="block font-bold text-gray-700 uppercase tracking-wider mb-1">
-                      Brändi tunnusvärv
+                      Taustapilt (laadi fail või sisesta URL)
                     </label>
-                    <div className="flex items-center gap-2">
+                    <div className="space-y-2">
                       <input
-                        type="color"
-                        value={newAdColor}
-                        onChange={(e) => setNewAdColor(e.target.value)}
-                        className="w-10 h-8 rounded border border-gray-300 cursor-pointer"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAdImageUpload}
+                        className="block w-full text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                       />
-                      <span className="font-mono text-gray-600">{newAdColor}</span>
+                      <input
+                        type="url"
+                        value={newAdImageUrl}
+                        onChange={(e) => setNewAdImageUrl(e.target.value)}
+                        placeholder="Või kleebi pildi URL (https://...)"
+                        className="input text-xs font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block font-bold text-gray-700 uppercase tracking-wider mb-1">
+                        Nupu tekst
+                      </label>
+                      <input
+                        type="text"
+                        value={newAdCtaText}
+                        onChange={(e) => setNewAdCtaText(e.target.value)}
+                        placeholder="Vaata lähemalt →"
+                        className="input text-xs"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-bold text-gray-700 uppercase tracking-wider mb-1">
+                        Brändi värv
+                      </label>
+                      <div className="flex items-center gap-2 pt-1">
+                        <input
+                          type="color"
+                          value={newAdColor}
+                          onChange={(e) => setNewAdColor(e.target.value)}
+                          className="w-10 h-8 rounded border border-gray-300 cursor-pointer"
+                        />
+                        <span className="font-mono text-gray-600">{newAdColor}</span>
+                      </div>
                     </div>
                   </div>
 
@@ -1486,7 +1610,7 @@ export default function AdminPage() {
                 </form>
               </div>
             </div>
-
+            </div>
           </div>
         )}
 
