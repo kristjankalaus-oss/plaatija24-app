@@ -254,7 +254,7 @@ export default function AdminPage() {
   const proTilersCount = tilers.filter(t => t.subscriptionTier === 'pro_1290').length
   const b2bTilersCount = tilers.filter(t => t.subscriptionTier === 'vip_b2b_2500').length
   const freeTilersCount = tilers.filter(t => t.subscriptionTier === 'free').length
-  const monthlySubscriptionRevenue = (proTilersCount * 12.90) + (b2bTilersCount * 25.00)
+  const monthlySubscriptionRevenue = (proTilersCount * 12.90) + (b2bTilersCount * 49.00)
   const totalVolumeEstimate = projects.reduce((sum, p) => sum + (p.aiEstimate?.grossTotal || 0), 0)
 
   const handleAdminUnlock = async (e: React.FormEvent) => {
@@ -346,7 +346,7 @@ export default function AdminPage() {
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold">Portaali haldus, tooted & tulud</h1>
             <p className="text-xs sm:text-sm text-gray-300 mt-1">
-              Muuda letihindu, halda tellimuspakette (12.90 € / 25 €), lisa kliente ja halda reklaamibännereid.
+              Muuda letihindu, halda tellimuspakette (12.90 € / 49 €), lisa kliente ja halda reklaamibännereid.
             </p>
           </div>
 
@@ -378,7 +378,7 @@ export default function AdminPage() {
             { id: 'overview', label: '📊 Ülevaade & Tulud' },
             { id: 'pricing', label: `🎯 Turu Hinnakiri & AI (${pricingRules.length})` },
             { id: 'products', label: `📦 Tooted & Letihinnad (${products.length})` },
-            { id: 'plans', label: '💰 Paketid & Hinnastus (12.90€ / 25€)' },
+            { id: 'plans', label: '💰 Paketid & Hinnastus (12.90€ / 49€)' },
             { id: 'clients', label: `👥 Meistrid & Peatöövõtjad (${tilers.length})` },
             { id: 'ads', label: `📢 Reklaamibännerid (${ads.length})` },
           ].map(tab => (
@@ -410,7 +410,7 @@ export default function AdminPage() {
                   {monthlySubscriptionRevenue.toFixed(2)} €
                 </div>
                 <div className="text-[11px] text-emerald-700 mt-1">
-                  {proTilersCount} PRO (12.90€) + {b2bTilersCount} B2B (25€)
+                  {proTilersCount} PRO (12.90€) + {b2bTilersCount} B2B (49€)
                 </div>
               </div>
 
@@ -1140,7 +1140,7 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* TAB 3: PAKETID & HINNASTUS (12.90€ / 25€) */}
+        {/* TAB 3: PAKETID & HINNASTUS (12.90€ / 49€) */}
         {activeTab === 'plans' && (
           <div className="space-y-6">
             <div className="card p-6 border border-gray-200">
@@ -1222,7 +1222,7 @@ export default function AdminPage() {
                         >
                           <option value="free">Tasuta (3 pakkumist/k)</option>
                           <option value="pro_1290">Meister PRO (12.90 €)</option>
-                          <option value="vip_b2b_2500">Peatöövõtjad B2B (25.00 €)</option>
+                          <option value="vip_b2b_2500">Peatöövõtjad B2B (49.00 €)</option>
                         </select>
                       </div>
                     </div>

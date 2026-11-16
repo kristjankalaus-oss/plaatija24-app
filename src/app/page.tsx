@@ -38,7 +38,7 @@ export default function HomePage() {
               href="/pricing"
               className="btn-secondary text-base py-4 px-8"
             >
-              🔨 Liitu meistrina (alates 0 € kuni 25 €/k)
+              🔨 Liitu meistrina (alates 0 € kuni 49 €/k)
             </Link>
           </div>
 
@@ -144,7 +144,7 @@ export default function HomePage() {
               Korterelamud, äripinnad ja suuremahulised hanked
             </h2>
             <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed">
-              Kas juhid ehitusobjekti või arendust? Sisesta korterite mahutabelid ja dwg joonised. Sinu hankele pääsevad pakkumisi tegema ainult kontrollitud <strong>B2B Äripaketiga (25 €/kuu)</strong> liitunud meistrid.
+              Kas juhid ehitusobjekti või arendust? Sisesta korterite mahutabelid ja dwg joonised. Sinu hankele pääsevad pakkumisi tegema ainult kontrollitud <strong>B2B Äripaketiga (49 €/kuu)</strong> liitunud meistrid.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 whitespace-nowrap">
@@ -158,7 +158,7 @@ export default function HomePage() {
               href="/pricing"
               className="px-6 py-3.5 bg-gray-900 hover:bg-gray-800 text-white font-bold rounded-xl text-xs border border-gray-700 transition-colors text-center"
             >
-              Liitu 25€ B2B meistrina
+              Liitu 49€ B2B meistrina
             </Link>
           </div>
         </div>
@@ -211,11 +211,11 @@ export default function HomePage() {
                   <span className="text-xs font-bold text-blue-400 uppercase">Peatöövõtjad & Äri PRO</span>
                   <span className="text-[10px] bg-blue-600/30 text-blue-300 border border-blue-500/40 px-2 py-0.5 rounded font-bold">B2B Eliit</span>
                 </div>
-                <div className="text-2xl font-black text-white mt-1">25.00 € <span className="text-xs font-normal text-gray-400">/ kuu</span></div>
+                <div className="text-2xl font-black text-white mt-1">49.00 € <span className="text-xs font-normal text-gray-400">/ kuu</span></div>
                 <p className="text-xs text-gray-300 mt-1">Täielik ligipääs PEATÖÖVÕTJATE B2B hangetele ja arendustele.</p>
               </div>
               <Link href="/pricing" className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl text-center mt-6 transition-colors shadow-xs">
-                Liitu 25.00 € paketiga
+                Liitu 49.00 € paketiga
               </Link>
             </div>
           </div>
@@ -237,7 +237,7 @@ export default function HomePage() {
           <div className="flex flex-wrap gap-5 font-semibold">
             <Link href="/request" className="hover:text-white transition-colors">Küsi pakkumist</Link>
             <Link href="/tilers" className="hover:text-white transition-colors">Paigaldajad</Link>
-            <Link href="/pricing" className="hover:text-white transition-colors">Meistrite paketid (12.90€ / 25€)</Link>
+            <Link href="/pricing" className="hover:text-white transition-colors">Meistrite paketid (12.90€ / 49€)</Link>
             <Link href="/pro/requests" className="hover:text-white transition-colors">Töölaud</Link>
             <Link href="/login" className="hover:text-white transition-colors">Logi sisse</Link>
             <Link href="/admin" className="text-blue-400 hover:text-blue-300 transition-colors">⚙️ Admin Paneel</Link>

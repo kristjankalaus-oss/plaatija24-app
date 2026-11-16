@@ -79,7 +79,7 @@ export default function ProRequestsPage() {
     if (!currentProject || !currentTiler) return
 
     if (isB2BLocked) {
-      setErrorMsg('See on Peatöövõtja B2B päring. Pakkumise saatmiseks liitu 25 €/kuus paketiga!')
+      setErrorMsg('See on Peatöövõtja B2B päring. Pakkumise saatmiseks liitu 49 €/kuus paketiga!')
       return
     }
 
@@ -224,7 +224,7 @@ export default function ProRequestsPage() {
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-700 text-gray-300'
               }`}>
-                {currentTiler?.subscriptionTier === 'vip_b2b_2500' ? 'B2B Äri PRO (25€)' : currentTiler?.subscriptionTier === 'pro_1290' ? 'Meister PRO (12.90€)' : 'Tasuta (3/kuu)'}
+                {currentTiler?.subscriptionTier === 'vip_b2b_2500' ? 'B2B Äri PRO (49€)' : currentTiler?.subscriptionTier === 'pro_1290' ? 'Meister PRO (12.90€)' : 'Tasuta (3/kuu)'}
               </span>
             </div>
 
@@ -285,7 +285,7 @@ export default function ProRequestsPage() {
                   {isB2B && (
                     <div className="mb-2">
                       <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-blue-100 text-blue-900 border border-blue-200">
-                        💎 Peatöövõtja B2B Hange (25€ pakett)
+                        💎 Peatöövõtja B2B Hange (49€ pakett)
                       </span>
                     </div>
                   )}
@@ -405,7 +405,7 @@ export default function ProRequestsPage() {
               {/* PAKKUMISE KOHANDAMINE & SAATMINE */}
               <div className="card p-6 border-2 border-blue-500 bg-white shadow-md relative overflow-hidden">
                 
-                {/* LUKUSTUS 1: B2B Peatöövõtja päring, nõutav 25€ pakett */}
+                {/* LUKUSTUS 1: B2B Peatöövõtja päring, nõutav 49€ pakett */}
                 {isB2BLocked ? (
                   <div className="p-8 text-center bg-blue-50/90 border-2 border-blue-400 rounded-2xl">
                     <span className="text-4xl">🔒</span>
@@ -413,13 +413,13 @@ export default function ProRequestsPage() {
                       See on PEATÖÖVÕTJA B2B päring
                     </h3>
                     <p className="text-xs text-blue-800 max-w-md mx-auto mt-1 mb-4 leading-relaxed">
-                      Sellele hankele pääsevad pakkumisi tegema ja peatöövõtjaga suhtlema ainult <strong>Peatöövõtjad & Äri PRO (25.00 €/kuu)</strong> paketiga meistrid.
+                      Sellele hankele pääsevad pakkumisi tegema ja peatöövõtjaga suhtlema ainult <strong>Peatöövõtjad & Äri PRO (49.00 €/kuu)</strong> paketiga meistrid.
                     </p>
                     <Link
                       href="/pricing"
                       className="btn-primary py-2.5 px-6 text-xs font-bold shadow-md bg-blue-600 hover:bg-blue-700"
                     >
-                      Liitu B2B Äripaketiga (25 € / kuu) →
+                      Liitu B2B Äripaketiga (49 € / kuu) →
                     </Link>
                   </div>
                 ) : isFreeLimitReached ? (

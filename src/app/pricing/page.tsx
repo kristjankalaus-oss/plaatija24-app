@@ -170,10 +170,10 @@ export default function PricingPage() {
                 Eksklusiivne B2B Allhanked
               </span>
               <h3 className="text-xl font-extrabold text-gray-900 mt-1">
-                Kuidas toimib 25 €/kuus Peatöövõtjate & Äripakett?
+                Kuidas toimib 49 €/kuus Peatöövõtjate & Äripakett?
               </h3>
               <p className="text-xs text-gray-600 mt-1 max-w-2xl leading-relaxed">
-                Kinnisvaraarendajad, ehitusfirmad ja peatöövõtjad (nt Merko, Nordecon, YIT) sisestavad lehele suuremahulisi korterelamute ja äripindade hankeid. Need projektid on tähistatud märgiga <strong>"💎 Peatöövõtja B2B päring"</strong>. Tavalised ja 12.90 € meistrid neid pakkuda ei saa — need on reserveeritud ainult 25 € paketiga liitunud meistritele!
+                Kinnisvaraarendajad, ehitusfirmad ja peatöövõtjad sisestavad lehele suuremahulisi korterelamute ja äripindade hankeid. Need projektid on tähistatud märgiga <strong>"💎 Peatöövõtja B2B päring"</strong>. Tavalised ja 12.90 € meistrid neid pakkuda ei saa — need on reserveeritud ainult 49 € paketiga liitunud meistritele!
               </p>
             </div>
             <Link

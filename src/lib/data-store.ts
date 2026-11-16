@@ -37,9 +37,9 @@ export const PRICING_PLANS: PricingPlan[] = [
     priceMonthly: 0,
     description: 'Tutvu platvormiga ja vasta esimestele klientidele tasuta',
     features: [
-      'Kõik eraklientide päringud on nähtaval',
+      'Kõik eraklientide päringud on nähtaval (24h viivitusega)',
       'Maksimaalselt 3 pakkumist kuus',
-      'Avalik meesteprofiil ja fotogalerii',
+      'Avalik meistriprofiil ja fotogalerii',
       'Otsesuhtlus kiirsõnumitega',
       'AI letihindade kalkulatsiooni nägemine'
     ],
@@ -49,15 +49,15 @@ export const PRICING_PLANS: PricingPlan[] = [
     id: 'pro_1290',
     name: 'Aktiivne Meister PRO',
     priceMonthly: 12.90,
-    description: 'Ideaalne igapäevaselt tegutsevale plaatijale ja mikrotsemendi paigaldajale',
+    description: 'Varajase liituja erihind! Ideaalne igapäevasele plaatijale ja mikrotsemendi paigaldajale',
     badge: 'Kõige populaarsem',
     popular: true,
     features: [
       'Piiramatu arv pakkumiste esitamist erapäringutele',
-      'Esiletõstetud profiil meistrite kataloogis',
-      'Märge "Kinnitatud Meister PRO"',
-      'Kohesed e-posti ja SMS teavitused uutest objektidest',
-      'Eelisjärjekorras kiirsõnumite teavitused',
+      'Kohesed e-posti teavitused uutest objektidest (ilma viivituseta)',
+      'Esiletõstetud profiil ja märge "Kinnitatud Meister PRO"',
+      '🛡️ Esimese objekti garantii: kui 60 päevaga tööd ei võida, pikendame tasuta',
+      'Aastapaketiga -20% soodsam (124 € / aasta)',
       'Prioriteetne klienditugi'
     ],
     ctaText: 'Vali PRO pakett (12.90 € / kuu)'
@@ -65,7 +65,7 @@ export const PRICING_PLANS: PricingPlan[] = [
   {
     id: 'vip_b2b_2500',
     name: 'Peatöövõtjad & Äri PRO',
-    priceMonthly: 25.00,
+    priceMonthly: 49.00,
     description: 'Suuremahulised B2B objektid, kortermajad, arendused ja peatöövõtjate hanked',
     badge: 'Maksimaalne tulu',
     features: [
@@ -76,7 +76,7 @@ export const PRICING_PLANS: PricingPlan[] = [
       'Ettevõtte logo ja sertifikaatide esiletõst',
       'Isiklik kliendihaldur'
     ],
-    ctaText: 'Vali B2B Äripakett (25.00 € / kuu)'
+    ctaText: 'Vali B2B Äripakett (49.00 € / kuu)'
   }
 ]
 
@@ -289,7 +289,7 @@ const STORAGE_KEYS = {
   MESSAGES: 'plaatija24_messages_v3',
   ADS: 'plaatija24_ads_v3',
   PRODUCTS: 'plaatija24_products_v3',
-  PRICING: 'plaatija24_pricing_v3',
+  PRICING: 'plaatija24_pricing_v4',
   PRICING_RULES: 'plaatija24_pricing_rules_v2'
 }
 
