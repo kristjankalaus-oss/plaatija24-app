@@ -51,6 +51,15 @@ export interface ScopeOfWork {
   tileWallArea?: number // Seinad: plaatimine (m²)
   microWallArea?: number // Seinad: mikrotsement (m²)
 
+  // Mitme tööliigi samaaegne valik ja mahud
+  selectedServices?: ServiceType[]
+  paintArea?: number // Maalritööd / krohvimine & värvimine (m²)
+  drywallArea?: number // Kipsitööd (m²)
+  masonryArea?: number // Müüriladumine (m²)
+  flooringArea?: number // Põrandatööd (m²)
+  plumbingPoints?: number // Santehnika & elekter (tk)
+  facadeArea?: number // Fassaad & üldehitus (m²)
+
   // Töölõigud
   levelingRequired: boolean // tasandus / pinna ettevalmistus
   waterproofingArea: number // m²

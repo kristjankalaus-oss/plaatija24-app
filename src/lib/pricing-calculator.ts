@@ -80,6 +80,14 @@ export function calculateAIEstimate(
   const floorArea = Number(scope.floorArea || 0)
   const wallArea = Number(scope.wallArea || 0)
 
+  const activeServices = new Set<ServiceType>(
+    scope.selectedServices && scope.selectedServices.length > 0 ? scope.selectedServices : [serviceType]
+  )
+  if (activeServices.has('mõlemad')) {
+    activeServices.add('plaat')
+    activeServices.add('mikrotsement')
+  }
+
   // Kasutame kas etteantud reegleid, andmepoe reegleid või 2026 vaikereegleid
   const rulesList = (customRules && customRules.length > 0) ? customRules : (typeof window !== 'undefined' ? getPricingRules() : DEFAULT_PRICING_RULES)
   const rulesMap = new Map<string, WorkPricingRule>()
@@ -196,7 +204,7 @@ export function calculateAIEstimate(
 
   // 3. PLAATIMISTÖÖD (kui teenus on 'plaat' või 'mõlemad', või kui on määratud plaaditavad ruudud)
   const hasTileExplicit = (scope.tileFloorArea !== undefined && scope.tileFloorArea > 0) || (scope.tileWallArea !== undefined && scope.tileWallArea > 0)
-  const isTileService = serviceType === 'plaat' || serviceType === 'mõlemad' || hasTileExplicit
+  const isTileService = activeServices.has('plaat') || hasTileExplicit
 
   if (isTileService) {
     let tFloor = 0
@@ -414,7 +422,7 @@ export function calculateAIEstimate(
 
   // 4. MIKROTSEMENT (Topciment süsteem)
   const hasMicroExplicit = (scope.microFloorArea !== undefined && scope.microFloorArea > 0) || (scope.microWallArea !== undefined && scope.microWallArea > 0)
-  const isMicroService = serviceType === 'mikrotsement' || serviceType === 'mõlemad' || hasMicroExplicit
+  const isMicroService = activeServices.has('mikrotsement') || hasMicroExplicit
 
   if (isMicroService) {
     let mFloor = 0
@@ -514,101 +522,105 @@ export function calculateAIEstimate(
   }
 
   // 4B. MAALRI-, KIPSI-, MÜÜRI-, PÕRANDA-, SANTEHNIKA- JA FASSAADITÖÖD
-  if (serviceType === 'maalritood' && totalArea > 0) {
+  const paintQty = Number(scope.paintArea ?? (activeServices.has('maalritood') ? totalArea : 0))
+  if ((activeServices.has('maalritood') || (scope.paintArea || 0) > 0) && paintQty > 0) {
     const rPaint = getR('paint_putty_standard', 18, 4.5)
     laborItems.push({
       id: 'paint-labor',
       category: 'viimistlus',
-      title: 'Pahteldamine, lihvimine, kruntimine ja 2x värvimine',
+      title: 'Krohvimine, pahteldamine, lihvimine, kruntimine ja 2x värvimine',
       description: 'Lauspahteldus (2 kihti), kruntvärv ja 2 kihti kulumiskindlat seinavärvi',
-      quantity: totalArea,
+      quantity: paintQty,
       unit: 'm²',
       unitPrice: rPaint.labor,
-      total: totalArea * rPaint.labor
+      total: paintQty * rPaint.labor
     })
     materialItems.push({
       id: 'mat-paint',
       category: 'materjalid',
-      title: 'Pahtlid, kruntvärv, seinavärv ja teibid',
-      quantity: totalArea,
+      title: 'Krohv, pahtlid, kruntvärv, seinavärv ja teibid',
+      quantity: paintQty,
       unit: 'm²',
       unitPrice: rPaint.material,
-      total: Math.round(totalArea * rPaint.material)
+      total: Math.round(paintQty * rPaint.material)
     })
     technicalNotes.push('Kvaliteetne maalritöö eeldab vahekuivamisi ja lihvimistöid sujuva valguse all.')
   }
 
-  if (serviceType === 'kipsitood' && totalArea > 0) {
+  const drywallQty = Number(scope.drywallArea ?? (activeServices.has('kipsitood') ? totalArea : 0))
+  if ((activeServices.has('kipsitood') || (scope.drywallArea || 0) > 0) && drywallQty > 0) {
     const rDrywall = getR('drywall_partition', 34, 22)
     laborItems.push({
       id: 'drywall-labor',
       category: 'paigaldus',
       title: 'Kipsvaheseinte ja -lagede ehitus (karkass + vill + plaat)',
       description: 'Metallkarkassi rihtimine, heliisolatsioonivill ja kipsplaatide paigaldus',
-      quantity: totalArea,
+      quantity: drywallQty,
       unit: 'm²',
       unitPrice: rDrywall.labor,
-      total: totalArea * rDrywall.labor
+      total: drywallQty * rDrywall.labor
     })
     materialItems.push({
       id: 'mat-drywall',
       category: 'materjalid',
       title: 'Kipsplaadid, metallkarkass, vill ja kinnitustarvikud',
-      quantity: totalArea,
+      quantity: drywallQty,
       unit: 'm²',
       unitPrice: rDrywall.material,
-      total: Math.round(totalArea * rDrywall.material)
+      total: Math.round(drywallQty * rDrywall.material)
     })
   }
 
-  if (serviceType === 'muuriladumine' && totalArea > 0) {
+  const masonryQty = Number(scope.masonryArea ?? (activeServices.has('muuriladumine') ? totalArea : 0))
+  if ((activeServices.has('muuriladumine') || (scope.masonryArea || 0) > 0) && masonryQty > 0) {
     const rMasonry = getR('masonry_blocks', 42, 32)
     laborItems.push({
       id: 'masonry-labor',
       category: 'paigaldus',
       title: 'Plokkseinte ladumine / betoonitööd',
       description: 'Fibo/Bauroc/Columbia ladumine, armeerimine, sillused või tasandusvalud',
-      quantity: totalArea,
+      quantity: masonryQty,
       unit: 'm²',
       unitPrice: rMasonry.labor,
-      total: totalArea * rMasonry.labor
+      total: masonryQty * rMasonry.labor
     })
     materialItems.push({
       id: 'mat-masonry',
       category: 'materjalid',
       title: 'Müüriplokid, müürisegu, armatuur ja sillused',
-      quantity: totalArea,
+      quantity: masonryQty,
       unit: 'm²',
       unitPrice: rMasonry.material,
-      total: Math.round(totalArea * rMasonry.material)
+      total: Math.round(masonryQty * rMasonry.material)
     })
   }
 
-  if (serviceType === 'porandatood' && totalArea > 0) {
+  const flooringQty = Number(scope.flooringArea ?? (activeServices.has('porandatood') ? floorArea : 0))
+  if ((activeServices.has('porandatood') || (scope.flooringArea || 0) > 0) && flooringQty > 0) {
     const rFloor = getR('floor_parquet', 20, 4.5)
     laborItems.push({
       id: 'floor-parquet-labor',
       category: 'paigaldus',
       title: 'Põrandakatete paigaldus (parkett / LVT / laminaat)',
       description: 'Alusvaiba paigaldus, põrandakatte paigaldus ja liistude ettevalmistus',
-      quantity: totalArea,
+      quantity: flooringQty,
       unit: 'm²',
       unitPrice: rFloor.labor,
-      total: totalArea * rFloor.labor
+      total: flooringQty * rFloor.labor
     })
     materialItems.push({
       id: 'mat-floor-underlay',
       category: 'materjalid',
       title: 'Aluskate, liimid ja paigaldustarvikud (põrandakate tellija valikul)',
-      quantity: totalArea,
+      quantity: flooringQty,
       unit: 'm²',
       unitPrice: rFloor.material,
-      total: Math.round(totalArea * rFloor.material)
+      total: Math.round(flooringQty * rFloor.material)
     })
   }
 
-  if (serviceType === 'santehnika_elekter') {
-    const points = Math.max(4, Math.round(totalArea / 3))
+  if (activeServices.has('santehnika_elekter') || (scope.plumbingPoints || 0) > 0) {
+    const points = Number(scope.plumbingPoints || Math.max(4, Math.round(totalArea / 3)))
     const rPlumb = getR('plumbing_point', 110, 45)
     laborItems.push({
       id: 'plumbing-labor',
@@ -631,26 +643,27 @@ export function calculateAIEstimate(
     })
   }
 
-  if (serviceType === 'fassaad_uldehitus' && totalArea > 0) {
+  const facadeQty = Number(scope.facadeArea ?? (activeServices.has('fassaad_uldehitus') ? totalArea : 0))
+  if ((activeServices.has('fassaad_uldehitus') || (scope.facadeArea || 0) > 0) && facadeQty > 0) {
     const rFacade = getR('facade_insulation', 58, 38)
     laborItems.push({
       id: 'facade-labor',
       category: 'paigaldus',
       title: 'Fassaadi-, terrassi- ja üldehitustööd',
       description: 'Soojustamine, armeerimine ja viimistlus vastavalt objekti mahule',
-      quantity: totalArea,
+      quantity: facadeQty,
       unit: 'm²',
       unitPrice: rFacade.labor,
-      total: totalArea * rFacade.labor
+      total: facadeQty * rFacade.labor
     })
     materialItems.push({
       id: 'mat-facade',
       category: 'materjalid',
       title: 'Soojustusplaadid, segud, võrk ja viimistluskrohv',
-      quantity: totalArea,
+      quantity: facadeQty,
       unit: 'm²',
       unitPrice: rFacade.material,
-      total: Math.round(totalArea * rFacade.material)
+      total: Math.round(facadeQty * rFacade.material)
     })
   }
 

@@ -52,6 +52,7 @@ export default function RequestForm() {
 
   // 2. Teenus & Kirjeldus & Failid (juba 1. sammus!)
   const [serviceType, setServiceType] = useState<ServiceType>('plaat')
+  const [selectedServices, setSelectedServices] = useState<ServiceType[]>(['plaat'])
   const [description, setDescription] = useState('')
   const [files, setFiles] = useState<UploadedFile[]>([])
 
@@ -67,25 +68,64 @@ export default function RequestForm() {
   const [tileWallArea, setTileWallArea] = useState<number>(18)
   const [microWallArea, setMicroWallArea] = useState<number>(0)
 
-  const handleSelectServiceType = (t: ServiceType) => {
-    setServiceType(t)
-    if (t === 'plaat') {
-      setTileFloorArea(floorArea)
-      setMicroFloorArea(0)
-      setTileWallArea(wallArea)
-      setMicroWallArea(0)
-    } else if (t === 'mikrotsement') {
-      setTileFloorArea(0)
-      setMicroFloorArea(floorArea)
-      setTileWallArea(0)
-      setMicroWallArea(wallArea)
-    } else if (t === 'mõlemad') {
-      const showerWall = Math.min(6, wallArea)
-      setTileWallArea(showerWall)
-      setMicroWallArea(Math.max(0, wallArea - showerWall))
-      setTileFloorArea(floorArea)
-      setMicroFloorArea(0)
+  // Muude ehitus- ja viimistlustööde mahud
+  const [paintArea, setPaintArea] = useState<number>(25)
+  const [drywallArea, setDrywallArea] = useState<number>(20)
+  const [masonryArea, setMasonryArea] = useState<number>(15)
+  const [flooringArea, setFlooringArea] = useState<number>(25)
+  const [plumbingPoints, setPlumbingPoints] = useState<number>(6)
+  const [facadeArea, setFacadeArea] = useState<number>(40)
+
+  const syncPrimaryServiceType = (services: ServiceType[]) => {
+    const hasTile = services.includes('plaat') || services.includes('mõlemad')
+    const hasMicro = services.includes('mikrotsement') || services.includes('mõlemad')
+    if (hasTile && hasMicro) {
+      setServiceType('mõlemad')
+    } else if (services.length > 0) {
+      setServiceType(services[0])
     }
+  }
+
+  const handleToggleService = (t: ServiceType) => {
+    let next: ServiceType[]
+    if (t === 'mõlemad') {
+      const others = selectedServices.filter(s => s !== 'plaat' && s !== 'mikrotsement' && s !== 'mõlemad')
+      next = ['plaat', 'mikrotsement', ...others]
+      if (tileWallArea + tileFloorArea === 0) {
+        setTileFloorArea(6)
+        setTileWallArea(12)
+      }
+      if (microWallArea + microFloorArea === 0) {
+        setMicroWallArea(8)
+      }
+      setSelectedServices(next)
+      syncPrimaryServiceType(next)
+      return
+    }
+
+    const exists = selectedServices.includes(t)
+    if (exists) {
+      if (selectedServices.length === 1) return // vähemalt üks peab jääma
+      next = selectedServices.filter(s => s !== t)
+      if (t === 'plaat') {
+        setTileFloorArea(0)
+        setTileWallArea(0)
+      } else if (t === 'mikrotsement') {
+        setMicroFloorArea(0)
+        setMicroWallArea(0)
+      }
+    } else {
+      next = [...selectedServices.filter(s => s !== 'mõlemad'), t]
+      if (t === 'plaat' && tileFloorArea + tileWallArea === 0) {
+        setTileFloorArea(6)
+        setTileWallArea(18)
+      } else if (t === 'mikrotsement' && microFloorArea + microWallArea === 0) {
+        setMicroFloorArea(4)
+        setMicroWallArea(12)
+      }
+    }
+    setSelectedServices(next)
+    syncPrimaryServiceType(next)
   }
 
   const handleUpdateTileWall = (val: number) => {
@@ -208,26 +248,45 @@ export default function RequestForm() {
   }, [user, role, fullName, authCompany])
 
   // Reaalajas koostatav Scope
-  const currentScope: ScopeOfWork = useMemo(() => ({
-    floorArea: Number(floorArea) || 0,
-    wallArea: Number(wallArea) || 0,
-    wallHeight: Number(wallHeight) || 2.5,
-    perimeter: Number(perimeter) || 0,
-    tileFloorArea: Number(tileFloorArea) || 0,
-    microFloorArea: Number(microFloorArea) || 0,
-    tileWallArea: Number(tileWallArea) || 0,
-    microWallArea: Number(microWallArea) || 0,
-    levelingRequired,
-    waterproofingArea: Number(waterproofingArea) || 0,
-    corners45degCount: Number(corners45degCount) || 0,
-    nichesCount: Number(nichesCount) || 0,
-    drainsCount: Number(drainsCount) || 0,
-    siliconeLength: Number(siliconeLength) || 0,
-    demolitionRequired,
-    extras: []
-  }), [
-    floorArea, wallArea, wallHeight, perimeter,
+  const currentScope: ScopeOfWork = useMemo(() => {
+    const hasTile = selectedServices.includes('plaat') || selectedServices.includes('mõlemad')
+    const hasMicro = selectedServices.includes('mikrotsement') || selectedServices.includes('mõlemad')
+    const tFloor = hasTile ? (Number(tileFloorArea) || 0) : 0
+    const mFloor = hasMicro ? (Number(microFloorArea) || 0) : 0
+    const tWall = hasTile ? (Number(tileWallArea) || 0) : 0
+    const mWall = hasMicro ? (Number(microWallArea) || 0) : 0
+    const totalFl = tFloor + mFloor
+    const totalWl = tWall + mWall
+
+    return {
+      floorArea: totalFl,
+      wallArea: totalWl,
+      wallHeight: Number(wallHeight) || 2.5,
+      perimeter: Number(perimeter) || 0,
+      tileFloorArea: tFloor,
+      microFloorArea: mFloor,
+      tileWallArea: tWall,
+      microWallArea: mWall,
+      selectedServices,
+      paintArea: selectedServices.includes('maalritood') ? (Number(paintArea) || 0) : 0,
+      drywallArea: selectedServices.includes('kipsitood') ? (Number(drywallArea) || 0) : 0,
+      masonryArea: selectedServices.includes('muuriladumine') ? (Number(masonryArea) || 0) : 0,
+      flooringArea: selectedServices.includes('porandatood') ? (Number(flooringArea) || 0) : 0,
+      plumbingPoints: selectedServices.includes('santehnika_elekter') ? (Number(plumbingPoints) || 0) : 0,
+      facadeArea: selectedServices.includes('fassaad_uldehitus') ? (Number(facadeArea) || 0) : 0,
+      levelingRequired,
+      waterproofingArea: (hasTile || hasMicro) ? (Number(waterproofingArea) || 0) : 0,
+      corners45degCount: hasTile ? (Number(corners45degCount) || 0) : 0,
+      nichesCount: (hasTile || hasMicro) ? (Number(nichesCount) || 0) : 0,
+      drainsCount: (hasTile || hasMicro) ? (Number(drainsCount) || 0) : 0,
+      siliconeLength: (hasTile || hasMicro) ? (Number(siliconeLength) || 0) : 0,
+      demolitionRequired,
+      extras: []
+    }
+  }, [
+    selectedServices, wallHeight, perimeter,
     tileFloorArea, microFloorArea, tileWallArea, microWallArea,
+    paintArea, drywallArea, masonryArea, flooringArea, plumbingPoints, facadeArea,
     levelingRequired, waterproofingArea, corners45degCount, nichesCount,
     drainsCount, siliconeLength, demolitionRequired
   ])
@@ -498,24 +557,38 @@ export default function RequestForm() {
                     )}
                   </div>
 
-                  {/* Teenuse liik */}
+                  {/* Teenuse liik (mitmikvalik) */}
                   <div>
-                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">{t('req.service.label')} *</label>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">{t('req.service.label')} *</label>
+                      <span className="text-[11px] font-semibold text-blue-700">Saad valida mitu tööliiki korraga</span>
+                    </div>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                       {SERVICE_CATEGORIES.map((cat) => {
                         const locCat = tService(cat.id)
+                        const isSelected =
+                          cat.id === 'mõlemad'
+                            ? selectedServices.includes('plaat') && selectedServices.includes('mikrotsement')
+                            : selectedServices.includes(cat.id)
                         return (
                           <button
                             key={cat.id}
                             type="button"
-                            onClick={() => handleSelectServiceType(cat.id)}
-                            className={`p-3 rounded-xl border-2 text-left transition-all ${
-                              serviceType === cat.id
+                            onClick={() => handleToggleService(cat.id)}
+                            className={`p-3 rounded-xl border-2 text-left transition-all relative ${
+                              isSelected
                                 ? 'border-blue-600 bg-blue-50/70 shadow-xs'
                                 : 'border-gray-200 hover:border-gray-300 bg-white'
                             }`}
                           >
-                            <div className="text-xl mb-1">{cat.icon}</div>
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-xl">{cat.icon}</span>
+                              {isSelected && (
+                                <span className="w-5 h-5 rounded-full bg-blue-600 text-white text-[11px] font-black flex items-center justify-center">
+                                  ✓
+                                </span>
+                              )}
+                            </div>
                             <div className="text-xs font-bold text-gray-900">{locCat.label}</div>
                             <div className="text-[10px] text-gray-500 mt-0.5">{locCat.subtitle}</div>
                           </button>
@@ -668,7 +741,7 @@ export default function RequestForm() {
                     </div>
 
                     {/* ERALDI JAOTUS: SEINAD JA PÕRAND (PLAAT VS MIKROTSEMENT) */}
-                    {(serviceType === 'plaat' || serviceType === 'mikrotsement' || serviceType === 'mõlemad') && (
+                    {(selectedServices.includes('plaat') || selectedServices.includes('mikrotsement') || selectedServices.includes('mõlemad')) && (
                     <div className="pt-3 border-t border-gray-200">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
                         <span className="text-xs font-bold text-gray-900 flex items-center gap-1.5 uppercase tracking-wider">
@@ -789,6 +862,95 @@ export default function RequestForm() {
                         </div>
                       </div>
                     </div>
+                    )}
+
+                    {/* MUUDE VALITUD TÖÖLIIKIDE MAHUD */}
+                    {selectedServices.some(s => ['maalritood', 'kipsitood', 'muuriladumine', 'porandatood', 'santehnika_elekter', 'fassaad_uldehitus'].includes(s)) && (
+                      <div className="pt-3 border-t border-gray-200 space-y-2.5">
+                        <span className="text-xs font-bold text-gray-900 uppercase tracking-wider block">
+                          📏 Valitud lisatööde mahud
+                        </span>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                          {selectedServices.includes('maalritood') && (
+                            <div className="p-3 bg-white rounded-xl border border-gray-200">
+                              <span className="text-[11px] font-bold text-gray-800 block mb-1">🎨 Krohv, pahtel &amp; värv (m²)</span>
+                              <input
+                                type="number"
+                                min="0"
+                                step="0.5"
+                                value={paintArea}
+                                onChange={(e) => setPaintArea(parseFloat(e.target.value) || 0)}
+                                className="input text-xs font-bold bg-gray-50"
+                              />
+                            </div>
+                          )}
+                          {selectedServices.includes('kipsitood') && (
+                            <div className="p-3 bg-white rounded-xl border border-gray-200">
+                              <span className="text-[11px] font-bold text-gray-800 block mb-1">📐 Kipsseinte &amp; lagede maht (m²)</span>
+                              <input
+                                type="number"
+                                min="0"
+                                step="0.5"
+                                value={drywallArea}
+                                onChange={(e) => setDrywallArea(parseFloat(e.target.value) || 0)}
+                                className="input text-xs font-bold bg-gray-50"
+                              />
+                            </div>
+                          )}
+                          {selectedServices.includes('muuriladumine') && (
+                            <div className="p-3 bg-white rounded-xl border border-gray-200">
+                              <span className="text-[11px] font-bold text-gray-800 block mb-1">🧱 Müüriladumine (m²)</span>
+                              <input
+                                type="number"
+                                min="0"
+                                step="0.5"
+                                value={masonryArea}
+                                onChange={(e) => setMasonryArea(parseFloat(e.target.value) || 0)}
+                                className="input text-xs font-bold bg-gray-50"
+                              />
+                            </div>
+                          )}
+                          {selectedServices.includes('porandatood') && (
+                            <div className="p-3 bg-white rounded-xl border border-gray-200">
+                              <span className="text-[11px] font-bold text-gray-800 block mb-1">🪵 Põrandatööd / parkett (m²)</span>
+                              <input
+                                type="number"
+                                min="0"
+                                step="0.5"
+                                value={flooringArea}
+                                onChange={(e) => setFlooringArea(parseFloat(e.target.value) || 0)}
+                                className="input text-xs font-bold bg-gray-50"
+                              />
+                            </div>
+                          )}
+                          {selectedServices.includes('santehnika_elekter') && (
+                            <div className="p-3 bg-white rounded-xl border border-gray-200">
+                              <span className="text-[11px] font-bold text-gray-800 block mb-1">🚿 Santehnika / elekter (punktid, tk)</span>
+                              <input
+                                type="number"
+                                min="0"
+                                step="1"
+                                value={plumbingPoints}
+                                onChange={(e) => setPlumbingPoints(parseInt(e.target.value) || 0)}
+                                className="input text-xs font-bold bg-gray-50"
+                              />
+                            </div>
+                          )}
+                          {selectedServices.includes('fassaad_uldehitus') && (
+                            <div className="p-3 bg-white rounded-xl border border-gray-200">
+                              <span className="text-[11px] font-bold text-gray-800 block mb-1">🏗️ Fassaad &amp; üldehitus (m²)</span>
+                              <input
+                                type="number"
+                                min="0"
+                                step="1"
+                                value={facadeArea}
+                                onChange={(e) => setFacadeArea(parseFloat(e.target.value) || 0)}
+                                className="input text-xs font-bold bg-gray-50"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     )}
                   </div>
 
