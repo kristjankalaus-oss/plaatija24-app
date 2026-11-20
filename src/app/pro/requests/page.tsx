@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
-import { getProjects, getTilers, addQuote, getQuotesForProject, fetchProjectsFromSupabase, addFeedback } from '@/lib/data-store'
-import { ProjectInquiry, ContractorQuote, TilerProfile } from '@/types'
+import { getProjects, getTilers, addQuote, getQuotesForProject, fetchProjectsFromSupabase, addFeedback, SERVICE_CATEGORIES } from '@/lib/data-store'
+import { ProjectInquiry, ContractorQuote, TilerProfile, ServiceType } from '@/types'
 import { useAuth } from '@/lib/useAuth'
 
 export default function ProRequestsPage() {
@@ -26,6 +26,23 @@ export default function ProRequestsPage() {
   const [successMsg, setSuccessMsg] = useState<string>('')
   const [errorMsg, setErrorMsg] = useState<string>('')
   const [reportSent, setReportSent] = useState<string>('')
+  const [onlyMyTrades, setOnlyMyTrades] = useState<boolean>(true)
+
+  const getProjectTrades = (p: ProjectInquiry): ServiceType[] => {
+    const raw = p.scope?.selectedServices && p.scope.selectedServices.length > 0
+      ? p.scope.selectedServices
+      : [p.serviceType]
+    const expanded = new Set<ServiceType>()
+    for (const s of raw) {
+      if (s === 'mõlemad') {
+        expanded.add('plaat')
+        expanded.add('mikrotsement')
+      } else {
+        expanded.add(s)
+      }
+    }
+    return Array.from(expanded)
+  }
 
   const refreshData = () => {
     const pList = getProjects()
@@ -58,8 +75,12 @@ export default function ProRequestsPage() {
     })
   }, [])
 
-  const currentProject = projects.find(p => p.id === selectedProjectId) || projects[0]
   const currentTiler = tilers.find(t => t.id === activeTilerId) || tilers[0]
+  const myServices = currentTiler?.services || []
+  const filteredProjects = onlyMyTrades && myServices.length > 0
+    ? projects.filter(p => getProjectTrades(p).some(tr => myServices.includes(tr)))
+    : projects
+  const currentProject = filteredProjects.find(p => p.id === selectedProjectId) || filteredProjects[0]
   const existingQuotes = currentProject ? getQuotesForProject(currentProject.id) : []
 
   // Kontrollime õigusi
@@ -265,14 +286,43 @@ export default function ProRequestsPage() {
           
           {/* Vasak veerg: Päringute nimekiri (4 veergu) */}
           <div className="lg:col-span-4 space-y-3">
-            <div className="text-xs font-bold uppercase tracking-wider text-gray-400 px-1">
-              Saadaval päringud ({projects.length})
+            <div className="flex items-center justify-between gap-2 px-1">
+              <div className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                Saadaval päringud ({filteredProjects.length})
+              </div>
+              {myServices.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setOnlyMyTrades(!onlyMyTrades)}
+                  className={`text-[10px] font-extrabold px-2.5 py-1 rounded-lg border transition-colors ${
+                    onlyMyTrades
+                      ? 'bg-blue-50 text-blue-800 border-blue-200'
+                      : 'bg-white text-gray-600 border-gray-200'
+                  }`}
+                >
+                  {onlyMyTrades ? '🎯 Minu erialad' : '🌐 Kõik tööd'}
+                </button>
+              )}
             </div>
 
-            {projects.map((p) => {
+            {filteredProjects.length === 0 && (
+              <div className="card p-6 text-center border border-gray-200 text-xs text-gray-500 space-y-2">
+                <div>Sinu valitud erialadele ({myServices.join(', ')}) hetkel avatud etappe pole.</div>
+                <button
+                  type="button"
+                  onClick={() => setOnlyMyTrades(false)}
+                  className="text-blue-700 font-bold hover:underline"
+                >
+                  Näita kõiki päringuid →
+                </button>
+              </div>
+            )}
+
+            {filteredProjects.map((p) => {
               const isSelected = p.id === currentProject?.id
               const isB2B = p.isB2BProject
               const requiresVip = isB2B && currentTiler?.subscriptionTier !== 'vip_b2b_2500'
+              const trades = getProjectTrades(p)
 
               return (
                 <div
@@ -300,11 +350,26 @@ export default function ProRequestsPage() {
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between text-[11px] mb-1">
-                    <span className="font-bold text-blue-800 uppercase">
-                      {p.serviceType === 'mõlemad' ? 'Plaat + Mikrotsement' : p.serviceType}
-                    </span>
-                    <span className="text-gray-400">{new Date(p.createdAt).toLocaleDateString('et-EE')}</span>
+                  <div className="flex items-center justify-between text-[11px] mb-1.5 gap-2">
+                    <div className="flex flex-wrap gap-1">
+                      {trades.map((tr) => {
+                        const cat = SERVICE_CATEGORIES.find(c => c.id === tr)
+                        const isMine = myServices.includes(tr)
+                        return (
+                          <span
+                            key={tr}
+                            className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                              isMine
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-100 text-gray-600'
+                            }`}
+                          >
+                            {cat?.icon} {cat?.label || tr}
+                          </span>
+                        )
+                      })}
+                    </div>
+                    <span className="text-gray-400 whitespace-nowrap">{new Date(p.createdAt).toLocaleDateString('et-EE')}</span>
                   </div>
 
                   <h3 className="font-bold text-gray-900 text-sm">

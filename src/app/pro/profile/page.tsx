@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
-import { getTilers, updateTilerProfile, addGalleryItem } from '@/lib/data-store'
+import { getTilers, updateTilerProfile, addGalleryItem, SERVICE_CATEGORIES } from '@/lib/data-store'
 import { TilerProfile, GalleryItem, ServiceType } from '@/types'
 import { useAuth } from '@/lib/useAuth'
 
@@ -254,6 +254,48 @@ export default function ProProfilePage() {
                       onChange={(e) => setTiler({ ...tiler, experienceYears: parseInt(e.target.value) || 0 })}
                       className="input text-xs"
                     />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                    Milliste tööde päringud mulle jõuavad? (Erialad) *
+                  </label>
+                  <p className="text-[11px] text-gray-500 mb-2">
+                    Märgi kõik tööd, mida teostad — töölaud suunab sulle vastavad etapid automaatselt.
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {SERVICE_CATEGORIES.filter(c => c.id !== 'mõlemad').map((cat) => {
+                      const active = tiler.services.includes(cat.id)
+                      return (
+                        <button
+                          key={cat.id}
+                          type="button"
+                          onClick={() => {
+                            const next = active
+                              ? tiler.services.filter(s => s !== cat.id)
+                              : [...tiler.services, cat.id]
+                            if (next.length === 0) return
+                            setTiler({ ...tiler, services: next })
+                          }}
+                          className={`p-2.5 rounded-xl border text-left flex items-center justify-between gap-2 transition-all ${
+                            active
+                              ? 'border-blue-600 bg-blue-50/70 text-blue-950 font-bold'
+                              : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                          }`}
+                        >
+                          <span className="flex items-center gap-2 text-xs">
+                            <span>{cat.icon}</span>
+                            <span>{cat.label}</span>
+                          </span>
+                          <span className={`w-4 h-4 rounded flex items-center justify-center text-[10px] font-black ${
+                            active ? 'bg-blue-600 text-white' : 'bg-gray-100 text-transparent'
+                          }`}>
+                            ✓
+                          </span>
+                        </button>
+                      )
+                    })}
                   </div>
                 </div>
 

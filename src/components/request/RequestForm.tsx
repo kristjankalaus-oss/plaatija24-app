@@ -18,6 +18,7 @@ import { saveProject, ESTONIAN_REGIONS, SERVICE_CATEGORIES } from '@/lib/data-st
 import AdBanner from '@/components/ads/AdBanner'
 import { useAuth } from '@/lib/useAuth'
 import { useTranslation } from '@/lib/i18n'
+import { parseFreeTextToScope } from '@/lib/scope-parser'
 
 const TILE_SIZES = [
   { id: 'standard_30x60', label: 'Standard 30x60 cm' },
@@ -75,6 +76,37 @@ export default function RequestForm() {
   const [flooringArea, setFlooringArea] = useState<number>(25)
   const [plumbingPoints, setPlumbingPoints] = useState<number>(6)
   const [facadeArea, setFacadeArea] = useState<number>(40)
+  const [detectedStagesCount, setDetectedStagesCount] = useState<number>(0)
+
+  const handleAutoParseDescription = (text: string) => {
+    const parsed = parseFreeTextToScope(text)
+    if (parsed.matchedCount === 0) {
+      setDetectedStagesCount(0)
+      return
+    }
+    setDetectedStagesCount(parsed.matchedCount)
+    setSelectedServices(parsed.detectedServices)
+    syncPrimaryServiceType(parsed.detectedServices)
+
+    if (parsed.tileFloorArea > 0 || parsed.tileWallArea > 0) {
+      setTileFloorArea(parsed.tileFloorArea)
+      setTileWallArea(parsed.tileWallArea)
+      setFloorArea(parsed.tileFloorArea + parsed.microFloorArea)
+      setWallArea(parsed.tileWallArea + parsed.microWallArea)
+    }
+    if (parsed.microFloorArea > 0 || parsed.microWallArea > 0) {
+      setMicroFloorArea(parsed.microFloorArea)
+      setMicroWallArea(parsed.microWallArea)
+      setFloorArea(parsed.tileFloorArea + parsed.microFloorArea)
+      setWallArea(parsed.tileWallArea + parsed.microWallArea)
+    }
+    if (parsed.paintArea > 0) setPaintArea(parsed.paintArea)
+    if (parsed.drywallArea > 0) setDrywallArea(parsed.drywallArea)
+    if (parsed.masonryArea > 0) setMasonryArea(parsed.masonryArea)
+    if (parsed.flooringArea > 0) setFlooringArea(parsed.flooringArea)
+    if (parsed.plumbingPoints > 0) setPlumbingPoints(parsed.plumbingPoints)
+    if (parsed.facadeArea > 0) setFacadeArea(parsed.facadeArea)
+  }
 
   const syncPrimaryServiceType = (services: ServiceType[]) => {
     const hasTile = services.includes('plaat') || services.includes('mõlemad')
@@ -665,19 +697,36 @@ export default function RequestForm() {
 
                   {/* OBJEKTI JA TEHTAVATE TÖÖDE KIRJELDUS VABAS VORMIS */}
                   <div>
-                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-                      Objekti ja tehtavate tööde kirjeldus vabas vormis *
-                    </label>
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                      <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">
+                        Objekti ja tehtavate tööde kirjeldus vabas vormis *
+                      </label>
+                      {detectedStagesCount > 0 && (
+                        <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+                          🤖 AI tuvastas {detectedStagesCount} tööetappi &amp; mahud
+                        </span>
+                      )}
+                    </div>
                     <textarea
                       rows={5}
                       value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder="Kirjelda vabas vormis oma objekti: nt vannitoa või terve korteri renoveerimine, ruumide mõõdud, aluspinna seisukord (nt betoon, kips), soovitud plaadid, kallete tegemine, trapid, eritööd või eelistatud algusaeg..."
+                      onChange={(e) => {
+                        const val = e.target.value
+                        setDescription(val)
+                        handleAutoParseDescription(val)
+                      }}
+                      placeholder="Kirjuta lihtsalt vabas vormis, nt: Plaatida vannituba 24 m², mikrotsement 10 m², krohvida ja värvida 35 m², parkett 45 m²..."
                       className="input text-xs sm:text-sm resize-none leading-relaxed"
                     />
-                    <div className="flex items-center justify-between text-[11px] text-gray-400 mt-1">
-                      <span>Mida põhjalikumalt kirjeldad, seda täpsema pakkumise meistrid teevad</span>
-                      <span>{description.length} tähemärki</span>
+                    <div className="flex items-center justify-between text-[11px] text-gray-400 mt-1.5 gap-2">
+                      <span>AI tuvastab tööetapid ja ruutmeetrid tekstist automaatselt ning jagab need meistritele</span>
+                      <button
+                        type="button"
+                        onClick={() => handleAutoParseDescription(description)}
+                        className="text-blue-700 font-bold hover:underline whitespace-nowrap"
+                      >
+                        ✨ Tuvasta uuesti
+                      </button>
                     </div>
                   </div>
 
