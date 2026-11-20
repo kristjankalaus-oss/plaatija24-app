@@ -1266,18 +1266,69 @@ export default function RequestForm() {
 
               <div className="space-y-2 py-3 border-t border-gray-100 text-xs">
                 <div className="flex justify-between text-gray-600">
-                  <span>Tööde turuhind:</span>
+                  <span>{t('req.sidebar.labor')}:</span>
                   <span className="font-semibold text-gray-900">{liveEstimate.laborSubtotal.toLocaleString('et-EE')} €</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
-                  <span>Süsteemi materjalid:</span>
+                  <span>{t('req.sidebar.materials')}:</span>
                   <span className="font-semibold text-gray-900">{liveEstimate.materialSubtotal.toLocaleString('et-EE')} €</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
-                  <span>Tööde kestus:</span>
-                  <span className="font-semibold text-gray-900">~{liveEstimate.estimatedDays} tööpäeva</span>
+                  <span>{t('req.sidebar.days')}:</span>
+                  <span className="font-semibold text-gray-900">~{liveEstimate.estimatedDays} {t('req.sidebar.workDays')}</span>
                 </div>
               </div>
+
+              {/* Detailne rida-realt jaotus */}
+              {(liveEstimate.laborItems.length > 0 || liveEstimate.materialItems.length > 0) && (
+                <div className="mt-3 pt-3 border-t border-gray-100 space-y-3 max-h-72 overflow-y-auto pr-1">
+                  {liveEstimate.laborItems.length > 0 && (
+                    <div>
+                      <div className="text-[10px] font-extrabold uppercase tracking-wider text-blue-800 mb-1.5">
+                        🔨 {t('req.sidebar.breakdownLabor')}
+                      </div>
+                      <div className="space-y-1.5">
+                        {liveEstimate.laborItems.map((item) => (
+                          <div key={item.id} className="flex items-start justify-between gap-2 text-[11px] bg-gray-50/80 rounded-lg px-2.5 py-1.5 border border-gray-100">
+                            <div className="min-w-0">
+                              <div className="font-semibold text-gray-800 leading-snug">{item.title}</div>
+                              <div className="text-[10px] text-gray-400">
+                                {item.quantity} {item.unit} × {item.unitPrice} €
+                              </div>
+                            </div>
+                            <div className="font-bold text-gray-900 whitespace-nowrap">
+                              {Math.round(item.total).toLocaleString('et-EE')} €
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {liveEstimate.materialItems.length > 0 && (
+                    <div>
+                      <div className="text-[10px] font-extrabold uppercase tracking-wider text-gray-600 mb-1.5">
+                        🧱 {t('req.sidebar.breakdownMat')}
+                      </div>
+                      <div className="space-y-1.5">
+                        {liveEstimate.materialItems.map((item) => (
+                          <div key={item.id} className="flex items-start justify-between gap-2 text-[11px] bg-blue-50/40 rounded-lg px-2.5 py-1.5 border border-blue-100/70">
+                            <div className="min-w-0">
+                              <div className="font-semibold text-gray-800 leading-snug">{item.title}</div>
+                              <div className="text-[10px] text-gray-400">
+                                {item.quantity} {item.unit} × {item.unitPrice} €
+                              </div>
+                            </div>
+                            <div className="font-bold text-gray-900 whitespace-nowrap">
+                              {Math.round(item.total).toLocaleString('et-EE')} €
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Eelvaade pildist */}
               <div className="mt-4 pt-4 border-t border-gray-100">
