@@ -1,8 +1,13 @@
+'use client'
+
 import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
 import AdGrid from '@/components/ads/AdGrid'
+import { useTranslation } from '@/lib/i18n'
 
 export default function HomePage() {
+  const { t } = useTranslation()
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Navbar />
@@ -17,23 +22,23 @@ export default function HomePage() {
           <div className="text-center max-w-4xl mx-auto">
             <div className="inline-flex items-center gap-2.5 bg-white/90 backdrop-blur-md text-blue-950 border border-blue-200/80 text-xs font-bold px-4 py-1.5 rounded-full mb-6 uppercase tracking-wider shadow-xs">
               <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
-              <span>🇪🇪 Objekt24 · Eesti ehitus- ja viimistlustööde turuplats</span>
+              <span>🇪🇪 {t('home.badge')}</span>
             </div>
 
             <h1 className="text-4xl sm:text-6xl font-black text-gray-950 tracking-tight leading-[1.1] mb-5">
-              Eelarve sekundiga,{' '}
+              {t('home.h1.prefix')}{' '}
               <span className="bg-gradient-to-r from-blue-600 via-blue-700 to-gray-950 bg-clip-text text-transparent">
-                pakkumised päevaga.
+                {t('home.h1.highlight')}
               </span>{' '}
-              Säästa aega ja raha.
+              {t('home.h1.suffix')}
             </h1>
 
             <p className="text-lg sm:text-xl font-bold mb-4 text-blue-700">
-              Plaatimine, mikrotsement, maalritööd, kipsitööd, müüriladumine ja üldehitus ühest kohast.
+              {t('home.subtitle')}
             </p>
 
             <p className="text-sm sm:text-base text-gray-600 mb-9 max-w-2xl mx-auto leading-relaxed">
-              Sisesta objekti mõõdud, fotod või joonised ning meie AI kalkulaator koostab kohese 2026. aasta turuhindadel põhineva eelarve. Saa kindlatelt meistritelt võrreldavad pakkumised ühe päringuga.
+              {t('home.desc')}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -41,22 +46,22 @@ export default function HomePage() {
                 href="/request"
                 className="btn-primary text-sm sm:text-base py-4 px-8 pharaoh-glow"
               >
-                <span>🤖 Küsi tasuta pakkumist & koosta AI pildid</span>
+                <span>🤖 {t('home.cta.client')}</span>
                 <span>→</span>
               </Link>
               <Link
                 href="/pricing"
                 className="btn-secondary text-sm sm:text-base py-4 px-8"
               >
-                <span>🔨 Liitu meistrina (0 € – 49 €/k)</span>
+                <span>🔨 {t('home.cta.pro')}</span>
               </Link>
             </div>
 
             <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs font-semibold text-gray-500">
-              <span className="flex items-center gap-1.5"><span className="text-blue-600 font-black">✓</span> Kliendile täiesti tasuta</span>
-              <span className="flex items-center gap-1.5"><span className="text-blue-600 font-black">✓</span> Eraldi seina ja põranda kalkulatsioon</span>
-              <span className="flex items-center gap-1.5"><span className="text-blue-600 font-black">✓</span> AI fotorealistlikud pildid</span>
-              <span className="flex items-center gap-1.5"><span className="text-blue-600 font-black">✓</span> Otsevestlus kiirsõnumites</span>
+              <span className="flex items-center gap-1.5"><span className="text-blue-600 font-black">✓</span> {t('home.trust.1')}</span>
+              <span className="flex items-center gap-1.5"><span className="text-blue-600 font-black">✓</span> {t('home.trust.2')}</span>
+              <span className="flex items-center gap-1.5"><span className="text-blue-600 font-black">✓</span> {t('home.trust.3')}</span>
+              <span className="flex items-center gap-1.5"><span className="text-blue-600 font-black">✓</span> {t('home.trust.4')}</span>
             </div>
           </div>
 
@@ -77,12 +82,12 @@ export default function HomePage() {
                     </svg>
                   </span>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-blue-300 bg-blue-950/80 border border-blue-800 px-2.5 py-0.5 rounded-full">
-                    Keraamika
+                    {t('bento.1.tag')}
                   </span>
                 </div>
                 <div className="mt-6">
-                  <h3 className="font-extrabold text-base text-white">Plaatimine & Suurformaat</h3>
-                  <p className="text-xs text-gray-400 mt-1">30×60 · 60×120 · XXL Slabid · Kalasaba · 45° Jiirid</p>
+                  <h3 className="font-extrabold text-base text-white">{t('bento.1.title')}</h3>
+                  <p className="text-xs text-gray-400 mt-1">{t('bento.1.desc')}</p>
                 </div>
               </div>
             </div>
@@ -100,17 +105,17 @@ export default function HomePage() {
                     </svg>
                   </span>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-blue-800 bg-blue-100 px-2.5 py-0.5 rounded-full">
-                    Vuugivaba
+                    {t('bento.2.tag')}
                   </span>
                 </div>
                 <div className="mt-6">
-                  <h3 className="font-extrabold text-base text-gray-950">Mikrotsement</h3>
-                  <p className="text-xs text-gray-600 mt-1">Seinad & põrandad · 2K PU kaitsekiht · Plaadile katmine</p>
+                  <h3 className="font-extrabold text-base text-gray-950">{t('bento.2.title')}</h3>
+                  <p className="text-xs text-gray-600 mt-1">{t('bento.2.desc')}</p>
                 </div>
               </div>
             </div>
 
-            {/* Kaart 3: Märgruumi Hüdroisolatsioon */}
+            {/* Kaart 3: Maalri-, Kipsi- & Müüritööd */}
             <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 to-blue-900 text-white p-6 border border-blue-500 shadow-lg hover:-translate-y-1 transition-all duration-300">
               <div className="absolute inset-0 bg-tile-grid-dark opacity-40" />
               <div className="relative z-10 flex flex-col justify-between h-full min-h-[170px]">
@@ -121,17 +126,17 @@ export default function HomePage() {
                     </svg>
                   </span>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-white bg-white/15 px-2.5 py-0.5 rounded-full">
-                    Veetihe
+                    {t('bento.3.tag')}
                   </span>
                 </div>
                 <div className="mt-6">
-                  <h3 className="font-extrabold text-base text-white">Maalri-, Kipsi- &amp; Müüritööd</h3>
-                  <p className="text-xs text-blue-100 mt-1">Pahteldus · Karkass · Fibo/Bauroc · Betoonivalud</p>
+                  <h3 className="font-extrabold text-base text-white">{t('bento.3.title')}</h3>
+                  <p className="text-xs text-blue-100 mt-1">{t('bento.3.desc')}</p>
                 </div>
               </div>
             </div>
 
-            {/* Kaart 4: AI Eelarve & Kombineeritud lahendus */}
+            {/* Kaart 4: AI Eelarve */}
             <div className="group relative overflow-hidden rounded-2xl bg-white text-gray-950 p-6 border border-gray-200 shadow-sm hover:border-blue-400 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
               <div className="relative z-10 flex flex-col justify-between h-full min-h-[170px]">
                 <div className="flex items-center justify-between">
@@ -141,12 +146,12 @@ export default function HomePage() {
                     </svg>
                   </span>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">
-                    Reaalajas
+                    {t('bento.4.tag')}
                   </span>
                 </div>
                 <div className="mt-6">
-                  <h3 className="font-extrabold text-base text-gray-950">AI Hinnakalkulaator</h3>
-                  <p className="text-xs text-gray-600 mt-1">Töö + materjalid eraldi · Kombineeritud seinad & põrand</p>
+                  <h3 className="font-extrabold text-base text-gray-950">{t('bento.4.title')}</h3>
+                  <p className="text-xs text-gray-600 mt-1">{t('bento.4.desc')}</p>
                 </div>
               </div>
             </div>
@@ -158,10 +163,10 @@ export default function HomePage() {
       <section className="py-4 bg-gray-950 text-white border-b border-gray-800">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-12 font-bold text-xs uppercase tracking-wider">
-            <span className="text-gray-200 flex items-center gap-2"><span className="text-blue-400">🛡️</span> Sertifitseeritud hüdroisolatsioon</span>
-            <span className="text-gray-200 flex items-center gap-2"><span className="text-blue-400">📐</span> Täpne 2026 mahuarvestus</span>
-            <span className="text-gray-200 flex items-center gap-2"><span className="text-blue-400">🧱</span> Keraamika & Suurformaat</span>
-            <span className="text-gray-200 flex items-center gap-2"><span className="text-blue-400">🎨</span> Vuugivaba Mikrotsement</span>
+            <span className="text-gray-200 flex items-center gap-2"><span className="text-blue-400">🛡️</span> {t('std.1')}</span>
+            <span className="text-gray-200 flex items-center gap-2"><span className="text-blue-400">📐</span> {t('std.2')}</span>
+            <span className="text-gray-200 flex items-center gap-2"><span className="text-blue-400">🧱</span> {t('std.3')}</span>
+            <span className="text-gray-200 flex items-center gap-2"><span className="text-blue-400">🎨</span> {t('std.4')}</span>
           </div>
         </div>
       </section>
@@ -177,42 +182,22 @@ export default function HomePage() {
           
           <div className="text-center max-w-2xl mx-auto mb-14">
             <span className="text-xs uppercase font-extrabold tracking-wider text-blue-800 bg-blue-100 border border-blue-200/80 px-3.5 py-1 rounded-full">
-              Kuidas teenus töötab?
+              {t('how.badge')}
             </span>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-950 mt-3 tracking-tight">
-              Mugav tellijale, tulus meistrile
+              {t('how.title')}
             </h2>
             <p className="text-xs sm:text-sm text-gray-500 mt-2">
-              Platvorm viib kokku erakliendid, peatöövõtjad ja kvalifitseeritud meistrid üle Eesti
+              {t('how.subtitle')}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {[
-              {
-                step: '01',
-                icon: '📐',
-                title: 'Sisesta andmed & mahud',
-                desc: 'Määra seinte ja põranda pindala (plaat vs mikrotsement), töölõigud ning laadi üles fotod ja joonised.'
-              },
-              {
-                step: '02',
-                icon: '🤖',
-                title: 'AI hinnaprognoos & pildid',
-                desc: 'AI arvutab detailse turuhindadel põhineva kalkulatsiooni ning kujundab realistlikud fotod valmis ruumist.'
-              },
-              {
-                step: '03',
-                icon: '🔨',
-                title: 'Meistrite pakkumised',
-                desc: 'Registreeritud meistrid ja B2B allhankijad näevad päringut, kohandavad hindu ja saadavad ametliku pakkumise.'
-              },
-              {
-                step: '04',
-                icon: '💬',
-                title: 'Kiirsõnumid & Leping',
-                desc: 'Suhtle pakkujatega kiirsõnumites, esita täpsustavaid küsimusi ja lepi kokku tööde algus.'
-              }
+              { step: '01', icon: '📐', title: t('how.s1.title'), desc: t('how.s1.desc') },
+              { step: '02', icon: '🤖', title: t('how.s2.title'), desc: t('how.s2.desc') },
+              { step: '03', icon: '🔨', title: t('how.s3.title'), desc: t('how.s3.desc') },
+              { step: '04', icon: '💬', title: t('how.s4.title'), desc: t('how.s4.desc') },
             ].map(item => (
               <div
                 key={item.step}
@@ -246,22 +231,22 @@ export default function HomePage() {
 
             <div className="relative z-10 max-w-2xl">
               <div className="inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider bg-blue-600/20 text-blue-300 border border-blue-500/30 px-3 py-1 rounded-full mb-4">
-                <span>🏢 Peatöövõtjatele & Arendajatele (B2B)</span>
+                <span>🏢 {t('b2b.badge')}</span>
               </div>
               <h2 className="text-2xl sm:text-4xl font-black text-white leading-tight">
-                Suured kortermajad, äripinnad & kiired alltöövõtu etapid
+                {t('b2b.title')}
               </h2>
               <p className="text-sm text-gray-300 mt-3 leading-relaxed">
-                Kas juhid ehitusobjekti või vajad kiiresti lisajõudu lõpetamata etappidele? Lisa hanked koos mahutabelitega — suured põhihanked on avatud <strong>49 € Äri PRO</strong> brigaadidele ning kiired etapid ka <strong>12.90 € Meister PRO</strong> väikefirmadele.
+                {t('b2b.desc')}
               </p>
             </div>
 
             <div className="relative z-10 flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
               <Link href="/request" className="btn-primary py-3.5 px-6 text-xs font-bold justify-center whitespace-nowrap pharaoh-glow">
-                + Sisesta B2B hange
+                {t('b2b.cta1')}
               </Link>
               <Link href="/pricing" className="px-6 py-3.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-xl text-xs font-bold text-center whitespace-nowrap transition-all">
-                Liitu 49€ B2B meistrina
+                {t('b2b.cta2')}
               </Link>
             </div>
           </div>
@@ -273,53 +258,53 @@ export default function HomePage() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <span className="text-xs uppercase font-extrabold tracking-wider text-blue-800 bg-blue-100 border border-blue-200/80 px-3.5 py-1 rounded-full">
-              Liitu Platvormiga
+              {t('plan.badge')}
             </span>
-            <h2 className="text-3xl font-black text-gray-950 mt-3">Meistrite & Ettevõtete paketid</h2>
+            <h2 className="text-3xl font-black text-gray-950 mt-3">{t('plan.title')}</h2>
             <p className="text-xs sm:text-sm text-gray-500 mt-1">
-              Alusta tasuta või liitu PRO paketiga, et vastata kõigile erapäringutele ja B2B etappidele
+              {t('plan.subtitle')}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="card p-6 border border-gray-200 flex flex-col justify-between bg-white hover:shadow-lg transition-all">
               <div>
-                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Alustav Meister</span>
-                <div className="text-3xl font-black text-gray-950 mt-2">0 € <span className="text-xs font-normal text-gray-400">/ kuu</span></div>
-                <p className="text-xs text-gray-500 mt-2 leading-relaxed">Tutvu platvormiga tasuta. Kuni 3 pakkumist kuus erapäringutele.</p>
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t('plan.free.title')}</span>
+                <div className="text-3xl font-black text-gray-950 mt-2">0 € <span className="text-xs font-normal text-gray-400">{t('plan.perMonth')}</span></div>
+                <p className="text-xs text-gray-500 mt-2 leading-relaxed">{t('plan.free.desc')}</p>
               </div>
               <Link href="/pricing" className="btn-secondary w-full justify-center text-xs font-bold py-2.5 mt-6">
-                Vaata paketti
+                {t('plan.free.cta')}
               </Link>
             </div>
 
             <div className="card p-6 border-2 border-blue-600 relative shadow-xl flex flex-col justify-between bg-white pharaoh-glow">
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-blue-600 text-white text-[10px] font-black uppercase tracking-wider">
-                Kõige populaarsem
+                {t('plan.pro.badge')}
               </div>
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-extrabold text-blue-700 uppercase tracking-wider">Aktiivne Meister PRO</span>
+                  <span className="text-xs font-extrabold text-blue-700 uppercase tracking-wider">{t('plan.pro.title')}</span>
                 </div>
-                <div className="text-3xl font-black text-gray-950 mt-2">12.90 € <span className="text-xs font-normal text-gray-400">/ kuu</span></div>
-                <p className="text-xs text-gray-600 mt-2 leading-relaxed">Piiramatu arv erapäringuid + peatöövõtjate kiired etapid ja lisajõu tööd.</p>
+                <div className="text-3xl font-black text-gray-950 mt-2">12.90 € <span className="text-xs font-normal text-gray-400">{t('plan.perMonth')}</span></div>
+                <p className="text-xs text-gray-600 mt-2 leading-relaxed">{t('plan.pro.desc')}</p>
               </div>
               <Link href="/pricing" className="btn-primary w-full justify-center text-xs font-bold py-2.5 mt-6">
-                Liitu 12.90 € paketiga
+                {t('plan.pro.cta')}
               </Link>
             </div>
 
             <div className="card p-6 border-2 border-gray-950 bg-gray-950 bg-tile-grid-dark text-white shadow-xl flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-blue-400 uppercase tracking-wider">Peatöövõtjad & Äri PRO</span>
-                  <span className="text-[10px] bg-blue-600/30 text-blue-300 border border-blue-500/40 px-2 py-0.5 rounded font-bold">B2B Eliit</span>
+                  <span className="text-xs font-bold text-blue-400 uppercase tracking-wider">{t('plan.vip.title')}</span>
+                  <span className="text-[10px] bg-blue-600/30 text-blue-300 border border-blue-500/40 px-2 py-0.5 rounded font-bold">{t('plan.vip.tag')}</span>
                 </div>
-                <div className="text-3xl font-black text-white mt-2">49.00 € <span className="text-xs font-normal text-gray-400">/ kuu</span></div>
-                <p className="text-xs text-gray-300 mt-2 leading-relaxed">Täielik ligipääs PEATÖÖVÕTJATE B2B põhihangetele ja arendustele.</p>
+                <div className="text-3xl font-black text-white mt-2">49.00 € <span className="text-xs font-normal text-gray-400">{t('plan.perMonth')}</span></div>
+                <p className="text-xs text-gray-300 mt-2 leading-relaxed">{t('plan.vip.desc')}</p>
               </div>
               <Link href="/pricing" className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl text-center mt-6 transition-colors shadow-xs">
-                Liitu 49.00 € paketiga
+                {t('plan.vip.cta')}
               </Link>
             </div>
           </div>
@@ -331,21 +316,21 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6 text-xs text-gray-400">
           <div className="space-y-1.5">
             <span className="text-lg font-black text-white block">
-              Objekt<span className="text-blue-500">24</span> · Ehitus & Viimistlus
+              Objekt<span className="text-blue-500">24</span> · {t('brand.tagline')}
             </span>
-            <p>Eelarve sekundiga, pakkumised päevaga. Säästa aega ja raha. · www.objekt24.ee</p>
+            <p>{t('brand.slogan')} · www.objekt24.ee</p>
             <p className="text-gray-500">
-              Haldaja: <strong className="text-gray-300">Tegulaator OÜ</strong> · E-post: <a href="mailto:info@objekt24.ee" className="text-blue-400 hover:underline">info@objekt24.ee</a>
+              {t('footer.managedBy')} <strong className="text-gray-300">Tegulaator OÜ</strong> · {t('footer.email')} <a href="mailto:info@objekt24.ee" className="text-blue-400 hover:underline">info@objekt24.ee</a>
             </p>
           </div>
           <div className="flex flex-wrap gap-5 font-semibold">
-            <Link href="/request" className="hover:text-white transition-colors">Küsi pakkumist</Link>
-            <Link href="/tilers" className="hover:text-white transition-colors">Meistrid & Firmad</Link>
-            <Link href="/pricing" className="hover:text-white transition-colors">Meistrite paketid (12.90€ / 49€)</Link>
-            <Link href="/pro/requests" className="hover:text-white transition-colors">Töölaud</Link>
-            <Link href="/feedback" className="hover:text-white transition-colors">Tagasiside</Link>
-            <Link href="/login" className="hover:text-white transition-colors">Logi sisse</Link>
-            <Link href="/admin" className="text-blue-400 hover:text-blue-300 transition-colors">⚙️ Admin Paneel</Link>
+            <Link href="/request" className="hover:text-white transition-colors">{t('nav.request')}</Link>
+            <Link href="/tilers" className="hover:text-white transition-colors">{t('nav.tilers')}</Link>
+            <Link href="/pricing" className="hover:text-white transition-colors">{t('nav.pricing')} (12.90€ / 49€)</Link>
+            <Link href="/pro/requests" className="hover:text-white transition-colors">{t('nav.workspace')}</Link>
+            <Link href="/feedback" className="hover:text-white transition-colors">{t('nav.feedback')}</Link>
+            <Link href="/login" className="hover:text-white transition-colors">{t('nav.login')}</Link>
+            <Link href="/admin" className="text-blue-400 hover:text-blue-300 transition-colors">⚙️ {t('footer.admin')}</Link>
           </div>
         </div>
       </footer>

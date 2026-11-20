@@ -17,6 +17,7 @@ import { getAIVisualizations } from '@/lib/ai-visualizer'
 import { saveProject, ESTONIAN_REGIONS, SERVICE_CATEGORIES } from '@/lib/data-store'
 import AdBanner from '@/components/ads/AdBanner'
 import { useAuth } from '@/lib/useAuth'
+import { useTranslation } from '@/lib/i18n'
 
 const TILE_SIZES = [
   { id: 'standard_30x60', label: 'Standard 30x60 cm' },
@@ -38,6 +39,7 @@ const SYSTEM_BRANDS: { id: SystemBrand; label: string; flag: string; desc: strin
 
 export default function RequestForm() {
   const router = useRouter()
+  const { t, tService } = useTranslation()
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [dragOver, setDragOver] = useState(false)
@@ -272,12 +274,12 @@ export default function RequestForm() {
     }
 
     if (!clientPhone || clientPhone.trim().length < 6) {
-      setSubmitError('Palun sisesta kehtiv telefoninumber, et meistrid saaksid objekti ülevaatuse kokku leppida.')
+      setSubmitError(t('req.err.phone'))
       return
     }
 
     if (!budgetConfirmed) {
-      setSubmitError('Palun kinnita enne saatmist, et oled tutvunud orienteeruva turuhinnaga.')
+      setSubmitError(t('req.err.budget'))
       return
     }
 
@@ -363,20 +365,20 @@ export default function RequestForm() {
             Kliendile 100% Tasuta · Kohustusi pole
           </span>
           <h1 className="text-3xl sm:text-4xl font-black text-gray-950 mt-3">
-            Kirjelda objekti & koosta esialgne AI pakkumine
+            {t('req.header.title')}
           </h1>
           <p className="text-gray-500 text-sm mt-1 max-w-xl mx-auto">
-            Laadi üles fotod, joonised või mahutabel ning kirjelda tehtavaid töid vabas vormis. AI koostab turuhindadel põhineva esialgse eelarve.
+            {t('req.header.desc')}
           </p>
         </div>
 
         {/* Sammude indikaator */}
         <div className="flex items-center justify-between mb-8 max-w-2xl mx-auto">
           {[
-            { s: 1, label: 'Objekt, Kirjeldus & Failid' },
-            { s: 2, label: 'Süsteem & Töölõigud' },
-            { s: 3, label: 'Plaadid & Viimistlus' },
-            { s: 4, label: 'Kontakt & Kinnitus' },
+            { s: 1, label: t('req.step.1') },
+            { s: 2, label: t('req.step.2') },
+            { s: 3, label: t('req.step.3') },
+            { s: 4, label: t('req.step.4') },
           ].map((item) => (
             <div key={item.s} className="flex flex-col items-center flex-1">
               <div
@@ -411,7 +413,7 @@ export default function RequestForm() {
                   {/* Tellija staatus */}
                   <div>
                     <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
-                      Tellija staatus
+                      {t('req.client.label')}
                     </label>
                     <div className="grid grid-cols-2 gap-3">
                       <button
@@ -424,8 +426,8 @@ export default function RequestForm() {
                         }`}
                       >
                         <div className="text-xl mb-1">🏠</div>
-                        <div className="text-xs font-bold text-gray-900">Eraisik (Erakodu)</div>
-                        <div className="text-[11px] text-gray-500 mt-0.5">Korter, eramu, vannituba jms</div>
+                        <div className="text-xs font-bold text-gray-900">{t('req.client.private')}</div>
+                        <div className="text-[11px] text-gray-500 mt-0.5">{t('req.client.privateDesc')}</div>
                       </button>
 
                       <button
@@ -439,27 +441,27 @@ export default function RequestForm() {
                       >
                         <div className="text-xl mb-1">🏢</div>
                         <div className={`text-xs font-bold flex items-center gap-1 ${clientType === 'contractor_b2b' ? 'text-white' : 'text-gray-900'}`}>
-                          Peatöövõtja / Arendaja <span className="text-[10px] bg-blue-600 text-white px-1.5 py-0.2 rounded font-bold">B2B</span>
+                          {t('req.client.b2b')} <span className="text-[10px] bg-blue-600 text-white px-1.5 py-0.2 rounded font-bold">B2B</span>
                         </div>
-                        <div className={`text-[11px] mt-0.5 ${clientType === 'contractor_b2b' ? 'text-gray-300' : 'text-gray-500'}`}>Korterelamud, äripinnad, allhanked</div>
+                        <div className={`text-[11px] mt-0.5 ${clientType === 'contractor_b2b' ? 'text-gray-300' : 'text-gray-500'}`}>{t('req.client.b2bDesc')}</div>
                       </button>
                     </div>
 
                     {clientType === 'contractor_b2b' && (
                       <div className="mt-3 p-4 bg-blue-50/60 border border-blue-200 rounded-xl space-y-3">
                         <div>
-                          <label className="block text-[11px] font-bold text-blue-900 mb-1">Ettevõtte / Peatöövõtja nimi</label>
+                          <label className="block text-[11px] font-bold text-blue-900 mb-1">{t('req.b2b.companyLabel')}</label>
                           <input
                             type="text"
                             value={companyName}
                             onChange={(e) => setCompanyName(e.target.value)}
-                            placeholder="nt Ehitus OÜ"
+                            placeholder="Ehitus OÜ"
                             className="input bg-white text-xs font-semibold"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-[11px] font-bold text-blue-900 mb-1.5">Mis tüüpi alltöövõttu otsite? *</label>
+                          <label className="block text-[11px] font-bold text-blue-900 mb-1.5">{t('req.b2b.scopeLabel')} *</label>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                             <button
                               type="button"
@@ -470,9 +472,9 @@ export default function RequestForm() {
                                   : 'border-blue-200/70 bg-white/60 hover:bg-white'
                               }`}
                             >
-                              <div className="text-xs font-bold text-gray-900">⚡ Kiire etapp / Lisajõud</div>
+                              <div className="text-xs font-bold text-gray-900">⚡ {t('req.b2b.stageHelper')}</div>
                               <div className="text-[10px] text-gray-500 mt-0.5">
-                                Lõpetamata etapid, paar vannituba või kiire abi (avatud ka 12.90 € Meister PRO väikefirmadele)
+                                {t('req.b2b.stageHelperDesc')}
                               </div>
                             </button>
 
@@ -485,9 +487,9 @@ export default function RequestForm() {
                                   : 'border-blue-200/70 bg-white/60 hover:bg-white'
                               }`}
                             >
-                              <div className="text-xs font-bold text-gray-900">🏗️ Terve objekt / Põhihange</div>
+                              <div className="text-xs font-bold text-gray-900">🏗️ {t('req.b2b.fullProject')}</div>
                               <div className="text-[10px] text-gray-500 mt-0.5">
-                                Suuremahuline tervikleping (avatud ainult 49 € Äri PRO brigaadidele)
+                                {t('req.b2b.fullProjectDesc')}
                               </div>
                             </button>
                           </div>
@@ -498,24 +500,27 @@ export default function RequestForm() {
 
                   {/* Teenuse liik */}
                   <div>
-                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Vali tööliik / kategooria *</label>
+                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">{t('req.service.label')} *</label>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                      {SERVICE_CATEGORIES.map((t) => (
-                        <button
-                          key={t.id}
-                          type="button"
-                          onClick={() => handleSelectServiceType(t.id)}
-                          className={`p-3 rounded-xl border-2 text-left transition-all ${
-                            serviceType === t.id
-                              ? 'border-blue-600 bg-blue-50/70 shadow-xs'
-                              : 'border-gray-200 hover:border-gray-300 bg-white'
-                          }`}
-                        >
-                          <div className="text-xl mb-1">{t.icon}</div>
-                          <div className="text-xs font-bold text-gray-900">{t.label}</div>
-                          <div className="text-[10px] text-gray-500 mt-0.5">{t.desc}</div>
-                        </button>
-                      ))}
+                      {SERVICE_CATEGORIES.map((cat) => {
+                        const locCat = tService(cat.id)
+                        return (
+                          <button
+                            key={cat.id}
+                            type="button"
+                            onClick={() => handleSelectServiceType(cat.id)}
+                            className={`p-3 rounded-xl border-2 text-left transition-all ${
+                              serviceType === cat.id
+                                ? 'border-blue-600 bg-blue-50/70 shadow-xs'
+                                : 'border-gray-200 hover:border-gray-300 bg-white'
+                            }`}
+                          >
+                            <div className="text-xl mb-1">{cat.icon}</div>
+                            <div className="text-xs font-bold text-gray-900">{locCat.label}</div>
+                            <div className="text-[10px] text-gray-500 mt-0.5">{locCat.subtitle}</div>
+                          </button>
+                        )
+                      })}
                     </div>
                   </div>
 
@@ -1077,32 +1082,32 @@ export default function RequestForm() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-semibold text-gray-700 mb-1">Teie nimi *</label>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1">{t('req.contact.name')} *</label>
                       <input
                         type="text"
                         required
                         value={clientName}
                         onChange={(e) => setClientName(e.target.value)}
-                        placeholder="nt Martin Kukk"
+                        placeholder="Martin Kukk"
                         className="input text-xs"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-gray-700 mb-1">E-post *</label>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1">{t('req.contact.email')} *</label>
                       <input
                         type="email"
                         required
                         value={clientEmail}
                         onChange={(e) => setClientEmail(e.target.value)}
-                        placeholder="nt martin@kodu.ee"
+                        placeholder="martin@kodu.ee"
                         className="input text-xs"
                       />
                     </div>
 
                     <div>
                       <label className="block text-xs font-semibold text-gray-700 mb-1">
-                        Telefoninumber {timeline !== 'just_browsing' && '*'}
+                        {t('req.contact.phone')} {timeline !== 'just_browsing' && '*'}
                       </label>
                       <input
                         type="tel"
@@ -1115,7 +1120,7 @@ export default function RequestForm() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-gray-700 mb-1">Piirkond / Maakond *</label>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1">{t('req.contact.region')} *</label>
                       <select
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
@@ -1131,13 +1136,13 @@ export default function RequestForm() {
                   {/* Tööde algusaeg ja valmisoleku filter */}
                   <div className="space-y-2">
                     <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">
-                      Millal plaanite töödega alustada? *
+                      {t('req.timeline.label')} *
                     </label>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                       {[
-                        { id: 'urgent_1_month', label: '🔥 Kohe / 1 kuu jooksul', desc: 'Saadetakse meistritele eelisjärjekorras' },
-                        { id: 'planned_1_3_months', label: '📅 1–3 kuu jooksul', desc: 'Planeeritud ehitus, ootan pakkumisi' },
-                        { id: 'just_browsing', label: '👀 Alles uurin hindu', desc: 'Vaatan vaid AI hinnakalkulatsiooni' },
+                        { id: 'urgent_1_month', label: `🔥 ${t('req.timeline.urgent')}` },
+                        { id: 'planned_1_3_months', label: `📅 ${t('req.timeline.planned')}` },
+                        { id: 'just_browsing', label: `👀 ${t('req.timeline.browsing')}` },
                       ].map(opt => (
                         <button
                           key={opt.id}
@@ -1154,7 +1159,6 @@ export default function RequestForm() {
                           }`}
                         >
                           <div className="text-xs font-bold text-gray-900">{opt.label}</div>
-                          <div className="text-[10px] text-gray-500 mt-0.5">{opt.desc}</div>
                         </button>
                       ))}
                     </div>
@@ -1179,7 +1183,7 @@ export default function RequestForm() {
                         className="mt-0.5 rounded text-blue-600 focus:ring-blue-500"
                       />
                       <span>
-                        Kinnitan, et olen tutvunud orienteeruva turuhinnaga (<strong>~{liveEstimate.grossTotal.toLocaleString('et-EE')} €</strong> KM-ga) ja soovin saada sellele tööle reaalseid hinnapakkumisi.
+                        {t('req.confirmBudget')} (<strong>~{liveEstimate.grossTotal.toLocaleString('et-EE')} €</strong>)
                       </span>
                     </label>
                   )}
@@ -1217,7 +1221,7 @@ export default function RequestForm() {
                       onClick={() => setStep(3)}
                       className="btn-secondary py-2 px-5 text-sm"
                     >
-                      ← Tagasi
+                      {t('req.btn.prev')}
                     </button>
                     <button
                       type="button"
@@ -1226,10 +1230,8 @@ export default function RequestForm() {
                       className="btn-primary py-3 px-8 text-sm font-bold shadow-md"
                     >
                       {loading
-                        ? '⏳ Koostan AI pakkumist ja pilte...'
-                        : timeline === 'just_browsing'
-                        ? '📊 Kuva täpne AI hinnaprognoos'
-                        : '🤖 Avalda päring ja saa pakkumised →'}
+                        ? `⏳ ${t('req.btn.submitting')}`
+                        : t('req.btn.submit')}
                     </button>
                   </div>
                 </div>
@@ -1244,7 +1246,7 @@ export default function RequestForm() {
               
               <div className="flex items-center justify-between pb-3 border-b border-blue-100">
                 <span className="text-xs font-extrabold uppercase tracking-wider text-blue-900 flex items-center gap-1.5">
-                  <span>⚡</span> AI Hinnaprognoos
+                  <span>⚡</span> {t('req.sidebar.title')}
                 </span>
                 <span className="text-[10px] font-bold px-2 py-0.5 bg-blue-100 text-blue-800 rounded">
                   {SYSTEM_BRAND_INFO[systemBrand]?.name.split(' ')[0]}
@@ -1252,7 +1254,7 @@ export default function RequestForm() {
               </div>
 
               <div className="py-4">
-                <div className="text-xs text-gray-500">Esialgne eeldatav kogumaksumus:</div>
+                <div className="text-xs text-gray-500">{t('req.sidebar.total')}:</div>
                 <div className="text-2xl font-black text-gray-900 mt-1">
                   ~{liveEstimate.grossTotal.toLocaleString('et-EE')} €
                   <span className="text-xs font-normal text-gray-400 ml-1">(KM-ga)</span>

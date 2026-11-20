@@ -5,8 +5,10 @@ import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
 import { getPricingPlans, getTilers, updateTilerProfile, AD_BANNER_PACKAGES } from '@/lib/data-store'
 import { SubscriptionTier, TilerProfile } from '@/types'
+import { useTranslation } from '@/lib/i18n'
 
 export default function PricingPage() {
+  const { t } = useTranslation()
   const plans = getPricingPlans()
   const tilers = getTilers()
   const [selectedTilerId, setSelectedTilerId] = useState<string>(tilers[0]?.id || 'tiler-1')
@@ -38,13 +40,13 @@ export default function PricingPage() {
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
           <span className="text-xs uppercase font-extrabold tracking-wider px-3.5 py-1 bg-blue-100 text-blue-900 border border-blue-200/80 rounded-full">
-            Meistrite Tellimuspaketid
+            {t('pricing.badge')}
           </span>
           <h1 className="text-3xl sm:text-4xl font-black text-gray-950 mt-3">
-            Liitu Plaatija24 meistrite võrgustikuga
+            {t('pricing.title')}
           </h1>
           <p className="text-sm sm:text-base text-gray-600 mt-2">
-            Tellijale on platvorm täiesti tasuta. Vali oma töömahule sobiv pakett ja saa pidevalt uusi tulusaid objekte.
+            {t('pricing.subtitle')}
           </p>
 
           {/* Aktiivse meistri valik */}
@@ -150,10 +152,10 @@ export default function PricingPage() {
                         : 'btn-secondary justify-center'
                     }`}
                   >
-                    {isCurrent ? '✓ Praegu valitud pakett' : plan.ctaText}
+                    {isCurrent ? t('pricing.current') : plan.ctaText}
                   </button>
                   <p className="text-[10px] text-center text-gray-400 mt-2">
-                    Paketti saab igal ajal muuta või peatada
+                    {t('pricing.cancelNote')}
                   </p>
                 </div>
 
@@ -189,10 +191,10 @@ export default function PricingPage() {
         <div className="mt-16 pt-12 border-t border-gray-200">
           <div className="text-center max-w-2xl mx-auto mb-10">
             <span className="text-xs uppercase font-extrabold tracking-wider px-3.5 py-1 bg-blue-100 text-blue-900 border border-blue-200/80 rounded-full">
-              Partneritele & Ehituspoodidele
+              {t('pricing.ad.badge')}
             </span>
             <h2 className="text-2xl sm:text-3xl font-black text-gray-950 mt-3">
-              Reklaamipindade & bännerite hinnakiri
+              {t('pricing.ad.title')}
             </h2>
             <p className="text-xs sm:text-sm text-gray-500 mt-1">
               Jõua otse klientide ja professionaalsete plaatijateni hetkel, mil nad planeerivad materjalide ostu. Platvorm kujundab bännerikaardi sinu teksti ja pildi põhjal automaatselt.
@@ -219,10 +221,10 @@ export default function PricingPage() {
                 </div>
 
                 <a
-                  href={`mailto:info@plaatija24.ee?subject=${encodeURIComponent(`Reklaamipinna tellimine: ${pkg.name} (${pkg.priceMonthly} €/k)`)}`}
+                  href={`mailto:info@objekt24.ee?subject=${encodeURIComponent(`Reklaamipinna tellimine: ${pkg.name} (${pkg.priceMonthly} €/k)`)}`}
                   className="btn-secondary w-full justify-center py-2.5 text-xs font-bold mt-6"
                 >
-                  Broneeri pind (info@plaatija24.ee) →
+                  Broneeri pind (info@objekt24.ee) →
                 </a>
               </div>
             ))}

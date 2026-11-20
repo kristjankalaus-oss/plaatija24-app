@@ -5,8 +5,10 @@ import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
 import { getTilers, ESTONIAN_REGIONS, SERVICE_CATEGORIES } from '@/lib/data-store'
 import { ServiceType } from '@/types'
+import { useTranslation } from '@/lib/i18n'
 
 export default function TilersPage() {
+  const { t, tService } = useTranslation()
   const tilers = getTilers()
   const [selectedService, setSelectedService] = useState<'all' | ServiceType>('all')
   const [selectedRegion, setSelectedRegion] = useState('all')
@@ -32,13 +34,13 @@ export default function TilersPage() {
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-10">
           <span className="text-xs uppercase font-extrabold tracking-wider px-3.5 py-1 bg-blue-100 text-blue-900 border border-blue-200/80 rounded-full">
-            Eesti Parimad Meistrid
+            {t('tilers.badge')}
           </span>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mt-3">
-            Registreeritud ehitusmeistrid ja paigaldajad
+            {t('tilers.title')}
           </h1>
           <p className="text-gray-500 text-sm mt-2">
-            Tutvu meistrite tehtud tööde galeriide, hinnangute ja spetsialiseerumisega. Küsi pakkumist või võta otse ühendust.
+            {t('tilers.subtitle')}
           </p>
         </div>
 

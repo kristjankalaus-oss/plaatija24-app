@@ -6,11 +6,13 @@ import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
 import { supabase } from '@/lib/supabase'
 import { UserRole } from '@/lib/useAuth'
+import { useTranslation } from '@/lib/i18n'
 
 function LoginFormContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get('redirect')
+  const { t } = useTranslation()
 
   const [mode, setMode] = useState<'login' | 'register'>('login')
   const [role, setRole] = useState<UserRole>('tiler')
@@ -35,7 +37,7 @@ function LoginFormContent() {
           password,
         })
         if (error) {
-          setErrorMsg('Vale e-post või parool. Kontrolli andmeid.')
+          setErrorMsg(t('login.err.credentials'))
           setLoading(false)
           return
         }
@@ -52,17 +54,17 @@ function LoginFormContent() {
         }
       } else {
         if (!fullName.trim()) {
-          setErrorMsg('Palun sisesta oma nimi.')
+          setErrorMsg(t('login.err.name'))
           setLoading(false)
           return
         }
         if (role === 'contractor_b2b' && !companyName.trim()) {
-          setErrorMsg('Palun sisesta ettevõtte nimi.')
+          setErrorMsg(t('login.err.company'))
           setLoading(false)
           return
         }
         if (password.length < 6) {
-          setErrorMsg('Parool peab olema vähemalt 6 tähemärki pikk.')
+          setErrorMsg(t('login.err.passwordLen'))
           setLoading(false)
           return
         }
@@ -94,12 +96,12 @@ function LoginFormContent() {
             router.push('/my-projects')
           }
         } else {
-          setSuccessMsg('✅ Konto loodud! Kontrolli oma e-posti kinnituslingi jaoks ja seejärel logi sisse.')
+          setSuccessMsg(t('login.success.created'))
           setMode('login')
         }
       }
     } catch {
-      setErrorMsg('Ühenduse viga. Proovi uuesti.')
+      setErrorMsg(t('login.err.network'))
     } finally {
       setLoading(false)
     }
@@ -113,15 +115,15 @@ function LoginFormContent() {
         <div className="w-full max-w-md card p-6 sm:p-8 border border-gray-200 shadow-lg bg-white">
           <div className="text-center mb-6">
             <span className="text-xs font-extrabold uppercase tracking-wider px-3 py-1 bg-blue-100 text-blue-900 rounded-full">
-              Plaatija24 Konto
+              {t('login.badge')}
             </span>
             <h1 className="text-2xl font-black text-gray-950 mt-3">
-              {mode === 'login' ? 'Logi sisse' : 'Loo uus konto'}
+              {mode === 'login' ? t('login.title.login') : t('login.title.register')}
             </h1>
             <p className="text-xs text-gray-500 mt-1">
               {mode === 'login'
-                ? 'Sisene oma kliendi või meistri töölauale'
-                : 'Vali roll ja alusta pakkumiste esitamist või küsimist'}
+                ? t('login.sub.login')
+                : t('login.sub.register')}
             </p>
           </div>
 
@@ -134,7 +136,7 @@ function LoginFormContent() {
                 mode === 'login' ? 'bg-white text-gray-950 shadow-xs' : 'text-gray-500 hover:text-gray-900'
               }`}
             >
-              Logi sisse
+              {t('login.tab.login')}
             </button>
             <button
               type="button"
@@ -143,7 +145,7 @@ function LoginFormContent() {
                 mode === 'register' ? 'bg-white text-gray-950 shadow-xs' : 'text-gray-500 hover:text-gray-900'
               }`}
             >
-              Registreeru
+              {t('login.tab.register')}
             </button>
           </div>
 
@@ -164,7 +166,7 @@ function LoginFormContent() {
               <>
                 <div>
                   <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-                    Konto tüüp *
+                    {t('login.role.label')} *
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     <button
@@ -177,8 +179,8 @@ function LoginFormContent() {
                       }`}
                     >
                       <div className="text-lg">🧱</div>
-                      <div className="text-xs font-bold text-gray-900 mt-0.5">Meister</div>
-                      <div className="text-[10px] text-gray-500">Pakun töid</div>
+                      <div className="text-xs font-bold text-gray-900 mt-0.5">{t('login.role.tiler')}</div>
+                      <div className="text-[10px] text-gray-500">{t('login.role.tilerDesc')}</div>
                     </button>
 
                     <button
@@ -191,8 +193,8 @@ function LoginFormContent() {
                       }`}
                     >
                       <div className="text-lg">🏢</div>
-                      <div className="text-xs font-bold text-gray-900 mt-0.5">Peatöövõtja</div>
-                      <div className="text-[10px] text-gray-500">Postitan hankeid</div>
+                      <div className="text-xs font-bold text-gray-900 mt-0.5">{t('login.role.b2b')}</div>
+                      <div className="text-[10px] text-gray-500">{t('login.role.b2bDesc')}</div>
                     </button>
 
                     <button
@@ -205,8 +207,8 @@ function LoginFormContent() {
                       }`}
                     >
                       <div className="text-lg">🏠</div>
-                      <div className="text-xs font-bold text-gray-900 mt-0.5">Eraisik</div>
-                      <div className="text-[10px] text-gray-500">Küsin pakkumist</div>
+                      <div className="text-xs font-bold text-gray-900 mt-0.5">{t('login.role.client')}</div>
+                      <div className="text-[10px] text-gray-500">{t('login.role.clientDesc')}</div>
                     </button>
                   </div>
                 </div>
@@ -214,14 +216,14 @@ function LoginFormContent() {
                 {role === 'contractor_b2b' && (
                   <div>
                     <label className="block text-xs font-semibold text-gray-700 mb-1">
-                      Ettevõtte nimi (Peatöövõtja / Arendaja) *
+                      {t('login.companyName')} *
                     </label>
                     <input
                       type="text"
                       required
                       value={companyName}
                       onChange={(e) => setCompanyName(e.target.value)}
-                      placeholder="nt Ehitus OÜ"
+                      placeholder="Ehitus OÜ"
                       className="input text-xs"
                     />
                   </div>
@@ -229,14 +231,14 @@ function LoginFormContent() {
 
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1">
-                    {role === 'tiler' ? 'Nimi või ettevõtte nimi *' : role === 'contractor_b2b' ? 'Projektijuhi / kontaktisiku nimi *' : 'Sinu nimi *'}
+                    {t('login.fullName')} *
                   </label>
                   <input
                     type="text"
                     required
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    placeholder={role === 'tiler' ? 'nt OÜ Plaatimine / Jüri' : 'Sinu ees- ja perekonnanimi'}
+                    placeholder={t('login.fullName')}
                     className="input text-xs"
                   />
                 </div>
@@ -244,25 +246,25 @@ function LoginFormContent() {
             )}
 
             <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">E-posti aadress *</label>
+              <label className="block text-xs font-semibold text-gray-700 mb-1">{t('login.email')} *</label>
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="nimi@ettevote.ee"
+                placeholder="name@company.ee"
                 className="input text-xs"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">Parool *</label>
+              <label className="block text-xs font-semibold text-gray-700 mb-1">{t('login.password')} *</label>
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Vähemalt 6 tähemärki"
+                placeholder="••••••"
                 className="input text-xs"
               />
             </div>
@@ -273,16 +275,16 @@ function LoginFormContent() {
               className="btn-primary w-full py-3 text-sm font-bold justify-center shadow-md"
             >
               {loading
-                ? '⏳ Palun oota...'
+                ? `⏳ ${t('login.loading')}`
                 : mode === 'login'
-                ? 'Logi sisse →'
-                : 'Loo konto ja jätka →'}
+                ? `${t('login.submit.login')} →`
+                : `${t('login.submit.register')} →`}
             </button>
           </form>
 
           <div className="mt-6 pt-4 border-t border-gray-100 text-center text-xs text-gray-500">
             <Link href="/" className="hover:text-blue-600 font-semibold">
-              ← Tagasi avalehele
+              {t('login.backHome')}
             </Link>
           </div>
         </div>

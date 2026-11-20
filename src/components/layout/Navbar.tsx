@@ -4,20 +4,28 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import AdBanner from '@/components/ads/AdBanner'
 import { useAuth } from '@/lib/useAuth'
+import { Locale, useTranslation } from '@/lib/i18n'
+
+const LOCALES: { code: Locale; label: string }[] = [
+  { code: 'et', label: 'ET' },
+  { code: 'en', label: 'EN' },
+  { code: 'ru', label: 'RU' },
+]
 
 export default function Navbar() {
   const pathname = usePathname()
   const { user, role, fullName, companyName, signOut } = useAuth()
+  const { locale, setLocale, t } = useTranslation()
 
   const links = [
-    { href: '/', label: 'Avaleht' },
-    { href: '/request', label: 'Küsi pakkumist (AI)', highlight: true },
-    { href: '/tilers', label: 'Meistrid & Firmad' },
-    { href: '/pricing', label: 'Meistrite paketid' },
-    ...(role === 'contractor_b2b' || role === 'client' ? [{ href: '/my-projects', label: role === 'contractor_b2b' ? '🏢 Minu hanked' : '📋 Minu päringud' }] : []),
-    ...(role === 'tiler' || role === 'admin' || !user ? [{ href: '/pro/requests', label: '🔨 Töölaud' }] : []),
-    { href: '/feedback', label: '💬 Tagasiside' },
-    ...(role === 'admin' ? [{ href: '/admin', label: '⚙️ Admin' }] : []),
+    { href: '/', label: t('nav.home') },
+    { href: '/request', label: t('nav.request'), highlight: true },
+    { href: '/tilers', label: t('nav.tilers') },
+    { href: '/pricing', label: t('nav.pricing') },
+    ...(role === 'contractor_b2b' || role === 'client' ? [{ href: '/my-projects', label: role === 'contractor_b2b' ? `🏢 ${t('nav.myTenders')}` : `📋 ${t('nav.myProjects')}` }] : []),
+    ...(role === 'tiler' || role === 'admin' || !user ? [{ href: '/pro/requests', label: `🔨 ${t('nav.workspace')}` }] : []),
+    { href: '/feedback', label: `💬 ${t('nav.feedback')}` },
+    ...(role === 'admin' ? [{ href: '/admin', label: `⚙️ ${t('nav.admin')}` }] : []),
   ]
 
   return (
@@ -47,13 +55,13 @@ export default function Navbar() {
                 Objekt<span style={{ color: 'var(--color-brand-500)' }}>24</span>
               </span>
               <span className="hidden sm:inline-block text-[10px] font-bold text-blue-900 ml-1.5 px-2 py-0.5 bg-blue-50 border border-blue-100 rounded-md">
-                Ehitus & Viimistlus
+                {t('brand.tagline')}
               </span>
             </div>
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-5 text-sm font-semibold">
+          <nav className="hidden lg:flex items-center gap-4 text-sm font-semibold">
             {links.map((link) => {
               const isActive = pathname === link.href || (link.href !== '/' && pathname?.startsWith(link.href))
               if (link.highlight) {
@@ -84,13 +92,31 @@ export default function Navbar() {
             })}
           </nav>
 
-          {/* Parempoolsed kiirviited */}
-          <div className="flex items-center gap-2.5">
+          {/* Parempoolsed kiirviited + Keelevalik */}
+          <div className="flex items-center gap-2">
+            {/* ET | EN | RU lüliti */}
+            <div className="inline-flex items-center bg-gray-100 border border-gray-200 rounded-lg p-0.5 text-[11px] font-extrabold">
+              {LOCALES.map((loc) => (
+                <button
+                  key={loc.code}
+                  type="button"
+                  onClick={() => setLocale(loc.code)}
+                  className={`px-2 py-1 rounded-md transition-all ${
+                    locale === loc.code
+                      ? 'bg-white text-blue-700 shadow-2xs'
+                      : 'text-gray-500 hover:text-gray-900'
+                  }`}
+                >
+                  {loc.label}
+                </button>
+              ))}
+            </div>
+
             <Link
               href="/request"
-              className="text-xs font-bold px-3 py-1.5 rounded-lg border border-blue-200 bg-blue-50/70 text-blue-900 hover:bg-blue-100 transition-colors"
+              className="hidden sm:inline-flex text-xs font-bold px-3 py-1.5 rounded-lg border border-blue-200 bg-blue-50/70 text-blue-900 hover:bg-blue-100 transition-colors"
             >
-              + Esita päring
+              {t('nav.submitRequest')}
             </Link>
             {user ? (
               <div className="hidden sm:flex items-center gap-2">
@@ -105,7 +131,7 @@ export default function Navbar() {
                   onClick={() => signOut()}
                   className="text-xs font-semibold px-2.5 py-1.5 rounded-lg text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors"
                 >
-                  Logi välja
+                  {t('nav.logout')}
                 </button>
               </div>
             ) : (
@@ -113,7 +139,7 @@ export default function Navbar() {
                 href="/login"
                 className="hidden sm:inline-flex text-xs font-bold px-3 py-1.5 rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition-colors"
               >
-                Logi sisse
+                {t('nav.login')}
               </Link>
             )}
           </div>

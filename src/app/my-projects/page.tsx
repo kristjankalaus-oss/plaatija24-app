@@ -6,8 +6,10 @@ import Navbar from '@/components/layout/Navbar'
 import { useAuth } from '@/lib/useAuth'
 import { getProjects, getQuotesForProject, fetchProjectsFromSupabase } from '@/lib/data-store'
 import { ProjectInquiry } from '@/types'
+import { useTranslation } from '@/lib/i18n'
 
 export default function MyProjectsPage() {
+  const { t } = useTranslation()
   const { user, role, fullName, companyName, loading: authLoading } = useAuth()
   const [projects, setProjects] = useState<ProjectInquiry[]>([])
   const [loading, setLoading] = useState(true)
@@ -41,16 +43,16 @@ export default function MyProjectsPage() {
         <main className="flex-1 flex items-center justify-center p-6">
           <div className="card p-8 max-w-md w-full text-center border border-gray-200 space-y-4">
             <span className="text-5xl block">📋</span>
-            <h1 className="text-xl font-extrabold text-gray-950">Minu hanked ja päringud</h1>
+            <h1 className="text-xl font-extrabold text-gray-950">{t('myProjects.title')}</h1>
             <p className="text-sm text-gray-600">
-              Logi sisse oma peatöövõtja või kliendi kontoga, et hallata oma esitatud objekte, võrrelda pakkumisi ja suhelda meistritega.
+              {t('myProjects.subtitle')}
             </p>
             <div className="pt-2 flex flex-col sm:flex-row gap-3 justify-center">
               <Link href="/login?redirect=/my-projects" className="btn-primary py-2.5 px-6 text-xs font-bold">
-                Logi sisse / Registreeru →
+                {t('nav.login')} →
               </Link>
               <Link href="/request" className="btn-secondary py-2.5 px-6 text-xs font-bold">
-                Esita uus päring
+                {t('myProjects.new')}
               </Link>
             </div>
           </div>
