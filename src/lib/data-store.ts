@@ -30,6 +30,19 @@ export const ESTONIAN_REGIONS = [
   'Kogu Eesti / Objekt väljaspool suuremaid linnu'
 ] as const
 
+// KÕIK EHITUS- JA VIIMISTLUSTÖÖDE KATEGOORIAD (Objekt24 Marketplace)
+export const SERVICE_CATEGORIES: { id: import('@/types').ServiceType; label: string; icon: string; desc: string }[] = [
+  { id: 'plaat', label: 'Plaatimine & Hüdro', icon: '🧱', desc: 'Keraamika, suurformaat, märgalad' },
+  { id: 'mikrotsement', label: 'Mikrotsement', icon: '🎨', desc: 'Vuugivaba disainviimistlus' },
+  { id: 'mõlemad', label: 'Plaat + Mikrotsement', icon: '✨', desc: 'Kombineeritud vannitoad & ruumid' },
+  { id: 'maalritood', label: 'Maalri- & Krohvitööd', icon: '🖌️', desc: 'Pahteldus, krunt, värvimine, krohv' },
+  { id: 'kipsitood', label: 'Kipsitööd & Laed', icon: '🏗️', desc: 'Karkass, vaheseinad, kipsplaadid' },
+  { id: 'muuriladumine', label: 'Müüriladumine & Betoon', icon: '🪨', desc: 'Fibo, Bauroc, Columbia, betoonivalud' },
+  { id: 'porandatood', label: 'Põrandatööd', icon: '🪵', desc: 'Parkett, LVT, laminaat, epoksiidpõrand' },
+  { id: 'santehnika_elekter', label: 'Santehnika & Elekter', icon: '🚿', desc: 'Torustik, põrandaküte, elektritööd' },
+  { id: 'fassaad_uldehitus', label: 'Fassaad & Üldehitus', icon: '🏡', desc: 'Soojustus, terrassid, kapitaalremont' },
+]
+
 // HINNAKIRJA PAKETID PLAATIJATELE
 export const PRICING_PLANS: PricingPlan[] = [
   {
@@ -271,6 +284,138 @@ export const DEFAULT_PRICING_RULES: WorkPricingRule[] = [
     unit: 'tk',
     laborPrice: 55.0,
     materialPrice: 15.0,
+    enabled: true
+  },
+
+  // 5. MAALRI- JA KROHVITÖÖD (2026 turg)
+  {
+    id: 'paint_putty_standard',
+    category: 'maalritood',
+    title: 'Pahteldamine, kruntimine ja 2x värvimine',
+    description: 'Lauspahteldus (2 kihti), lihvimine, kruntvärv ja 2 kihti kvaliteetset seinavärvi',
+    unit: 'm²',
+    laborPrice: 18.0,
+    materialPrice: 4.5,
+    enabled: true
+  },
+  {
+    id: 'plastering_machine',
+    category: 'maalritood',
+    title: 'Kips- või tsementkrohvimine seintele',
+    description: 'Aluspinna kruntimine ja masin-/käsikrohvimine majakate järgi',
+    unit: 'm²',
+    laborPrice: 16.0,
+    materialPrice: 6.0,
+    enabled: true
+  },
+
+  // 6. KIPSITÖÖD JA VAHESEINAD
+  {
+    id: 'drywall_partition',
+    category: 'kipsitood',
+    title: 'Kipsvaheseina ehitus (karkass + vill + kipsplaat)',
+    description: 'Metallkarkass, heliisolatsioonivill ja kipsplaatide paigaldus',
+    unit: 'm²',
+    laborPrice: 34.0,
+    materialPrice: 22.0,
+    enabled: true
+  },
+  {
+    id: 'drywall_ceiling',
+    category: 'kipsitood',
+    title: 'Kipsripplae ehitus',
+    description: 'Kahetasandiline riputussüsteem, karkass ja kipsplaadi paigaldus',
+    unit: 'm²',
+    laborPrice: 38.0,
+    materialPrice: 18.0,
+    enabled: true
+  },
+
+  // 7. MÜÜRILADUMINE JA BETOONITÖÖD
+  {
+    id: 'masonry_blocks',
+    category: 'muuriladumine',
+    title: 'Plokkseinte ladumine (Fibo / Bauroc / Columbia)',
+    description: 'Plokkide ladumine, armeerimine ja silluste paigaldus',
+    unit: 'm²',
+    laborPrice: 42.0,
+    materialPrice: 32.0,
+    enabled: true
+  },
+  {
+    id: 'concrete_screed',
+    category: 'muuriladumine',
+    title: 'Põranda betoonivalu / tasanduskiht',
+    description: 'Aluspinna ettevalmistus, kile/armatuur ja betoonivalu lihvimisega',
+    unit: 'm²',
+    laborPrice: 22.0,
+    materialPrice: 18.0,
+    enabled: true
+  },
+
+  // 8. PÕRANDATÖÖD
+  {
+    id: 'floor_parquet',
+    category: 'porandatood',
+    title: 'Parketi, laminaadi või LVT paigaldus',
+    description: 'Alusvaiba paigaldus ja klikk- või liimitava põrandakatte paigaldus',
+    unit: 'm²',
+    laborPrice: 20.0,
+    materialPrice: 4.5,
+    enabled: true
+  },
+  {
+    id: 'floor_epoxy',
+    category: 'porandatood',
+    title: 'Epoksiidpõranda paigaldus (garaažid, abiruumid)',
+    description: 'Betooni teemantlihvimine, epokrunt ja 2-komponentne kulumiskindel epokate',
+    unit: 'm²',
+    laborPrice: 45.0,
+    materialPrice: 35.0,
+    enabled: true
+  },
+
+  // 9. SANTEHNIKA & ELEKTER
+  {
+    id: 'plumbing_point',
+    category: 'santehnika_elekter',
+    title: 'Santehnilised punktid (vee- ja kanalisatsioonitööd)',
+    description: 'Torude vedamine, survestamine ja liitmike paigaldus',
+    unit: 'tk',
+    laborPrice: 110.0,
+    materialPrice: 45.0,
+    enabled: true
+  },
+  {
+    id: 'electrical_point',
+    category: 'santehnika_elekter',
+    title: 'Elektripunktide ja põrandakütte paigaldus',
+    description: 'Kaabeldus, tooside freesimine, termostaatide ja küttekaablite paigaldus',
+    unit: 'tk',
+    laborPrice: 45.0,
+    materialPrice: 18.0,
+    enabled: true
+  },
+
+  // 10. FASSAAD & ÜLDEHITUS
+  {
+    id: 'facade_insulation',
+    category: 'fassaad_uldehitus',
+    title: 'Fassaadi soojustamine ja krohvimine',
+    description: 'EPS/villsoojustus, tüübeldus, armeerimisvõrk ja dekoratiivkrohv',
+    unit: 'm²',
+    laborPrice: 58.0,
+    materialPrice: 38.0,
+    enabled: true
+  },
+  {
+    id: 'terrace_build',
+    category: 'fassaad_uldehitus',
+    title: 'Puit- või komposiitterrassi ehitus',
+    description: 'Karkassi rajamine, postvundamendid ja terrassilaudise paigaldus',
+    unit: 'm²',
+    laborPrice: 48.0,
+    materialPrice: 42.0,
     enabled: true
   }
 ]

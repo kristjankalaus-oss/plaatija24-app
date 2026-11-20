@@ -4,7 +4,7 @@ Plaatija24 rakendus – ehitusmaterjalide ja plaatimistööde haldusplatvorm.
 
 ## Tehnoloogiad
 
-- Next.js 15
+- Next.js 16
 - TypeScript
 - Tailwind CSS
 - Supabase

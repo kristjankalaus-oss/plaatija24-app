@@ -2,7 +2,16 @@
 // Plaatija24 & Mikrotsement – Tüüpide definitsioonid
 // ============================================
 
-export type ServiceType = 'plaat' | 'mikrotsement' | 'mõlemad'
+export type ServiceType =
+  | 'plaat'
+  | 'mikrotsement'
+  | 'mõlemad'
+  | 'maalritood'
+  | 'kipsitood'
+  | 'muuriladumine'
+  | 'porandatood'
+  | 'santehnika_elekter'
+  | 'fassaad_uldehitus'
 
 export type SystemBrand = 'mira' | 'mapei' | 'weber' | 'kiilto' | 'ceresit' | 'none'
 
@@ -262,7 +271,18 @@ export interface PricingPlan {
 // Turu hinnakirja reeglid (admini hallatav)
 export interface WorkPricingRule {
   id: string
-  category: 'plaat' | 'mikrotsement' | 'ettevalmistus' | 'viimistlus' | 'eritoo'
+  category:
+    | 'plaat'
+    | 'mikrotsement'
+    | 'maalritood'
+    | 'kipsitood'
+    | 'muuriladumine'
+    | 'porandatood'
+    | 'santehnika_elekter'
+    | 'fassaad_uldehitus'
+    | 'ettevalmistus'
+    | 'viimistlus'
+    | 'eritoo'
   title: string
   description: string
   unit: 'm²' | 'jm' | 'tk' | 'kmpl' | 'projekt'

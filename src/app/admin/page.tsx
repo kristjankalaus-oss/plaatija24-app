@@ -981,6 +981,70 @@ export default function AdminPage() {
               </div>
             </div>
 
+            {/* 5. KATEGOORIA: ÜLDEHITUS & TEISED VIIMISTLUSTÖÖD */}
+            <div className="card p-6 border border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="font-extrabold text-gray-950 text-base flex items-center gap-2">
+                    <span>🏗️</span>
+                    <span>5. Üldehitus & Siseviimistlus (Maalri-, kipsi-, müüri-, põranda-, santehnika- ja fassaaditööd)</span>
+                  </h3>
+                  <p className="text-xs text-gray-500">2026. aasta Eesti turuhinnad ülejäänud ehitusvaldkondadele</p>
+                </div>
+                <span className="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg">Objekt24 Turg</span>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-gray-200 text-gray-400 font-bold uppercase tracking-wider">
+                      <th className="pb-3 w-1/3">Töö nimetus ja kirjeldus</th>
+                      <th className="pb-3 text-center">Ühik</th>
+                      <th className="pb-3 text-right">Töö hind (€)</th>
+                      <th className="pb-3 text-right">Materjalikulu (€)</th>
+                      <th className="pb-3 text-center">Olek</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {pricingRules
+                      .filter(r => ['maalritood', 'kipsitood', 'muuriladumine', 'porandatood', 'santehnika_elekter', 'fassaad_uldehitus'].includes(r.category))
+                      .map(rule => (
+                      <tr key={rule.id} className="hover:bg-gray-50/60 transition-colors">
+                        <td className="py-3 pr-4">
+                          <span className="font-bold text-gray-900 block text-sm">{rule.title}</span>
+                          <span className="text-gray-500 text-[11px] block mt-0.5">{rule.description}</span>
+                        </td>
+                        <td className="py-3 text-center font-mono font-semibold text-gray-600">{rule.unit}</td>
+                        <td className="py-3 text-right">
+                          <input
+                            type="number"
+                            step="0.5"
+                            value={rule.laborPrice}
+                            onChange={(e) => handleUpdateRuleLabor(rule.id, parseFloat(e.target.value) || 0)}
+                            className="w-24 px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm text-right font-bold text-gray-900 focus:ring-2 focus:ring-blue-500"
+                          />
+                        </td>
+                        <td className="py-3 text-right">
+                          <input
+                            type="number"
+                            step="0.5"
+                            value={rule.materialPrice}
+                            onChange={(e) => handleUpdateRuleMaterial(rule.id, parseFloat(e.target.value) || 0)}
+                            className="w-24 px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm text-right font-bold text-gray-900 focus:ring-2 focus:ring-blue-500"
+                          />
+                        </td>
+                        <td className="py-3 text-center">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                            Aktiivne
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
             {/* Alumine salvestusriba */}
             <div className="flex items-center justify-between p-4 bg-gray-900 text-white rounded-2xl shadow-lg">
               <div className="text-xs text-gray-300">

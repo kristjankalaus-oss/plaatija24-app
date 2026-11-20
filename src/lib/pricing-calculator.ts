@@ -513,6 +513,147 @@ export function calculateAIEstimate(
     }
   }
 
+  // 4B. MAALRI-, KIPSI-, MÜÜRI-, PÕRANDA-, SANTEHNIKA- JA FASSAADITÖÖD
+  if (serviceType === 'maalritood' && totalArea > 0) {
+    const rPaint = getR('paint_putty_standard', 18, 4.5)
+    laborItems.push({
+      id: 'paint-labor',
+      category: 'viimistlus',
+      title: 'Pahteldamine, lihvimine, kruntimine ja 2x värvimine',
+      description: 'Lauspahteldus (2 kihti), kruntvärv ja 2 kihti kulumiskindlat seinavärvi',
+      quantity: totalArea,
+      unit: 'm²',
+      unitPrice: rPaint.labor,
+      total: totalArea * rPaint.labor
+    })
+    materialItems.push({
+      id: 'mat-paint',
+      category: 'materjalid',
+      title: 'Pahtlid, kruntvärv, seinavärv ja teibid',
+      quantity: totalArea,
+      unit: 'm²',
+      unitPrice: rPaint.material,
+      total: Math.round(totalArea * rPaint.material)
+    })
+    technicalNotes.push('Kvaliteetne maalritöö eeldab vahekuivamisi ja lihvimistöid sujuva valguse all.')
+  }
+
+  if (serviceType === 'kipsitood' && totalArea > 0) {
+    const rDrywall = getR('drywall_partition', 34, 22)
+    laborItems.push({
+      id: 'drywall-labor',
+      category: 'paigaldus',
+      title: 'Kipsvaheseinte ja -lagede ehitus (karkass + vill + plaat)',
+      description: 'Metallkarkassi rihtimine, heliisolatsioonivill ja kipsplaatide paigaldus',
+      quantity: totalArea,
+      unit: 'm²',
+      unitPrice: rDrywall.labor,
+      total: totalArea * rDrywall.labor
+    })
+    materialItems.push({
+      id: 'mat-drywall',
+      category: 'materjalid',
+      title: 'Kipsplaadid, metallkarkass, vill ja kinnitustarvikud',
+      quantity: totalArea,
+      unit: 'm²',
+      unitPrice: rDrywall.material,
+      total: Math.round(totalArea * rDrywall.material)
+    })
+  }
+
+  if (serviceType === 'muuriladumine' && totalArea > 0) {
+    const rMasonry = getR('masonry_blocks', 42, 32)
+    laborItems.push({
+      id: 'masonry-labor',
+      category: 'paigaldus',
+      title: 'Plokkseinte ladumine / betoonitööd',
+      description: 'Fibo/Bauroc/Columbia ladumine, armeerimine, sillused või tasandusvalud',
+      quantity: totalArea,
+      unit: 'm²',
+      unitPrice: rMasonry.labor,
+      total: totalArea * rMasonry.labor
+    })
+    materialItems.push({
+      id: 'mat-masonry',
+      category: 'materjalid',
+      title: 'Müüriplokid, müürisegu, armatuur ja sillused',
+      quantity: totalArea,
+      unit: 'm²',
+      unitPrice: rMasonry.material,
+      total: Math.round(totalArea * rMasonry.material)
+    })
+  }
+
+  if (serviceType === 'porandatood' && totalArea > 0) {
+    const rFloor = getR('floor_parquet', 20, 4.5)
+    laborItems.push({
+      id: 'floor-parquet-labor',
+      category: 'paigaldus',
+      title: 'Põrandakatete paigaldus (parkett / LVT / laminaat)',
+      description: 'Alusvaiba paigaldus, põrandakatte paigaldus ja liistude ettevalmistus',
+      quantity: totalArea,
+      unit: 'm²',
+      unitPrice: rFloor.labor,
+      total: totalArea * rFloor.labor
+    })
+    materialItems.push({
+      id: 'mat-floor-underlay',
+      category: 'materjalid',
+      title: 'Aluskate, liimid ja paigaldustarvikud (põrandakate tellija valikul)',
+      quantity: totalArea,
+      unit: 'm²',
+      unitPrice: rFloor.material,
+      total: Math.round(totalArea * rFloor.material)
+    })
+  }
+
+  if (serviceType === 'santehnika_elekter') {
+    const points = Math.max(4, Math.round(totalArea / 3))
+    const rPlumb = getR('plumbing_point', 110, 45)
+    laborItems.push({
+      id: 'plumbing-labor',
+      category: 'paigaldus',
+      title: 'Santehnilised ja elektritööd (vee-, kanali- ja küttepunktid)',
+      description: 'Torustike ja kaabelduse vedu, survestamine ja ühenduste ettevalmistus',
+      quantity: points,
+      unit: 'tk',
+      unitPrice: rPlumb.labor,
+      total: points * rPlumb.labor
+    })
+    materialItems.push({
+      id: 'mat-plumb',
+      category: 'materjalid',
+      title: 'Torud, liitmikud, kaablid ja kinnitustarvikud',
+      quantity: points,
+      unit: 'tk',
+      unitPrice: rPlumb.material,
+      total: points * rPlumb.material
+    })
+  }
+
+  if (serviceType === 'fassaad_uldehitus' && totalArea > 0) {
+    const rFacade = getR('facade_insulation', 58, 38)
+    laborItems.push({
+      id: 'facade-labor',
+      category: 'paigaldus',
+      title: 'Fassaadi-, terrassi- ja üldehitustööd',
+      description: 'Soojustamine, armeerimine ja viimistlus vastavalt objekti mahule',
+      quantity: totalArea,
+      unit: 'm²',
+      unitPrice: rFacade.labor,
+      total: totalArea * rFacade.labor
+    })
+    materialItems.push({
+      id: 'mat-facade',
+      category: 'materjalid',
+      title: 'Soojustusplaadid, segud, võrk ja viimistluskrohv',
+      quantity: totalArea,
+      unit: 'm²',
+      unitPrice: rFacade.material,
+      total: Math.round(totalArea * rFacade.material)
+    })
+  }
+
   // 5. ERITÖÖD JA DETAILID (Jiirid, nišid, trapid, silikoon)
   const jiirLength = Number(scope.corners45degCount || 0)
   if (jiirLength > 0) {

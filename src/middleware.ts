@@ -10,12 +10,13 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Lubatud avalikud teed (sisselogimise leht, API ja staatilised ressursid)
+  const isStaticAsset = /\.(?:png|jpg|jpeg|gif|webp|svg|ico|css|js|woff2?|txt|xml|json)$/i.test(pathname)
   if (
     pathname.startsWith('/login-gate') ||
     pathname.startsWith('/api/auth-gate') ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/favicon.ico') ||
-    pathname.includes('.')
+    isStaticAsset
   ) {
     return NextResponse.next()
   }

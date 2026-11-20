@@ -17,23 +17,23 @@ export default function HomePage() {
           <div className="text-center max-w-4xl mx-auto">
             <div className="inline-flex items-center gap-2.5 bg-white/90 backdrop-blur-md text-blue-950 border border-blue-200/80 text-xs font-bold px-4 py-1.5 rounded-full mb-6 uppercase tracking-wider shadow-xs">
               <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
-              <span>🇪🇪 Kliendile 100% tasuta · AI Hinnakalkulaator & Visualiseering</span>
+              <span>🇪🇪 Objekt24 · Eesti ehitus- ja viimistlustööde turuplats</span>
             </div>
 
             <h1 className="text-4xl sm:text-6xl font-black text-gray-950 tracking-tight leading-[1.1] mb-5">
-              Leia usaldusväärne{' '}
+              Eelarve sekundiga,{' '}
               <span className="bg-gradient-to-r from-blue-600 via-blue-700 to-gray-950 bg-clip-text text-transparent">
-                plaatija või mikrotsemendi
+                pakkumised päevaga.
               </span>{' '}
-              meister kiirelt ja vaevata.
+              Säästa aega ja raha.
             </h1>
 
             <p className="text-lg sm:text-xl font-bold mb-4 text-blue-700">
-              Nutikas 2026. aasta turuhindade kalkulaator ja AI-põhine disainilahendus.
+              Plaatimine, mikrotsement, maalritööd, kipsitööd, müüriladumine ja üldehitus ühest kohast.
             </p>
 
             <p className="text-sm sm:text-base text-gray-600 mb-9 max-w-2xl mx-auto leading-relaxed">
-              Sisesta ruumi mõõdud, fotod või visandid ning meie süsteem koostab kohese eelarve ja realistliku visiooni valminud projektist. Vali kontrollitud spetsialistide hulgast parim partner.
+              Sisesta objekti mõõdud, fotod või joonised ning meie AI kalkulaator koostab kohese 2026. aasta turuhindadel põhineva eelarve. Saa kindlatelt meistritelt võrreldavad pakkumised ühe päringuga.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -125,8 +125,8 @@ export default function HomePage() {
                   </span>
                 </div>
                 <div className="mt-6">
-                  <h3 className="font-extrabold text-base text-white">Hüdroisolatsioon</h3>
-                  <p className="text-xs text-blue-100 mt-1">2 kihti mastiksit · Nurgalindid · Renntrapi kalded</p>
+                  <h3 className="font-extrabold text-base text-white">Maalri-, Kipsi- &amp; Müüritööd</h3>
+                  <p className="text-xs text-blue-100 mt-1">Pahteldus · Karkass · Fibo/Bauroc · Betoonivalud</p>
                 </div>
               </div>
             </div>
@@ -331,16 +331,16 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6 text-xs text-gray-400">
           <div className="space-y-1.5">
             <span className="text-lg font-black text-white block">
-              Plaatija<span className="text-blue-500">24</span> & Mikrotsement
+              Objekt<span className="text-blue-500">24</span> · Ehitus & Viimistlus
             </span>
-            <p>Eesti juhtiv plaatimistööde ja mikrotsemendi turuplats · www.plaatija24.ee</p>
+            <p>Eelarve sekundiga, pakkumised päevaga. Säästa aega ja raha. · www.objekt24.ee</p>
             <p className="text-gray-500">
-              Haldaja: <strong className="text-gray-300">Tegulaator OÜ</strong> · E-post: <a href="mailto:info@plaatija24.ee" className="text-blue-400 hover:underline">info@plaatija24.ee</a>
+              Haldaja: <strong className="text-gray-300">Tegulaator OÜ</strong> · E-post: <a href="mailto:info@objekt24.ee" className="text-blue-400 hover:underline">info@objekt24.ee</a>
             </p>
           </div>
           <div className="flex flex-wrap gap-5 font-semibold">
             <Link href="/request" className="hover:text-white transition-colors">Küsi pakkumist</Link>
-            <Link href="/tilers" className="hover:text-white transition-colors">Paigaldajad</Link>
+            <Link href="/tilers" className="hover:text-white transition-colors">Meistrid & Firmad</Link>
             <Link href="/pricing" className="hover:text-white transition-colors">Meistrite paketid (12.90€ / 49€)</Link>
             <Link href="/pro/requests" className="hover:text-white transition-colors">Töölaud</Link>
             <Link href="/feedback" className="hover:text-white transition-colors">Tagasiside</Link>

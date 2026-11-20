@@ -3,7 +3,13 @@ import { NextResponse } from 'next/server'
 export async function POST(request: Request) {
   try {
     const { password } = await request.json()
-    const validPassword = process.env.SITE_PASSWORD || 'plaatija2026'
+    const validPassword =
+      process.env.SITE_PASSWORD ||
+      (process.env.NODE_ENV !== 'production' ? 'plaatija2026' : '')
+
+    if (!validPassword) {
+      return NextResponse.json({ success: false, error: 'SITE_PASSWORD puudub' }, { status: 500 })
+    }
 
     if (password === validPassword) {
       const response = NextResponse.json({ success: true })

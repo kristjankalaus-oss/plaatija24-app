@@ -12,7 +12,7 @@ export default function Navbar() {
   const links = [
     { href: '/', label: 'Avaleht' },
     { href: '/request', label: 'Küsi pakkumist (AI)', highlight: true },
-    { href: '/tilers', label: 'Paigaldajad' },
+    { href: '/tilers', label: 'Meistrid & Firmad' },
     { href: '/pricing', label: 'Meistrite paketid' },
     ...(role === 'contractor_b2b' || role === 'client' ? [{ href: '/my-projects', label: role === 'contractor_b2b' ? '🏢 Minu hanked' : '📋 Minu päringud' }] : []),
     ...(role === 'tiler' || role === 'admin' || !user ? [{ href: '/pro/requests', label: '🔨 Töölaud' }] : []),
@@ -44,10 +44,10 @@ export default function Navbar() {
             </div>
             <div>
               <span className="text-xl font-black tracking-tight text-gray-950">
-                Plaatija<span style={{ color: 'var(--color-brand-500)' }}>24</span>
+                Objekt<span style={{ color: 'var(--color-brand-500)' }}>24</span>
               </span>
               <span className="hidden sm:inline-block text-[10px] font-bold text-blue-900 ml-1.5 px-2 py-0.5 bg-blue-50 border border-blue-100 rounded-md">
-                & Mikrotsement
+                Ehitus & Viimistlus
               </span>
             </div>
           </Link>

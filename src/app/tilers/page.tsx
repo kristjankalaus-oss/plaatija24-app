@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
-import { getTilers, ESTONIAN_REGIONS } from '@/lib/data-store'
+import { getTilers, ESTONIAN_REGIONS, SERVICE_CATEGORIES } from '@/lib/data-store'
 import { ServiceType } from '@/types'
 
 export default function TilersPage() {
@@ -35,7 +35,7 @@ export default function TilersPage() {
             Eesti Parimad Meistrid
           </span>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mt-3">
-            Registreeritud plaatijad ja mikrotsemendi paigaldajad
+            Registreeritud ehitusmeistrid ja paigaldajad
           </h1>
           <p className="text-gray-500 text-sm mt-2">
             Tutvu meistrite tehtud tööde galeriide, hinnangute ja spetsialiseerumisega. Küsi pakkumist või võta otse ühendust.
@@ -46,13 +46,20 @@ export default function TilersPage() {
         <div className="card p-4 border border-gray-200 mb-8 flex flex-wrap items-center justify-between gap-4">
           
           {/* Eriala filtrid */}
-          <div className="flex items-center gap-2 overflow-x-auto">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-bold text-gray-400 uppercase tracking-wider mr-1">Eriala:</span>
-            {[
-              { id: 'all', label: 'Kõik meistrid' },
-              { id: 'plaat', label: '🧱 Plaatimine' },
-              { id: 'mikrotsement', label: '🎨 Mikrotsement' },
-            ].map(f => (
+            <button
+              type="button"
+              onClick={() => setSelectedService('all')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                selectedService === 'all'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              Kõik meistrid
+            </button>
+            {SERVICE_CATEGORIES.filter(c => c.id !== 'mõlemad').map(f => (
               <button
                 key={f.id}
                 type="button"
@@ -63,7 +70,7 @@ export default function TilersPage() {
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                {f.label}
+                {f.icon} {f.label}
               </button>
             ))}
           </div>

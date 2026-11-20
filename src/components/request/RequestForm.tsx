@@ -14,7 +14,7 @@ import {
 } from '@/types'
 import { calculateAIEstimate, SYSTEM_BRAND_INFO } from '@/lib/pricing-calculator'
 import { getAIVisualizations } from '@/lib/ai-visualizer'
-import { saveProject, ESTONIAN_REGIONS } from '@/lib/data-store'
+import { saveProject, ESTONIAN_REGIONS, SERVICE_CATEGORIES } from '@/lib/data-store'
 import AdBanner from '@/components/ads/AdBanner'
 import { useAuth } from '@/lib/useAuth'
 
@@ -289,11 +289,12 @@ export default function RequestForm() {
     const isB2B = clientType === 'contractor_b2b'
     const projectId = 'proj-' + Date.now()
 
+    const serviceLabel = SERVICE_CATEGORIES.find(c => c.id === serviceType)?.label || serviceType
     const projectTitle = isB2B
       ? b2bScope === 'stage_helper'
-        ? `B2B Etapp / Lisajõud: ${companyName || 'Ehitusobjekt'}`
-        : `B2B Põhihange: ${companyName || 'Ehitusobjekt'}`
-      : `Viimistlusobjekt (${serviceType === 'mõlemad' ? 'Plaat + Mikrotsement' : serviceType})`
+        ? `B2B Etapp / Lisajõud: ${companyName || 'Ehitusobjekt'} (${serviceLabel})`
+        : `B2B Põhihange: ${companyName || 'Ehitusobjekt'} (${serviceLabel})`
+      : `${serviceLabel}`
 
     const newProject: ProjectInquiry = {
       id: projectId,
@@ -497,24 +498,20 @@ export default function RequestForm() {
 
                   {/* Teenuse liik */}
                   <div>
-                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Teenuse liik</label>
-                    <div className="grid grid-cols-3 gap-3">
-                      {[
-                        { id: 'plaat', label: 'Plaatimine', icon: '🧱', desc: 'Keraamika, portselan, marmor' },
-                        { id: 'mikrotsement', label: 'Mikrotsement', icon: '🎨', desc: 'Sujuv vuugivaba viimistlus' },
-                        { id: 'mõlemad', label: 'Mõlemad', icon: '✨', desc: 'Kombineeritud lahendus' },
-                      ].map((t) => (
+                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Vali tööliik / kategooria *</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                      {SERVICE_CATEGORIES.map((t) => (
                         <button
                           key={t.id}
                           type="button"
-                          onClick={() => handleSelectServiceType(t.id as ServiceType)}
-                          className={`p-3.5 rounded-xl border-2 text-left transition-all ${
+                          onClick={() => handleSelectServiceType(t.id)}
+                          className={`p-3 rounded-xl border-2 text-left transition-all ${
                             serviceType === t.id
                               ? 'border-blue-600 bg-blue-50/70 shadow-xs'
                               : 'border-gray-200 hover:border-gray-300 bg-white'
                           }`}
                         >
-                          <div className="text-2xl mb-1">{t.icon}</div>
+                          <div className="text-xl mb-1">{t.icon}</div>
                           <div className="text-xs font-bold text-gray-900">{t.label}</div>
                           <div className="text-[10px] text-gray-500 mt-0.5">{t.desc}</div>
                         </button>
@@ -666,6 +663,7 @@ export default function RequestForm() {
                     </div>
 
                     {/* ERALDI JAOTUS: SEINAD JA PÕRAND (PLAAT VS MIKROTSEMENT) */}
+                    {(serviceType === 'plaat' || serviceType === 'mikrotsement' || serviceType === 'mõlemad') && (
                     <div className="pt-3 border-t border-gray-200">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
                         <span className="text-xs font-bold text-gray-900 flex items-center gap-1.5 uppercase tracking-wider">
@@ -786,6 +784,7 @@ export default function RequestForm() {
                         </div>
                       </div>
                     </div>
+                    )}
                   </div>
 
                   <div className="pt-2 flex justify-end">
